@@ -16,7 +16,7 @@
     {
       "name": "specialists-shopify",
       "source": "./specialists-shopify",
-      "description": "Groep 3 — domein-plugin voor Shopify-store-repo's (bv. smartwatchbanden): Liam, Sandra, Steven. Alleen een Shopify-repo schakelt deze in."
+      "description": "Groep 3 — domein-plugin voor Shopify-store-repo's (bv. smartwatchbanden): Liam, Sandra, Steven, plus de domein-skill start-task. Alleen een Shopify-repo schakelt deze in."
     }
   ]
 }

@@ -10,11 +10,11 @@ heeft.
 
 Het systeem kent drie groepen specialisten, elk in een eigen plugin:
 
-| Plugin | Groep | Voor wie | Subagents |
+| Plugin | Groep | Voor wie | Inhoud |
 |---|---|---|---|
 | `specialists` | **1 · globaal** | elke repo | Paula, Rebecca, Vera, Gwen, Cody, Tycho, Sylvester, Tessa, Edith, Victor |
 | `specialists-lifehub` | **2 · life-hub-achtig** | persoonlijke informatie-hub / brain-gebaseerde kennisrepo | Astrid, Fiona, Hugo, Ian, Onyx |
-| `specialists-shopify` | **3 · Shopify** | Shopify-store-repo (bv. smartwatchbanden) | Liam, Sandra, Steven |
+| `specialists-shopify` | **3 · Shopify** | Shopify-store-repo (bv. smartwatchbanden) | Liam, Sandra, Steven + de domein-skill `start-task` |
 
 Een consumerende repo schakelt **groep 1 altijd in**, plus de domein-groep die bij hem past:
 
