@@ -9,6 +9,18 @@ folden) staat in [`README.md`](README.md#bijdragen--changelog--pr-workflow).
 Alles wat sinds de laatste release naar `master` is gemergd — nieuwste bovenaan, één blok per pull
 request.
 
+### #11 · LICENSE (MIT) en .gitignore toegevoegd · Chore · 2026-07-14
+
+De repo is bewust publiek maar had nog geen licentie (publiek zichtbaar ≠ vrij te gebruiken) en geen
+`.gitignore`. Toegevoegd: een **MIT-licentie** (copyright 2026 Dave Kok) zodat het specialisten-systeem
+vrij te gebruiken en aan te passen is met behoud van de copyright-notice, en een `.gitignore` voor
+OS-rommel, editor-mappen, logs/temp en de per-gebruiker `settings.local.json` (de gedeelde
+`.claude/settings.json` blijft in de repo).
+
+[PR #11](https://github.com/DaveKJohn/claude-specialists/pull/11)
+
+---
+
 ### #10 · README-migratiestatus geactualiseerd: alle drie de groepen gemigreerd · Docs · 2026-07-14
 
 De README-sectie "Manuals — het gesplitste model" beweerde nog dat groep 1 (`specialists`) en
