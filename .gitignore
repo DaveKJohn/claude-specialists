@@ -1,0 +1,24 @@
+# OS-rommel
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+
+# Editors / IDE's
+.vscode/
+.idea/
+*.swp
+*~
+
+# Logs & tijdelijke bestanden
+*.log
+*.tmp
+*.bak
+
+# Claude Code — per-gebruiker, niet delen (de gedeelde .claude/settings.json blijft wél in de repo)
+.claude/settings.local.json
