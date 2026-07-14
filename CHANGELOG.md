@@ -9,6 +9,19 @@ folden) staat in [`README.md`](README.md#bijdragen--changelog--pr-workflow).
 Alles wat sinds de laatste release naar `master` is gemergd — nieuwste bovenaan, één blok per pull
 request.
 
+### #7 · groep-1 (gedeelde kern): 10 manuals gereconcilieerd naar specialists/manuals/, agent-defs naar plugin + repo-extensie · Feat · 2026-07-14
+
+Tweede stap in het gesplitste manual-model, nu voor de gedeelde kern-plugin `specialists` (groep 1). Anders dan bij `specialists-lifehub` (die maar één consument heeft) waren de draagbare delen van deze 10 manuals tussen de twee consumerende repo's (life-hub en smartwatchbanden) uit elkaar gegroeid — daarom is elk draagbaar vakboek **gereconcilieerd** (het beste van beide versies samengevoegd, niets van substantie verloren) tot één repo-neutrale bron. Elke consumerende repo houdt vanaf nu alleen zijn eigen repo-lens als `.claude/extensions/<group>-<id>-extension.md`.
+
+- `specialists/manuals/{02-09,03-07,04-11,04-12,04-13,04-18,05-15,06-16,06-17,06-19}-manual.md` — nieuw: de 10 gereconcilieerde, volledig repo-neutrale draagbare vakboeken (Paula, Rebecca, Vera, Gwen, Cody, Tycho, Sylvester, Tessa, Edith, Victor). Repo-specifieke details (paden, platform, teamgenoot-namen, conventies) zijn eruit en wonen voortaan in de per-repo extensie.
+- `specialists/agents/*.md` (10) — de vakboek-verwijzing wijst nu naar `${CLAUDE_PLUGIN_ROOT}/manuals/<group>-<id>-manual.md` (in de plugin) plus `.claude/extensions/<group>-<id>-extension.md` (repo-lens), i.p.v. het oude `.claude/manuals/<group>-<id>-manual.md`.
+
+De bijbehorende repo-lenzen (life-hub + smartwatchbanden) en het opruimen van de lokale `.claude/manuals/`-kopieën zitten in de PR's van die repo's. De persona-only specialisten blijven bewust repo-side (de main-loop kan geen plugin-bestand runtime laden) en verhuizen niet naar deze plugin.
+
+[PR #7](https://github.com/DaveKJohn/claude-specialists/pull/7)
+
+---
+
 ### #6 · life-hub-domeingroep: draagbaar vakboek naar specialists-lifehub/manuals/, agent-defs verwijzen nu naar plugin + repo-extensie · Feat · 2026-07-14
 
 Eerste stap in het gesplitste manual-model: het **draagbare** vakboek van een specialist verhuist naar de plugin, de **repo-lens** blijft als extensie in de consumerende repo. Uitgevoerd voor de domeingroep `specialists-lifehub` (Astrid, Fiona, Hugo, Ian, Onyx); groep 1 (`specialists`) en `specialists-shopify` volgen apart omdat die meerdere consumerende repo's tegelijk raken.
