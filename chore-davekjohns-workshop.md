@@ -17,6 +17,9 @@ het Claude-Specialists-systeem is de eerste product-familie.
   `open-pr.ps1`/`fold-changelog-entry.ps1` (`--repo`), de bootstrap-skill-instructies, en de
   intro's/structuursecties van `CLAUDE.md`, `README.md`, `.claude/README.md`, `releases/README.md`
   en de repo-lenzen.
+- **Nieuwe familie-README** — `claude-code-plugins/claude-specialists/README.md` legt uit wat het
+  specialisten-systeem doet en wat het verschil is tussen de drie sub-plugins (gedeelde kern vs.
+  domein-groepen), met verwijzing naar de root-README voor consumptie-details.
 - **Lint-fix (persona-links)** — persona-sjablonen linken relatief aan hun *bestemming*
   (`.claude/extensions/` van een consument); door de diepere bronlocatie viel de toevallige
   bron-resolutie weg. `check-plugin-integrity.ps1` valideert persona-links nu expliciet alsof ze op
