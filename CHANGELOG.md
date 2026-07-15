@@ -9,6 +9,18 @@ folden) staat in [`README.md`](README.md#bijdragen--changelog--pr-workflow).
 Alles wat sinds de laatste release naar `main` is gemergd — nieuwste bovenaan, één blok per pull
 request.
 
+### #21 · Sylvesters vakboek-les: /reload-plugins naast de herstart · Docs · 2026-07-15
+
+Sylvesters draagbare vakboek (`05-15-manual.md`) stelde dat plugin-/subagent-wijzigingen pas bij
+een herstart van Claude Code laden. In de praktijk (rooktest 15 juli 2026) blijkt `/reload-plugins`
+plugins mid-sessie te herladen — subagents en skills worden direct beschikbaar, zonder herstart. De
+harde regel is bijgewerkt: `/reload-plugins` als snel pad, de herstart als vertrouwde terugvaloptie,
+met de kanttekening dat `CLAUDE.md`-imports en settings wél een herstart blijven vragen.
+
+[PR #21](https://github.com/DaveKJohn/davekjohns-workshop/pull/21)
+
+---
+
 ### #20 · Repo hernoemd naar `davekjohns-workshop` + plugins verhuisd naar `claude-code-plugins/claude-specialists/` · Chore · 2026-07-15
 
 De repo heet voortaan **`davekjohns-workshop`**: de werkplaats van Dave (DaveKJohn) waar al zijn
