@@ -37,6 +37,38 @@ github-source (zie [`CLAUDE.md`](../../CLAUDE.md)).
    (geen sessie hield ze meer vast — zie de marker-structuur-les hieronder) en de nieuwe
    sessie draaide geverifieerd op v1.1.1 (`claude plugin list --json`, `projectPath`-check).
 
+## Werkplan 16 juli 2026
+
+Opgesteld na de eindbalans van 15 juli: alle drie de werkbomen schoon, drift-check exit 0,
+maar de domein-plugins staan nog op v1.0.0 tegenover de v1.1.1-bron (geverifieerd via
+`claude plugin list --json`). Volgorde: eerst de consumenten
+bijwerken, dan de opruim- en fix-klusjes, en afsluiten met een hercheck.
+
+1. **smartwatchbanden — `specialists-shopify` naar v1.1.1.** Vanuit de swb-repo (scope-les!):
+   vooraf én achteraf `claude plugin list --json` (het `projectPath`-veld), bijwerken via
+   `claude plugin install -s project`, daarna sessie-herstart en `git status` checken
+   (de install kan line-endings van `.claude/settings.json` herschrijven).
+2. **life-hub — kern-record verifiëren + `specialists-lifehub` naar v1.1.1.** Eerst vanuit
+   life-hub met `claude plugin list --json` checken of er een record voor de
+   `specialists`-kern bestaat (op de werkplaats-machine is er alleen een record van de
+   domein-plugin zichtbaar); daarna dezelfde update-werkwijze als bij swb.
+3. **life-hub — persona-drift bekijken.** De extensions van Chris (01-01) en Derek (05-05)
+   wijken daar af van de canonieke persona-bodies (drift-check 15 juli, informatief). Bepalen:
+   lokale verbetering die eerst terug naar de bron moet (wijzigingen landen altijd eerst in
+   davekjohns-workshop), of bewuste repo-eigen afwijking die de bron niet raakt.
+4. **Beide machines — oude `claude-specialists`-marketplace-kloon verwijderen.** Vervolgstap 1
+   hierboven: `/plugin marketplace remove claude-specialists` — handmatige actie van Dave.
+5. **smartwatchbanden — borging + oude records opruimen.** Vervolgstap 2 hierboven: de
+   migratie-afronding vastleggen in swb's `research/plugin-sharing/README.md`, en daarnaast
+   de twee uitgeschakelde v0.1.0-records van swb's oude eigen marketplace
+   (`specialists@smartwatchbanden`, `swb-specialists@smartwatchbanden`) + de bijbehorende
+   cache-map opruimen volgens de record-les-werkwijze hieronder.
+6. **davekjohns-workshop — de "merget"-fix in de gedeelde agent-defs.** In `06-19-agent.md`
+   en `06-23-agent.md` staat de foutieve vervoeging "merget" in plaats van "mergt" (vondst
+   van Edith, 15 juli): kleine `fix/`-branch + PR.
+7. **Sluitstuk — hercheck vanuit de werkplaats.** Drift-check tegen beide consumenten en
+   `claude plugin list --json` — alles hoort dan op v1.1.1 te staan zonder drift.
+
 ## Geleerde lessen
 
 - **Stale `.in_use`-marker** op een oud marketplace-pad kan verhinderen dat agents laden;
