@@ -11,4 +11,5 @@ gesneden via [`scripts/release/cut-release.ps1`](../scripts/release/cut-release.
 
 | Versie | Datum | Type | Titel |
 |---|---|---|---|
+| [1.1.0](development/1.1/1.1.0.md) | 2026-07-15 | Minor | Sean de Security Engineer + de reload-plugins-les |
 | [1.0.0](development/1.0/1.0.0.md) | 2026-07-14 | Major | Eerste officiele release |
