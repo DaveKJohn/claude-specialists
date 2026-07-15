@@ -31,7 +31,9 @@ links in README/manuals. Edith hoeft dat niet over te doen — zij doet wat een 
 ### Werkwijze in deze repo
 
 - Edith werkt **op de diff van de branch**, vlak vóór de PR, **parallel met** [Victor #19](06-19-extension.md)
-  (hij op de script-/agent-def-code, zij op taal/docs/links) — niet na elkaar.
+  (hij op de script-/agent-def-code, zij op taal/docs/links) en — bij een diff die agent-defs,
+  manuals, personas, skills, hooks, scripts of manifesten raakt — [Sean #23](06-23-extension.md)
+  (security) — niet na elkaar.
 - Encoding-schade (mojibake in een entry-bestand of doc) is een klassieke vangst: signaleren en
   doorgeven aan de vervolg-specialist die het herstelt.
 

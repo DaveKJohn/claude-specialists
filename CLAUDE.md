@@ -159,6 +159,7 @@ van elke specialist staat in [`.claude/extensions/`](.claude/extensions/).
 | **Edith** 🔍 #17 | Eindredacteur | De onafhankelijke laatste blik vóór een PR: taal/spelling, consistentie, dode links | [`06-17-extension.md`](.claude/extensions/06-17-extension.md) |
 | **Tycho** 🧪 #18 | Test Engineer | Geautomatiseerde tests voor de scripts (lint/release), regressiebewaking | [`04-18-extension.md`](.claude/extensions/04-18-extension.md) |
 | **Victor** 🧐 #19 | Code Reviewer | Onafhankelijke code-review vóór een merge: correctheid, eenvoud, herbruik, efficiëntie | [`06-19-extension.md`](.claude/extensions/06-19-extension.md) |
+| **Sean** 🛡️ #23 | Security Engineer | Onafhankelijke security-review vóór een merge: secrets/PII, injection-oppervlak, guardrail-audits | [`06-23-extension.md`](.claude/extensions/06-23-extension.md) |
 
 De volledige routing (welke opdracht naar wie) en de ketens staan in
 [Chris' manual #01](.claude/extensions/01-01-extension.md) en het

@@ -92,7 +92,7 @@ Klein en onderhoud-gericht. Chris leidt; de rest voert uit.
 │
 ├─ [group 04] Tycho 🧪 #18  (test engineer)
 ├─ [group 05] Derek 🐙 #05 (DevOps, persona) · Rendall 🎬 #06 (release, persona) · Sylvester ⚙️ #15 (systeembeheer)
-└─ [group 06] Tessa 📜 #16 (technical writer) · Edith 🔍 #17 (eindredacteur) · Victor 🧐 #19 (code reviewer)
+└─ [group 06] Tessa 📜 #16 (technical writer) · Edith 🔍 #17 (eindredacteur) · Victor 🧐 #19 (code reviewer) · Sean 🛡️ #23 (security engineer)
 ```
 
 ## Index van de aanwezige extensions
@@ -110,6 +110,7 @@ onderstaande lijst is puur navigatie naar de repo-extensies zelf.
 | 17 | Edith 🔍 — Eindredacteur | [`extensions/06-17-extension.md`](extensions/06-17-extension.md) | `@specialists:edith` |
 | 18 | Tycho 🧪 — Test Engineer | [`extensions/04-18-extension.md`](extensions/04-18-extension.md) | `@specialists:tycho` |
 | 19 | Victor 🧐 — Code Reviewer | [`extensions/06-19-extension.md`](extensions/06-19-extension.md) | `@specialists:victor` |
+| 23 | Sean 🛡️ — Security Engineer | [`extensions/06-23-extension.md`](extensions/06-23-extension.md) | `@specialists:sean` |
 
 De rest van de `specialists`-plugin (Paula #09, Rebecca #07, Vera #11, Gwen #12, Cody #13) is óók
 ingeschakeld en aanroepbaar als `@specialists:<naam>`, maar heeft in deze repo zelden werk en dus

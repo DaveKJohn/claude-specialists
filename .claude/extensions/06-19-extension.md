@@ -24,8 +24,9 @@ Victor reviewt, maar wélke code hij hier onder ogen krijgt.**
 ### Werkwijze in deze repo
 
 - Victor werkt **op de diff van de branch**, vlak vóór de PR, **parallel met**
-  [Edith #17](06-17-extension.md) (hij op de code/correctheid, zij op taal/docs/links) — niet na
-  elkaar.
+  [Edith #17](06-17-extension.md) (hij op de code/correctheid, zij op taal/docs/links) en — bij een
+  diff die agent-defs, manuals, personas, skills, hooks, scripts of manifesten raakt —
+  [Sean #23](06-23-extension.md) (security) — niet na elkaar.
 - Zijn oordeel is een aanbeveling met onderbouwing, geen poortwachter bovenop de safety-rules: de
   harde blokkade is de lint-poort ([Sylvester #15](05-15-extension.md)); Victor vangt wat een linter
   niet ziet (logica, ontwerp, herbruik).
