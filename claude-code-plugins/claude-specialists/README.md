@@ -13,7 +13,7 @@ de marketplace **per stuk** aan of uit.
 
 | Plugin | Wat het is | Voor wie |
 |---|---|---|
-| [`specialists/`](specialists/) | **De gedeelde kern (groep 1).** Tien repo-neutrale specialisten die in élke repo hetzelfde werken (o.a. onderzoek, systeembeheer, technical writing, eindredactie, code-review, testen). Draagt daarnaast de persona-sjablonen van de hoofdloop (Chris/Derek/Rendall) en de bootstrap-skill `specialists-init`. | **Elke** consumerende repo — dit is de basis, altijd inschakelen. |
+| [`specialists/`](specialists/) | **De gedeelde kern (groep 1).** Elf repo-neutrale specialisten die in élke repo hetzelfde werken (o.a. onderzoek, systeembeheer, technical writing, eindredactie, code-review, security-review, testen). Draagt daarnaast de persona-sjablonen van de hoofdloop (Chris/Derek/Rendall) en de bootstrap-skill `specialists-init`. | **Elke** consumerende repo — dit is de basis, altijd inschakelen. |
 | [`specialists-lifehub/`](specialists-lifehub/) | **Domein-groep 2.** Vijf specialisten voor een persoonlijke informatie-hub / brain-gebaseerde kennisrepo (Astrid, Fiona, Hugo, Ian, Onyx). Bewust domein-gekleurd: ze kennen hun repo en teamgenoten bij naam. | Alleen een life-hub-achtige repo. |
 | [`specialists-shopify/`](specialists-shopify/) | **Domein-groep 3.** Drie specialisten voor een Shopify-store-repo (Liam · Liquid, Sandra · webshopbeheer, Steven · configuratie) plus de domein-skill `start-task`. Eveneens bewust domein-gekleurd. | Alleen een Shopify-repo (bv. smartwatchbanden). |
 
