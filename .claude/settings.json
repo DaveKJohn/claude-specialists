@@ -1,4 +1,7 @@
 {
+  "enabledPlugins": {
+    "specialists@davekjohns-workshop": true
+  },
   "extraKnownMarketplaces": {
     "davekjohns-workshop": {
       "source": {
@@ -6,8 +9,5 @@
         "repo": "DaveKJohn/davekjohns-workshop"
       }
     }
-  },
-  "enabledPlugins": {
-    "specialists@davekjohns-workshop": true
   }
 }
