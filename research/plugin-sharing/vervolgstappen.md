@@ -71,3 +71,17 @@ github-source (zie [`CLAUDE.md`](../../CLAUDE.md)).
   kijken: **leeg = vrij** (veilig te verwijderen), en staat er wél een PID-bestand, dan
   vertelt de PID exact wélke sessie de versie gebruikt (te herleiden via de proceslijst,
   bv. `Get-Process -Id <pid>`).
+- **Ruleset-verificatie-les: het `bypass_actors`-veld van een GitHub-ruleset is alleen
+  zichtbaar voor repo-admins** (15 juli 2026, instellen van de ruleset `main-ci-poort`).
+  Vraagt een niet-admin-account de ruleset op via de API, dan lijkt de bypass-list leeg
+  terwijl hij gevuld is — een kijk-artefact dat tot de onterechte conclusie "de bypass
+  ontbreekt" leidde. Verifieer een ruleset daarom altijd als het account dat daadwerkelijk
+  gaat pushen, via het veld `current_user_can_bypass` (`"always"` = gedekt, `"never"` =
+  geblokkeerd): dat veld beantwoordt de vraag die er echt toe doet, onafhankelijk van wie
+  de bypass-list mag zien.
+- **Write-bypass-kanttekening: de bypass-list van `main-ci-poort` bevat bewust ook de
+  Write-rol** (15 juli 2026). Nodig omdat de directe fold-/release-commits op `main` als
+  werk-account `davekokbwj` worden gepusht, dat op deze persoonlijke repo geen admin kán
+  zijn (alleen eigenaar + collaborators met write). Veilig zolang `davekokbwj` de enige
+  collaborator is — maar krijgt de repo ooit externe collaborators, dan kan élke
+  write-collaborator de checks passeren en moet deze bypass opnieuw bekeken worden.
