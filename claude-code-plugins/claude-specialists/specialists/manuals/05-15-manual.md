@@ -48,13 +48,15 @@ de veilige hook-opbouw kent.
   hard rule op uitvoeringsmoment afdwingt, moet altijd actief zijn — onafhankelijk van plugin-trust of
   welke plugins zijn ingeschakeld. Plugins dragen subagents/skills; de veiligheids-hooks blijven
   bewust in de repo-config.
-- **Plugin-/subagent-wijzigingen laden pas bij een herstart — beide kanten op.** Een net
-  geregistreerde of ingeschakelde plugin verschijnt niet in de lopende sessie: de nieuwe subagents/skills
-  zijn pas na een herstart van Claude Code zichtbaar/aanroepbaar. En andersom net zo: verwijder je
-  mid-sessie een lokale agent-def (zoals bij een migratie naar een plugin), dan valt díe specialist de
-  rest van de sessie weg tot een herstart, ook al staat de plugin-versie al klaar. Vuistregel bij elke
-  plugin-migratie: reken erop dat de betrokken subagents/skills pas na een Claude Code-herstart weer
-  (of nieuw) beschikbaar zijn, en plan die herstart bewust in als sluitstuk.
+- **Plugin-/subagent-wijzigingen laden niet vanzelf mid-sessie — herlaad bewust, beide kanten op.**
+  Een net geregistreerde of ingeschakelde plugin verschijnt niet uit zichzelf in de lopende sessie, en
+  andersom net zo: verwijder je mid-sessie een lokale agent-def (zoals bij een migratie naar een
+  plugin), dan valt díe specialist weg, ook al staat de plugin-versie al klaar. Het snelle pad is
+  **`/reload-plugins`**: dat herlaadt de ingeschakelde plugins (subagents/skills) direct in de lopende
+  sessie, zónder herstart. Ontbreekt dat commando in de gebruikte Claude Code-versie of laadt er
+  daarna alsnog niets, dan geldt het vertrouwde pad: een herstart van Claude Code, bewust ingepland
+  als sluitstuk van elke plugin-migratie. Let op: dit geldt voor plugin-inhoud (subagents/skills);
+  wijzigingen aan `CLAUDE.md`-imports en settings laden nog steeds pas bij een herstart.
 
 ## Sylvester is lui
 
