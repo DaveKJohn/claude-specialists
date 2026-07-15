@@ -1,16 +1,18 @@
-# CLAUDE.md — claude-specialists
+# CLAUDE.md — davekjohns-workshop
 
 Dit bestand is de operating guide voor deze repo, die wordt bestuurd door de **Claude Specialists** —
 een team gespecialiseerde Claudes onder één Chief of Staff. Het is opgebouwd zoals elke
 specialist-manual: **de draagbare werkwijze staat bovenaan** (het systeem en de grondwet, geldig in
 elke repo die met de Claude Specialists werkt), en **alles wat specifiek is voor déze repo staat
-onderaan** onder [`## Eigen aan deze repo (claude-specialists)`](#eigen-aan-deze-repo-claude-specialists).
+onderaan** onder [`## Eigen aan deze repo (davekjohns-workshop)`](#eigen-aan-deze-repo-davekjohns-workshop).
 
-> **Deze repo is een bijzonder geval.** claude-specialists ís de marketplace die het hele
-> specialisten-systeem huisvest (de subagent-definities en draagbare vakboeken die andere repo's
-> inschakelen — zie [`README.md`](README.md)) — en gebruikt dat systeem hier ook **zelf**, door zijn
-> eigen `specialists`-plugin (groep 1) in te schakelen. Het team dat aan deze repo werkt is daarom
-> klein en toegespitst op het onderhoud van dít product: agent-defs, manuals, docs en tooling.
+> **Deze repo is een bijzonder geval.** davekjohns-workshop is de **werkplaats van Dave**: de
+> marketplace-repo waar al zijn plugins worden gebouwd. De eerste product-familie is het
+> specialisten-systeem in `claude-code-plugins/claude-specialists/` (de subagent-definities en draagbare vakboeken
+> die andere repo's inschakelen — zie [`README.md`](README.md)) — en de repo gebruikt dat systeem
+> hier ook **zelf**, door zijn eigen `specialists`-plugin (groep 1) in te schakelen. Het team dat aan
+> deze repo werkt is daarom klein en toegespitst op het onderhoud van dít product: agent-defs,
+> manuals, docs en tooling.
 
 ---
 
@@ -58,7 +60,7 @@ repo-slot.
 **Grondwet — lees dit eerst.** Deze regels gelden breed gedeeld en staan boven elk gemak; alle
 overige werkwijze woont in de specialist-manuals. De concrete invulling voor déze repo (de
 hoofdbranch, de lint-poort, de fold-uitzondering, het publiek-zijn) staat in
-[`## Eigen aan deze repo (claude-specialists)`](#eigen-aan-deze-repo-claude-specialists).
+[`## Eigen aan deze repo (davekjohns-workshop)`](#eigen-aan-deze-repo-davekjohns-workshop).
 
 ### Nooit zonder expliciete toestemming van Dave
 
@@ -110,16 +112,18 @@ hierboven gebeuren alleen op expliciet verzoek van Dave.
 
 ---
 
-## Eigen aan deze repo (claude-specialists)
+## Eigen aan deze repo (davekjohns-workshop)
 
 > *Alles hierboven is de draagbare werkwijze van een repo die door de Claude Specialists wordt
-> bestuurd. Dit deel is de claude-specialists-lens: kopieer je dit systeem naar een andere repo, dan
+> bestuurd. Dit deel is de davekjohns-workshop-lens: kopieer je dit systeem naar een andere repo, dan
 > is dít het stuk dat je vervangt — het beschrijft niet dát er specialisten en safety-rules zijn, maar
 > wát déze repo is, welk team er werkt, en hoe de grondwet hier concreet is ingevuld.*
 
-`claude-specialists` is de **standalone marketplace-repo** die het Claude-Specialists-systeem
-huisvest, opgedeeld in **drie plugins**: de gedeelde, draagbare kern (`specialists`) plus twee
-domein-groepen (`specialists-lifehub`, `specialists-shopify`). Deze repo is de **single source of
+`davekjohns-workshop` is de **werkplaats-repo van Dave (DaveKJohn)**: de marketplace waar al zijn
+plugins worden gebouwd en onderhouden. De eerste product-familie is het Claude-Specialists-systeem
+in [`claude-code-plugins/claude-specialists/`](claude-code-plugins/claude-specialists/), opgedeeld in **drie plugins**: de gedeelde,
+draagbare kern (`specialists`) plus twee domein-groepen (`specialists-lifehub`,
+`specialists-shopify`). Deze repo is de **single source of
 truth** voor alle deelbare subagent-definities — elke consumerende repo (life-hub, smartwatchbanden)
 wijst hierheen en schakelt per plugin aan of uit. De volledige uitleg — de drie groepen, wat hier
 wél/niet woont, het gesplitste manual-model, de aanroep-namespaces, de consumptie-config en de
@@ -127,7 +131,7 @@ drift-lint — staat in [`README.md`](README.md); dit `CLAUDE.md` dupliceert dat
 
 **De repo consumeert zichzelf.** Via [`.claude/settings.json`](.claude/settings.json) schakelt deze
 repo zijn eigen `specialists`-plugin (groep 1) in, met de `github`-marketplace-source
-`DaveKJohn/claude-specialists` — de repo wijst dus naar zichzelf. Zo werkt het onderhoudsteam met
+`DaveKJohn/davekjohns-workshop` — de repo wijst dus naar zichzelf. Zo werkt het onderhoudsteam met
 exact het product dat het onderhoudt. Eén gevolg om te kennen: via de `github`-source ziet het team de
 **laatst gepushte** versie van de plugins, niet je lopende branch-werk — een agent-def die je op een
 branch wijzigt draait pas mee ná merge + push.
@@ -163,8 +167,10 @@ verzonnen — alleen in overleg met Dave (zie
 
 ### Structuur — waar wat woont
 
-- **`.claude-plugin/marketplace.json`** — de marketplace-definitie: de drie plugins met hun `source`.
-- **`specialists/`, `specialists-lifehub/`, `specialists-shopify/`** — de drie plugins, elk met een
+- **`.claude-plugin/marketplace.json`** — de marketplace-definitie: de plugins met hun `source`.
+- **`claude-code-plugins/`** — het thuis van alle plugin-families van de werkplaats. De eerste (en
+  vooralsnog enige) familie is **`claude-specialists/`**: de drie plugins
+  (`specialists/`, `specialists-lifehub/`, `specialists-shopify/`), elk met een
   eigen `.claude-plugin/plugin.json` (`version`), `agents/` en — voor een gemigreerde groep —
   `manuals/`. `specialists` draagt daarnaast `personas/` (de draagbare sjablonen van de
   hoofdloop-specialisten Chris/Derek/Rendall) en `skills/specialists-init/` (het repo-neutrale
@@ -179,7 +185,7 @@ verzonnen — alleen in overleg met Dave (zie
   (harness-config), en `README.md` (het specialisten-handboek).
 - **`CLAUDE.md`, `README.md`, `CHANGELOG.md`, `.github/pull_request_template.md`** — de root-docs.
 
-### Safety-invulling van claude-specialists
+### Safety-invulling van davekjohns-workshop
 
 De grondwet hierboven, hier concreet ingevuld:
 
