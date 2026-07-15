@@ -23,7 +23,12 @@ repo is dat een groot en zichtbaar deel van het werk, want de repo is zelf een s
   vóór een release draait.
 - **`.github/workflows/ci.yml`** — de CI-poort op GitHub: draait dezelfde lint-poort + alle
   testsuites (`scripts/tests/*.tests.ps1`) bij elke PR en elke push naar `main`, zodat de wacht ook
-  geldt voor werk dat buiten `open-pr.ps1` om ontstaat.
+  geldt voor werk dat buiten `open-pr.ps1` om ontstaat. Sinds 15 juli 2026 dwingt de repo-ruleset
+  **`main-ci-poort`** (GitHub → Settings → Rules) die poort af als **required status check**: een PR
+  naar `main` mergt pas bij een groene `lint-en-tests`-job. De bypass-list (Repository admin + de
+  Write-rol, "Always allow") houdt de directe fold-/release-commits op `main` mogelijk — het
+  werk-account `davekokbwj` heeft write-rechten, geen admin. Die Write-bypass is veilig zolang er
+  geen externe collaborators zijn en moet herzien worden zodra die er wél komen.
 - **`scripts/lint/check-consumer-drift.ps1`** — de read-only drift-check tegen een consumerende repo
   (`MISSING`/`IDENTICAL`/`DRIFTED`).
 - **`scripts/lib/branch-info.ps1`** — de prefix→label→changelog-type-tabel (gedeeld met de
