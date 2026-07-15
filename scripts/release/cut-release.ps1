@@ -70,9 +70,11 @@ function Write-Utf8NoBom([string]$Path, [string]$Content) {
 $reservedRootMd = @('CHANGELOG.md', 'CLAUDE.md', 'README.md', 'LICENSE.md')
 
 function Get-PluginManifests {
-    Get-ChildItem -Path $repoRoot -Directory |
-        ForEach-Object { Join-Path $_.FullName '.claude-plugin\plugin.json' } |
-        Where-Object { Test-Path $_ }
+    # Recursief, zodat plugins op elke diepte gevonden worden (bv. claude-code-plugins/<familie>/<plugin>/);
+    # zelfde detectie als de lint-poort (check-plugin-integrity.ps1).
+    Get-ChildItem -Path $repoRoot -Recurse -Filter 'plugin.json' -File |
+        Where-Object { $_.FullName -match '\.claude-plugin\\plugin\.json$' } |
+        Select-Object -ExpandProperty FullName
 }
 
 # --- Vangrails: op main, schoon, geen ongevouwen entries ---------------------------------------
