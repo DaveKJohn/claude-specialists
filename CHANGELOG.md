@@ -9,6 +9,18 @@ folden) staat in [`README.md`](README.md#bijdragen--changelog--pr-workflow).
 Alles wat sinds de laatste release naar `main` is gemergd — nieuwste bovenaan, één blok per pull
 request.
 
+### #22 · Plugin-sharing-traject: stand & vervolgstappen gelogd · Docs · 2026-07-15
+
+Nieuw logboek `research/plugin-sharing/vervolgstappen.md`: de geverifieerde stand van het
+marketplace-migratie-traject (beide consumenten — smartwatchbanden en life-hub — zijn over op
+`davekjohns-workshop`), de resterende vervolgstappen (oude marketplace-kloon opruimen, borging in
+swb, lokale map-hernoem) en de geleerde lessen (stale `.in_use`-marker, overdrachten verifiëren
+tegen de actuele repo-staat).
+
+[PR #22](https://github.com/DaveKJohn/davekjohns-workshop/pull/22)
+
+---
+
 ### #21 · Sylvesters vakboek-les: /reload-plugins naast de herstart · Docs · 2026-07-15
 
 Sylvesters draagbare vakboek (`05-15-manual.md`) stelde dat plugin-/subagent-wijzigingen pas bij
