@@ -6,4 +6,7 @@ manifesten (metadata-only: repo, plugin, versies, extension-inventaris — nooit
 absolute paden), een doctrine-README in de kern-plugin, het nieuwe
 `scripts/sync/check-connectors.ps1` (two-way: enabled-check, extension-inventaris outbound én
 inbound, versies tegen bron en machine-administratie, plus de bestaande drift-check per
-consument) en een dependency-vrije testsuite (12 asserts). Live-run: alle vijf connectors groen.
+consument) en een dependency-vrije testsuite (18 asserts). Na de reviews van Sean en Edith
+gehard en aangescherpt: manifestvelden worden gevalideerd vóór gebruik (geen absolute paden,
+geen pad-traversal buiten de scope-root, plugin-veld alleen als bestaande slug) en de dode
+links in het doctrine-README zijn hersteld. Live-run: alle vijf connectors groen.

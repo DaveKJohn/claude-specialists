@@ -61,13 +61,17 @@ function New-FixtureConsumer {
 
 # Schrijft een fixture-manifest en geeft het pad terug.
 function New-FixtureManifest {
-    param([string[]]$Extensions, [string]$LocalCheckout = 'onbestaand-fixture-pad')
+    param(
+        [string[]]$Extensions,
+        [string]$LocalCheckout = 'onbestaand-fixture-pad',
+        [string]$Plugin = 'specialists@davekjohns-workshop'
+    )
     $mfPath = Join-Path $Fixture 'manifest.json'
     $obj = [ordered]@{
         repo          = 'fixture/consumer'
         visibility    = 'private'
         localCheckout = $LocalCheckout
-        plugin        = 'specialists@davekjohns-workshop'
+        plugin        = $Plugin
         syncedVersion = '0.0.0'
         lastChecked   = '2026-01-01'
         status        = 'in-sync'
@@ -122,6 +126,27 @@ try {
     $selfManifest = Join-Path $RepoRoot 'claude-code-plugins\claude-specialists\specialists\connectors\davekjohns-workshop.json'
     $r = Invoke-Check ($base + @('-Manifest', $selfManifest))
     Assert-Equal 0 $r.Code 'self-manifest (werkplaats consumeert zichzelf): exit-code 0'
+
+    # --- 7. Guardrails (advies Sean): manifestvelden worden niet blind vertrouwd -----------------
+    # 7a. Absoluut localCheckout-pad -> geweigerd, exit 1.
+    New-FixtureConsumer -ExtensionIds @('06-16')
+    $mf = New-FixtureManifest -Extensions @('06-16') -LocalCheckout 'C:\Windows'
+    $r = Invoke-Check ($base + @('-Manifest', $mf))
+    Assert-Equal 1 $r.Code 'absoluut pad: exit-code 1'
+    Assert-Match '\[FOUT\].*geweigerd' $r.Out 'absoluut pad: geweigerd-melding'
+
+    # 7b. Pad-traversal buiten de scope-root -> geweigerd, exit 1. '..\..\..' resolvet vanaf de
+    #     repo-root altijd tot boven de scope-root (= twee niveaus boven de repo-root).
+    $mf = New-FixtureManifest -Extensions @('06-16') -LocalCheckout '..\..\..'
+    $r = Invoke-Check ($base + @('-Manifest', $mf))
+    Assert-Equal 1 $r.Code 'pad-traversal: exit-code 1'
+    Assert-Match '\[FOUT\].*buiten de toegestane scope' $r.Out 'pad-traversal: scope-melding'
+
+    # 7c. Plugin-veld met pad-tekens -> geweigerd, exit 1.
+    $mf = New-FixtureManifest -Extensions @('06-16') -Plugin '..\..\evil@davekjohns-workshop'
+    $r = Invoke-Check ($base + @('-Manifest', $mf, '-ConsumerPathOverride', $Fixture))
+    Assert-Equal 1 $r.Code 'ongeldig plugin-veld: exit-code 1'
+    Assert-Match '\[FOUT\].*plugin-veld' $r.Out 'ongeldig plugin-veld: FOUT-melding'
 } finally {
     if (Test-Path -LiteralPath $Fixture) { Remove-Item -Recurse -Force -LiteralPath $Fixture }
 }

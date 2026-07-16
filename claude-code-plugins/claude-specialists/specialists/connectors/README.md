@@ -10,7 +10,7 @@ elke consument kan zijn eigen verwachte staat inzien.
 davekjohns-workshop werkt als een **Customer Data Platform**: alle wijzigingen aan gedeelde
 plugin-content (agent-defs, manuals, persona-bodies, skills) **landen éérst hier**, en worden pas
 daarna doorgesynct naar de aangesloten repo's — nooit andersom (zie de safety-regels in de
-repo-[`CLAUDE.md`](../../../../../CLAUDE.md)). Ontstaat er tóch een verbetering in een consument,
+repo-[`CLAUDE.md`](../../../../CLAUDE.md)). Ontstaat er tóch een verbetering in een consument,
 dan is dat een **inbound-signaal**: de wijziging wordt eerst hierheen teruggelegd en daarna
 opnieuw uitgesynct.
 
@@ -19,10 +19,10 @@ Belangrijke nuance — **wat synct en wat niet**:
 - **Wél gesynchroniseerd (bron hier):** de draagbare persona-bodies (alles boven de
   `## Eigen aan deze repo`-marker) en alle plugin-content zelf (agent-defs, manuals, skills).
 - **Níét gesynchroniseerd (repo-eigen):** het `## Eigen aan deze repo`-slot van elke extension —
-  de repo-lens is per consument verschillend en hoort daar. Het register houdt alleen bij *dát*
-  een lens bestaat, nooit wat erin staat.
+  de repo-lens is per consument verschillend en hoort daar thuis. Het register houdt alleen bij
+  *dát* een lens bestaat, nooit wat erin staat.
 - **Waarom extensions niet alléén hier kunnen staan:** de sessie in een consumerende repo leest
-  de lens-bestanden at runtime uit de **eigen checkout** (agent-defs verwijzen ernaar, en de
+  de lens-bestanden runtime uit de **eigen checkout** (agent-defs verwijzen ernaar, en de
   persona van de orchestrator wordt via een `@`-import in de repo-CLAUDE.md geladen). De kopie in
   de consument is dus technisch noodzakelijk; dit register + de check houden hem eerlijk.
 
@@ -58,11 +58,11 @@ consumerende repo's.
 
 ## De check
 
-[`scripts/sync/check-connectors.ps1`](../../../../../scripts/sync/check-connectors.ps1) draait de
+[`scripts/sync/check-connectors.ps1`](../../../../scripts/sync/check-connectors.ps1) draait de
 two-way-controle over alle manifesten: plugin nog enabled, geregistreerde extensions aanwezig
 (outbound), niet-geregistreerde extensions gesignaleerd (inbound), manifest- en machine-versies
 tegen de bron, en per consument de content-drift-check
-([`check-consumer-drift.ps1`](../../../../../scripts/lint/check-consumer-drift.ps1)). Draai hem
+([`check-consumer-drift.ps1`](../../../../scripts/lint/check-consumer-drift.ps1)). Draai hem
 aan het begin van een werkdag of sessie:
 
 ```powershell

@@ -62,10 +62,15 @@ function Write-Skip ([string]$Msg) { Write-Host "  [SKIP]  $Msg" -ForegroundColo
 function Write-Info ([string]$Msg) { $script:infos++;  Write-Host "  [INFO]  $Msg" -ForegroundColor Yellow }
 function Write-Fout ([string]$Msg) { $script:errors++; Write-Host "  [FOUT]  $Msg" -ForegroundColor Red }
 
-# Plugin-naam (voor de '@') -> plugin-map onder de familie-root.
+# Guardrail (advies Sean): manifestvelden zijn data uit een publieke repo en worden nooit blind
+# vertrouwd. Plugin-naam (voor de '@') -> plugin-map onder de familie-root, alleen als de naam
+# een simpele slug is EN de map echt onder de familie-root bestaat; anders $null.
 function Get-PluginDir([string]$PluginId) {
     $name = $PluginId.Split('@')[0]
-    return Join-Path $FamilyRoot $name
+    if ($name -notmatch '^[a-z0-9][a-z0-9-]*$') { return $null }
+    $dir = Join-Path $FamilyRoot $name
+    if (-not (Test-Path -LiteralPath $dir)) { return $null }
+    return $dir
 }
 
 # Ids (<group>-<id>) die een plugin bezit: agents/ + personas/.
@@ -102,10 +107,23 @@ foreach ($mf in $manifestFiles) {
     $m = Get-Content -LiteralPath $mf.FullName -Raw -Encoding UTF8 | ConvertFrom-Json
     Write-Host "`n-- $($m.plugin) -> $($m.repo)" -ForegroundColor Cyan
 
+    # 0. Guardrail (advies Sean): valideer manifestvelden voor gebruik. Het plugin-veld moet naar
+    #    een echte plugin-map onder de familie-root wijzen; localCheckout mag niet absoluut zijn en
+    #    moet (na resolven) binnen de scope-root blijven (de map boven de GitHub-checkouts).
+    $pluginDir = Get-PluginDir $m.plugin
+    if ($null -eq $pluginDir) {
+        Write-Fout "ongeldig of onbekend plugin-veld '$($m.plugin)' in $($mf.Name) -- manifest overgeslagen."
+        continue
+    }
+
     # 1. Checkout aanwezig?
     if ($ConsumerPathOverride) {
         $checkout = $ConsumerPathOverride
     } else {
+        if ([System.IO.Path]::IsPathRooted($m.localCheckout)) {
+            Write-Fout "absoluut localCheckout-pad '$($m.localCheckout)' in $($mf.Name) -- geweigerd (alleen relatieve sibling-paden)."
+            continue
+        }
         $checkout = Join-Path $RepoRoot $m.localCheckout
     }
     if (-not (Test-Path -LiteralPath $checkout)) {
@@ -113,6 +131,13 @@ foreach ($mf in $manifestFiles) {
         continue
     }
     $checkout = (Resolve-Path -LiteralPath $checkout).Path
+    if (-not $ConsumerPathOverride) {
+        $scopeRoot = (Resolve-Path -LiteralPath (Join-Path $RepoRoot '..\..')).Path
+        if (-not $checkout.StartsWith($scopeRoot, [System.StringComparison]::OrdinalIgnoreCase)) {
+            Write-Fout "localCheckout '$($m.localCheckout)' valt buiten de toegestane scope ('$scopeRoot') -- geweigerd."
+            continue
+        }
+    }
 
     # 2. Plugin enabled in de consument?
     $settingsPath = Join-Path $checkout '.claude\settings.json'
@@ -138,8 +163,7 @@ foreach ($mf in $manifestFiles) {
     if ($missing.Count -gt 0) { Write-Fout ("geregistreerde extension(s) ontbreken: " + ($missing -join ', ')) }
     else                      { Write-Ok  "alle $($m.extensions.Count) geregistreerde extensions aanwezig" }
 
-    $pluginDir = Get-PluginDir $m.plugin
-    $ownedIds  = Get-PluginIds $pluginDir
+    $ownedIds = Get-PluginIds $pluginDir
     if (Test-Path -LiteralPath $extDir) {
         $present = Get-ChildItem -LiteralPath $extDir -Filter '*-extension.md' -File |
             ForEach-Object { $_.BaseName -replace '-extension$', '' }
