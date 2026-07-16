@@ -9,6 +9,18 @@ folden) staat in [`README.md`](README.md#bijdragen--changelog--pr-workflow).
 Alles wat sinds de laatste release naar `main` is gemergd — nieuwste bovenaan, één blok per pull
 request.
 
+### #40 · Quote-les geborgd: geen dubbele aanhalingstekens in native argumenten · Docs · 2026-07-16
+
+Geleerde les van 16 juli vastgelegd in Dereks lens (`.claude/extensions/05-05-extension.md`, nieuwe
+sectie "De quote-les"): PowerShell 5.1 verminkt dubbele aanhalingstekens in argumenten voor native
+commando's (`git`, `gh`) — een `"` in een commit-message laat `git commit -m` afketsen. Werkwijze:
+inline argumenten vrij van `"` houden, of de tekst via een bestand doorgeven (`git commit -F`,
+`gh … --body-file`). De bestaande PR-body-vermelding verwijst nu naar deze sectie.
+
+[PR #40](https://github.com/DaveKJohn/davekjohns-workshop/pull/40)
+
+---
+
 ### #39 · Fold-les geborgd: check `git branch --show-current` vóór het folden · Docs · 2026-07-16
 
 Geleerde les van 16 juli vastgelegd in Rendalls lens (`.claude/extensions/05-06-extension.md`,
