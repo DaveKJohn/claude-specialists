@@ -9,6 +9,17 @@ folden) staat in [`README.md`](README.md#bijdragen--changelog--pr-workflow).
 Alles wat sinds de laatste release naar `main` is gemergd — nieuwste bovenaan, één blok per pull
 request.
 
+### #44 · Merget-fix: foutieve vervoeging hersteld in agent-defs en manual · Fix · 2026-07-16
+
+De foutieve vervoeging "merget" vervangen door "mergt" op alle drie de vindplaatsen:
+`06-19-agent.md`, `06-23-agent.md` én `06-19-manual.md` (de derde vindplaats kwam boven bij het
+opzetten van issue #42). Vondst van Edith (15 juli 2026); werkplan-stap 6, sluit issue #42. Let op:
+de gedeelde agent-defs bereiken consumenten pas ná een release-bump.
+
+[PR #44](https://github.com/DaveKJohn/davekjohns-workshop/pull/44)
+
+---
+
 ### #43 · Copilot-dossier geparkeerd: geen betaald plan, geen upgrade · Docs · 2026-07-16
 
 Uitkomst van de Copilot-proef vastgelegd: de coding-agent-testcase (issue #42) strandde op de
