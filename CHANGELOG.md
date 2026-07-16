@@ -9,6 +9,17 @@ folden) staat in [`README.md`](README.md#bijdragen--changelog--pr-workflow).
 Alles wat sinds de laatste release naar `main` is gemergd — nieuwste bovenaan, één blok per pull
 request.
 
+### #55 · Connector-manifesten gesynct op v1.3.0 · Chore · 2026-07-16
+
+De `syncedVersion`-velden in de drie connector-manifesten op v1.3.0 gezet, vooruitlopend op de
+release die direct na deze merge wordt geknipt (één goedgekeurde beweging van Dave). Voor life-hub
+en smartwatchbanden bewaakt de machine-record-check de echte sync-status tot de plugin-updates
+daar zijn gedraaid; deze branch vervangt de eerdere, niet gemergde 1.2.0-variant.
+
+[PR #55](https://github.com/DaveKJohn/davekjohns-workshop/pull/55)
+
+---
+
 ### #54 · Inbound-route geformaliseerd: issue met label inbound voor kern-verbeterpunten uit connectors · Docs · 2026-07-16
 
 De vaste inbound-route vastgelegd in de connectors-doctrine én in de gedeelde kern zelf: ontdekt
