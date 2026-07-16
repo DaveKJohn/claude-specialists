@@ -9,37 +9,16 @@ folden) staat in [`README.md`](README.md#bijdragen--changelog--pr-workflow).
 Alles wat sinds de laatste release naar `main` is gemergd — nieuwste bovenaan, één blok per pull
 request.
 
-### #55 · Connector-manifesten gesynct op v1.3.0 · Chore · 2026-07-16
-
-De `syncedVersion`-velden in de drie connector-manifesten op v1.3.0 gezet, vooruitlopend op de
-release die direct na deze merge wordt geknipt (één goedgekeurde beweging van Dave). Voor life-hub
-en smartwatchbanden bewaakt de machine-record-check de echte sync-status tot de plugin-updates
-daar zijn gedraaid; deze branch vervangt de eerdere, niet gemergde 1.2.0-variant.
-
-[PR #55](https://github.com/DaveKJohn/davekjohns-workshop/pull/55)
-
----
-
-### #54 · Inbound-route geformaliseerd: issue met label inbound voor kern-verbeterpunten uit connectors · Docs · 2026-07-16
-
-De vaste inbound-route vastgelegd in de connectors-doctrine én in de gedeelde kern zelf: ontdekt
-een sessie in een consumerende repo kern-verbeterpunten, dan bouwt die niet zelf maar opent een
-issue op deze repo met het label `inbound` (nieuw issue-sjabloon
-`.github/ISSUE_TEMPLATE/inbound-verbeterpunt.md`; label aangemaakt op GitHub). De route staat nu
-ook repo-neutraal in Chris' persona-body (`personas/01-01-persona.md`), zodat elke consument-sessie
-hem kent zodra de persona-bodies daar ververst zijn; de workshop-eigen Chris-kopie is daarbij
-volledig gelijkgetrokken met de bron (de parallel-werk-sectie ontbrak daar nog — zelf-drift die
-geen check dekte). Een tijdelijke lens-notitie blijft de enige legitieme overbrugging aan
-consument-zijde.
-
-[PR #54](https://github.com/DaveKJohn/davekjohns-workshop/pull/54)
-
----
-
 ## Releases
 
 De vastgelegde versies van de marketplace — nieuwste bovenaan. Elke release bumpt alle
 plugin-versies in lockstep en verwijst naar de volledige notes in `releases/development/`.
+
+### [v1.3.0] - 2026-07-16 — Minor
+
+Zie [releases/development/1.3/1.3.0.md](releases/development/1.3/1.3.0.md) voor de volledige release-notes.
+
+---
 
 ### [v1.2.0] - 2026-07-16 — Minor
 
