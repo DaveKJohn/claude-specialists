@@ -98,10 +98,11 @@ mechanisme is Rendall's.
    reist mee. Rendall draait `fold-changelog-entry.ps1 [-Branch <naam>]` op `main`, commit direct
    (`chore: fold changelog entry <branch>`), pusht. Laat je `-Branch` weg, dan worden alle aanwezige
    entry-bestanden in één keer gevouwen. **Check vóór de fold dat je écht op `main` staat**
-   (`git branch --show-current`): `gh pr merge --delete-branch` verwijdert de remote branch, maar
-   wisselt de lokale checkout níét naar `main` — les van 16 juli 2026, toen de fold daardoor op de
-   al gemergde lokale branch draaide en de wijzigingen handmatig naar `main` moesten worden
-   overgezet.
+   (`git branch --show-current`): `gh pr merge --delete-branch` belooft in zijn help óók de lokale
+   branch op te ruimen, maar bleek in de praktijk de lokale checkout gewoon op de gemergde branch
+   te kunnen laten staan — les van 16 juli 2026, toen de fold daardoor op die al gemergde lokale
+   branch draaide en de wijzigingen handmatig naar `main` moesten worden overgezet. Vertrouw dus
+   niet op de flag, maar op de check.
 3. **Meer branches mergen** → elk brengt zijn entry-bestand; elk wordt gevouwen. `## Pull Requests`
    stapelt op.
 
