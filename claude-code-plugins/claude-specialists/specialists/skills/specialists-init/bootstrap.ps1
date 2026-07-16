@@ -145,6 +145,9 @@ foreach ($pluginName in ($pluginNames | Sort-Object -Unique)) {
         foreach ($line in (Get-Content -LiteralPath $_.FullName -TotalCount 10)) {
             if ($line -match '^name:\s*(\S+)') { $agentName = $Matches[1]; break }
         }
+        # Defense-in-depth (advies Sean): de naam belandt in het geschreven sjabloon -- beperk hem
+        # tot een veilige tekenset, ook al is de bron een plugin uit dezelfde vertrouwensgrens.
+        $agentName = $agentName -replace '[^A-Za-z0-9_-]', ''
         if ($agentName) { $displayName = $agentName.Substring(0,1).ToUpper() + $agentName.Substring(1) } else { $displayName = "$group-$id" }
         $template = @"
 ---
