@@ -90,7 +90,9 @@ foreach ($file in $entryFiles) {
         if ($LASTEXITCODE -eq 0 -and $filesJson) {
             $touched = @()
             foreach ($f in @(($filesJson | ConvertFrom-Json).files)) {
-                if ($f.path -match '^claude-code-plugins/claude-specialists/([a-z0-9][a-z0-9-]*)/') {
+                # -cmatch (advies Sean): -match is case-insensitief en zou de kleine-letters-
+                # tekenklasse stilzwijgend oprekken; plugin-mapnamen zijn altijd lowercase slugs.
+                if ($f.path -cmatch '^claude-code-plugins/claude-specialists/([a-z0-9][a-z0-9-]*)/') {
                     if ($Matches[1] -ne 'connectors' -and $touched -notcontains $Matches[1]) { $touched += $Matches[1] }
                 }
             }
