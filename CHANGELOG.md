@@ -9,6 +9,18 @@ folden) staat in [`README.md`](README.md#bijdragen--changelog--pr-workflow).
 Alles wat sinds de laatste release naar `main` is gemergd — nieuwste bovenaan, één blok per pull
 request.
 
+### #47 · Eind-hercheck 16 juli vastgelegd in het werkplan · Docs · 2026-07-16
+
+De uitslag van de eerste eind-hercheck (werkplan-stap 7) vastgelegd in
+`research/plugin-sharing/vervolgstappen.md`: drift-checks beide exit 0 en de `specialists`-kern op
+v1.1.1 (het structurele werk is gezond); stappen 1, 2, 3 en 5 blijven open als consumenten-handwerk,
+stap 4 blijkt op de werkplaats-machine al gebeurd, en de `enabled: false`-observatie bij de
+domein-plugins is genoteerd als dubbelcheck-punt. Stap 6 (de merget-fix, PR #44) is afgevinkt.
+
+[PR #47](https://github.com/DaveKJohn/davekjohns-workshop/pull/47)
+
+---
+
 ### #46 · Persona-sjabloon voor Bianca (Biograaf, #02) · Feat · 2026-07-16
 
 De vier persona-only hoofdloop-rollen zijn nu compleet gespiegeld in de `specialists`-plugin: naast Chris/Derek/Rendall krijgt ook Bianca haar draagbare persona-sjabloon (`personas/03-02-persona.md`). De body is letterlijk overgenomen uit haar consument-manual, zodat bron en kopie in lijn zijn; de index-blockquote en het repo-lens-slot volgen het draagbare sjabloon-format. De drie sjabloon-opsommingen in `README.md` + `CLAUDE.md` noemen Bianca nu mee — de workshop-roster bewust niet, want zij is geen marketplace-onderhouder maar puur een sjabloon-bron voor consumenten. Aanleiding: een consistentie-audit in life-hub vond dat Bianca als enige van de vier persona-only rollen geen plugin-spiegel had. check-plugin-integrity: 0 errors.
