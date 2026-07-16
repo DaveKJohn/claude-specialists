@@ -9,6 +9,16 @@ folden) staat in [`README.md`](README.md#bijdragen--changelog--pr-workflow).
 Alles wat sinds de laatste release naar `main` is gemergd — nieuwste bovenaan, één blok per pull
 request.
 
+### #41 · Taalfix in de quote-les na eindredactie · Fix · 2026-07-16
+
+Twee taalpunten van Edith in de quote-les (`.claude/extensions/05-05-extension.md`) hersteld, die
+na de merge van PR #40 binnenkwamen: congruentie ("tekst die ze écht nodig hebben" i.p.v. "heeft")
+en de huisstijl-imperatief ("houd" i.p.v. "hou").
+
+[PR #41](https://github.com/DaveKJohn/davekjohns-workshop/pull/41)
+
+---
+
 ### #40 · Quote-les geborgd: geen dubbele aanhalingstekens in native argumenten · Docs · 2026-07-16
 
 Geleerde les van 16 juli vastgelegd in Dereks lens (`.claude/extensions/05-05-extension.md`, nieuwe
