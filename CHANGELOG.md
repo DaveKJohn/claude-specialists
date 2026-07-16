@@ -9,6 +9,19 @@ folden) staat in [`README.md`](README.md#bijdragen--changelog--pr-workflow).
 Alles wat sinds de laatste release naar `main` is gemergd — nieuwste bovenaan, één blok per pull
 request.
 
+### #51 · Persona-drift-besluit vastgelegd + nacorrecties van Edith · Docs · 2026-07-16
+
+Werkplan-stap 3 besloten en vastgelegd: de persona-drift in life-hub (Chris 01-01, Derek 05-05)
+blijkt uit body-diffs verouderde kopieën te zijn — life-hub mist de fork-les en de
+PR-body-regel die de bron al draagt — dus geen terugleg naar de bron; life-hub ververst zijn
+persona-bodies vanaf de bron (uitvoering ín life-hub). Daarnaast vier nacorrecties van Edith op de
+#50-tekst verwerkt: "borgingsdeel" consistent gespeld, `cache/`-pad met forward slash,
+`enabled=true` in consistente casing, en de vooraf-verificatie bij stap 1 expliciet benoemd.
+
+[PR #51](https://github.com/DaveKJohn/davekjohns-workshop/pull/51)
+
+---
+
 ### #50 · Werkplan-stand bijgewerkt: stappen 1, 2 en 5-opruimdeel afgerond · Docs · 2026-07-16
 
 Werkplan-stand van 16 juli bijgewerkt in `research/plugin-sharing/vervolgstappen.md`: stappen 1
