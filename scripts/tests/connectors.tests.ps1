@@ -147,6 +147,35 @@ try {
     $r = Invoke-Check ($base + @('-Manifest', $mf, '-ConsumerPathOverride', $Fixture))
     Assert-Equal 1 $r.Code 'ongeldig plugin-veld: exit-code 1'
     Assert-Match '\[FOUT\].*plugin-veld' $r.Out 'ongeldig plugin-veld: FOUT-melding'
+
+    # --- 8. Machine-record-check (zonder -SkipVersions; vondst Victor) ---------------------------
+    # De administratie wordt gelezen via $env:USERPROFILE; het kindproces erft de env-var, dus we
+    # wijzen die tijdelijk naar de fixture. -SkipDrift blijft aan (eigen suite).
+    function Set-FixtureAdmin([string]$RecordsJson) {
+        $dir = Join-Path $Fixture '.claude\plugins'
+        New-Item -ItemType Directory -Path $dir -Force | Out-Null
+        [System.IO.File]::WriteAllText((Join-Path $dir 'installed_plugins.json'), $RecordsJson)
+    }
+    $oldProfile = $env:USERPROFILE
+    try {
+        # 8a. Stale record (projectPath bestaat niet) -> geen crash, INFO, exit 0.
+        New-FixtureConsumer -ExtensionIds @('06-16')
+        $mf = New-FixtureManifest -Extensions @('06-16')
+        Set-FixtureAdmin '{ "version": 2, "plugins": { "specialists@davekjohns-workshop": [ { "scope": "project", "projectPath": "C:\\bestaat-niet-connectors-fixture", "installPath": "x", "version": "0.0.1" } ] } }'
+        $env:USERPROFILE = $Fixture
+        $r = Invoke-Check @('-SkipDrift', '-Manifest', $mf, '-ConsumerPathOverride', $Fixture)
+        Assert-Equal 0 $r.Code 'stale record: exit-code 0 (geen crash)'
+        Assert-Match '\[INFO\].*geen machine-record' $r.Out 'stale record: INFO-melding'
+
+        # 8b. Record wijst naar de fixture maar met oudere versie dan de bron -> FOUT, exit 1.
+        $fixtureEscaped = ($Fixture -replace '\\', '\\')
+        Set-FixtureAdmin ('{ "version": 2, "plugins": { "specialists@davekjohns-workshop": [ { "scope": "project", "projectPath": "' + $fixtureEscaped + '", "installPath": "x", "version": "0.0.1" } ] } }')
+        $r = Invoke-Check @('-SkipDrift', '-Manifest', $mf, '-ConsumerPathOverride', $Fixture)
+        Assert-Equal 1 $r.Code 'verouderd record: exit-code 1'
+        Assert-Match '\[FOUT\].*machine-record staat op v0\.0\.1' $r.Out 'verouderd record: FOUT-melding'
+    } finally {
+        $env:USERPROFILE = $oldProfile
+    }
 } finally {
     if (Test-Path -LiteralPath $Fixture) { Remove-Item -Recurse -Force -LiteralPath $Fixture }
 }

@@ -90,8 +90,8 @@ function Get-PluginIds([string]$PluginDir) {
 if ($Manifest) {
     $manifestFiles = @(Get-Item -LiteralPath $Manifest)
 } else {
-    $manifestFiles = Get-ChildItem -LiteralPath $FamilyRoot -Recurse -Filter '*.json' -File |
-        Where-Object { $_.DirectoryName -match '\\connectors$' }
+    $manifestFiles = @(Get-ChildItem -LiteralPath $FamilyRoot -Recurse -Filter '*.json' -File |
+        Where-Object { $_.DirectoryName -match '\\connectors$' })
 }
 
 if ($manifestFiles.Count -eq 0) {
@@ -190,9 +190,14 @@ foreach ($mf in $manifestFiles) {
             $prop = $admin.plugins.PSObject.Properties | Where-Object { $_.Name -eq $m.plugin }
             $record = $null
             if ($prop) {
-                $record = @($prop.Value) | Where-Object {
-                    $_.projectPath -and ((Resolve-Path -LiteralPath $_.projectPath -ErrorAction SilentlyContinue).Path -eq $checkout)
-                } | Select-Object -First 1
+                # Een record kan een projectPath dragen dat niet (meer) bestaat op deze machine;
+                # Resolve-Path geeft dan $null en mag nooit blind op .Path worden uitgelezen
+                # (StrictMode-crash, vondst Victor).
+                foreach ($rec in @($prop.Value)) {
+                    if (-not ($rec.PSObject.Properties.Name -contains 'projectPath')) { continue }
+                    $resolved = Resolve-Path -LiteralPath $rec.projectPath -ErrorAction SilentlyContinue
+                    if ($resolved -and $resolved.Path -eq $checkout) { $record = $rec; break }
+                }
             }
             if ($null -eq $record) {
                 Write-Info "geen machine-record voor deze consument (installatie loopt mogelijk via een andere machine)."
