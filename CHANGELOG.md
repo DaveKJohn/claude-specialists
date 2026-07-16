@@ -9,6 +9,17 @@ folden) staat in [`README.md`](README.md#bijdragen--changelog--pr-workflow).
 Alles wat sinds de laatste release naar `main` is gemergd — nieuwste bovenaan, één blok per pull
 request.
 
+### #45 · Slotwoord toegevoegd aan het Copilot-dossier · Docs · 2026-07-16
+
+Slotwoord toegevoegd aan `research/copilot/bevindingen.md`: waarom Copilot deze repo weinig
+toevoegt — de specialisten zijn een werkwijze (governance + vakwerk, synchroon onder Dave's regie),
+Copilot een platform-actor die vooral asynchrone capaciteit en een externe reviewstem zou brengen.
+Met het besluit niet te upgraden mist de repo gemak, geen kwaliteit.
+
+[PR #45](https://github.com/DaveKJohn/davekjohns-workshop/pull/45)
+
+---
+
 ### #44 · Merget-fix: foutieve vervoeging hersteld in agent-defs en manual · Fix · 2026-07-16
 
 De foutieve vervoeging "merget" vervangen door "mergt" op alle drie de vindplaatsen:
