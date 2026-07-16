@@ -205,11 +205,12 @@ De grondwet hierboven, hier concreet ingevuld:
   `main`. Geldige prefixes ([`scripts/lib/branch-info.ps1`](scripts/lib/branch-info.ps1)):
   `feat/` → enhancement · `fix/` → bug · `docs/` → documentation · `chore/` → documentation. Zie
   [Derek #05](.claude/extensions/05-05-extension.md#branch-classificeren-benoemen-en-aanmaken).
-- **De lint-poort is de veiligheidswacht vóór elke PR.**
+- **De lint- en test-poort zijn de veiligheidswacht vóór elke PR.**
   [`scripts/lint/check-plugin-integrity.ps1`](scripts/lint/check-plugin-integrity.ps1) valideert de
   manifesten (`marketplace.json` + elke `plugin.json`), de agent-def- en manual-frontmatter en scant
-  op dode links. `open-pr.ps1` draait die poort eerst; bij een error wordt er niet gepusht en geen PR
-  geopend (`-SkipLint` is de noodklep). Zie [Sylvester #15](.claude/extensions/05-15-extension.md).
+  op dode links; daarna draaien alle testsuites (`scripts/tests/*.tests.ps1`), exact zoals CI.
+  `open-pr.ps1` draait beide poorten eerst; bij een error of falende suite wordt er niet gepusht en
+  geen PR geopend (`-SkipLint`/`-SkipTests` zijn de noodkleppen). Zie [Sylvester #15](.claude/extensions/05-15-extension.md).
 - **Twee bewuste uitzonderingen op "nooit direct op `main`":**
   1. De **fold-commit** na een merge: [`fold-changelog-entry.ps1`](scripts/release/fold-changelog-entry.ps1)
      vouwt het entry-bestand in `CHANGELOG.md` en verwijdert het — scope beperkt tot `CHANGELOG.md` +
