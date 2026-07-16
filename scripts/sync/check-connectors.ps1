@@ -4,10 +4,12 @@
     zijn met deze repo -- de source of truth.
 
 .DESCRIPTION
-    Elke plugin draagt een connectors/-map met een manifest per aangesloten repo
-    (claude-code-plugins/claude-specialists/<plugin>/connectors/<repo>.json). Het manifest bevat
-    alleen METADATA (repo, plugin, versie, extension-inventaris, status) -- nooit lens-inhoud en
-    nooit absolute machine-paden; localCheckout is relatief aan de root van deze repo.
+    Het register woont op familie-niveau, naast de plugin-mappen (bewust NIET erin, zodat het
+    niet meereist met de plugin-cache van consumenten): een manifest per plugin per aangesloten
+    repo (claude-code-plugins/claude-specialists/connectors/<plugin>/<repo>.json). Het manifest
+    bevat alleen METADATA (repo, plugin, versie, extension-inventaris, status) -- nooit
+    lens-inhoud en nooit absolute machine-paden; localCheckout is relatief aan de root van deze
+    repo.
 
     Per manifest checkt dit script:
       1. Checkout aanwezig op deze machine?          nee -> [SKIP] (geen fout)
@@ -86,12 +88,15 @@ function Get-PluginIds([string]$PluginDir) {
     return $ids | Sort-Object -Unique
 }
 
-# Verzamel manifesten.
+# Verzamel manifesten uit de register-boom op familie-niveau.
 if ($Manifest) {
     $manifestFiles = @(Get-Item -LiteralPath $Manifest)
 } else {
-    $manifestFiles = @(Get-ChildItem -LiteralPath $FamilyRoot -Recurse -Filter '*.json' -File |
-        Where-Object { $_.DirectoryName -match '\\connectors$' })
+    $connectorsRoot = Join-Path $FamilyRoot 'connectors'
+    $manifestFiles = @()
+    if (Test-Path -LiteralPath $connectorsRoot) {
+        $manifestFiles = @(Get-ChildItem -LiteralPath $connectorsRoot -Recurse -Filter '*.json' -File)
+    }
 }
 
 if ($manifestFiles.Count -eq 0) {

@@ -1,18 +1,22 @@
 # connectors/ — het register van aangesloten repo's
 
-Elke plugin in deze marketplace draagt een eigen `connectors/`-map: **het register van welke
-repo's deze plugin geïnstalleerd hebben en of ze nog in sync zijn met deze repo.** Dit README is
-de doctrine; de `<repo>.json`-manifesten zijn de data. De map reist mee met de plugin-cache, dus
-elke consument kan zijn eigen verwachte staat inzien.
+Dit is het register van **welke repo's de plugins van deze familie geïnstalleerd hebben en of ze
+nog in sync zijn met deze repo** — één submap per plugin, met daarin een `<repo>.json`-manifest
+per aangesloten repo. Dit README is de doctrine; de manifesten zijn de data.
+
+**Het register woont bewust op familie-niveau, náást de plugin-mappen — niet erin.** De
+marketplace-sources wijzen naar de plugin-mappen zelf, dus dit register reist *niet* mee met de
+plugin-cache van consumenten: geen enkele consument ziet zo de manifesten van een ander (besluit
+Dave, 16 juli 2026, na de security-review). Het register is werkplaats-administratie.
 
 ## De doctrine: deze repo is de source of truth
 
 davekjohns-workshop werkt als een **Customer Data Platform**: alle wijzigingen aan gedeelde
 plugin-content (agent-defs, manuals, persona-bodies, skills) **landen éérst hier**, en worden pas
 daarna doorgesynct naar de aangesloten repo's — nooit andersom (zie de safety-regels in de
-repo-[`CLAUDE.md`](../../../../CLAUDE.md)). Ontstaat er tóch een verbetering in een consument,
-dan is dat een **inbound-signaal**: de wijziging wordt eerst hierheen teruggelegd en daarna
-opnieuw uitgesynct.
+repo-[`CLAUDE.md`](../../../CLAUDE.md)). Ontstaat er tóch een verbetering in een consument, dan
+is dat een **inbound-signaal**: de wijziging wordt eerst hierheen teruggelegd en daarna opnieuw
+uitgesynct.
 
 Belangrijke nuance — **wat synct en wat niet**:
 
@@ -31,7 +35,9 @@ Belangrijke nuance — **wat synct en wat niet**:
 Deze repo is **publiek**. Manifesten bevatten daarom uitsluitend **metadata**: repo-naam, plugin,
 versies, extension-inventaris (alleen `<group>-<id>`-nummers), status en een relatief
 checkout-pad. **Nooit** lens-inhoud, absolute machine-paden of andere gegevens uit de (private)
-consumerende repo's.
+consumerende repo's. De relatieve `localCheckout`-paden onthullen de sibling-indeling van de
+lokale checkouts; dat is een bewust geaccepteerde mate van transparantie (security-review,
+16 juli 2026).
 
 ## Het manifest-format
 
@@ -50,7 +56,8 @@ consumerende repo's.
 ```
 
 - `localCheckout` is **relatief aan de root van deze repo** (de werkplaats-checkout); staat de
-  checkout niet op de machine, dan slaat de check hem over.
+  checkout niet op de machine, dan slaat de check hem over. Absolute paden en paden buiten de
+  scope-root worden door de check geweigerd.
 - `syncedVersion` is de bronversie waarop deze connector het laatst is gesynct; loopt de bron
   vooruit, dan signaleert de check dat.
 - `status`/`notes` zijn de menselijke samenvatting (`in-sync` of `attentie` + toelichting); ze
@@ -58,12 +65,12 @@ consumerende repo's.
 
 ## De check
 
-[`scripts/sync/check-connectors.ps1`](../../../../scripts/sync/check-connectors.ps1) draait de
+[`scripts/sync/check-connectors.ps1`](../../../scripts/sync/check-connectors.ps1) draait de
 two-way-controle over alle manifesten: plugin nog enabled, geregistreerde extensions aanwezig
 (outbound), niet-geregistreerde extensions gesignaleerd (inbound), manifest- en machine-versies
 tegen de bron, en per consument de content-drift-check
-([`check-consumer-drift.ps1`](../../../../scripts/lint/check-consumer-drift.ps1)). Draai hem
-aan het begin van een werkdag of sessie:
+([`check-consumer-drift.ps1`](../../../scripts/lint/check-consumer-drift.ps1)). Draai hem aan
+het begin van een werkdag of sessie:
 
 ```powershell
 .\scripts\sync\check-connectors.ps1              # alles

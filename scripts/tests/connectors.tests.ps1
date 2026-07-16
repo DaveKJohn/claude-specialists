@@ -123,7 +123,7 @@ try {
     Assert-Match "\[INFO\].*'06-23'" $r.Out 'niet-geregistreerd: INFO noemt het id'
 
     # --- 6. Echte manifesten van deze repo: het self-manifest checkt altijd ----------------------
-    $selfManifest = Join-Path $RepoRoot 'claude-code-plugins\claude-specialists\specialists\connectors\davekjohns-workshop.json'
+    $selfManifest = Join-Path $RepoRoot 'claude-code-plugins\claude-specialists\connectors\specialists\davekjohns-workshop.json'
     $r = Invoke-Check ($base + @('-Manifest', $selfManifest))
     Assert-Equal 0 $r.Code 'self-manifest (werkplaats consumeert zichzelf): exit-code 0'
 

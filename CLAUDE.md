@@ -177,9 +177,10 @@ verzonnen — alleen in overleg met Dave (zie
   vooralsnog enige) familie is **`claude-specialists/`**: de drie plugins
   (`specialists/`, `specialists-lifehub/`, `specialists-shopify/`), elk met een
   eigen `.claude-plugin/plugin.json` (`version`), `agents/` en — voor een gemigreerde groep —
-  `manuals/`, plus een `connectors/`-map: het register van welke repo's de plugin geïnstalleerd
+  `manuals/`. Naast de plugin-mappen (bewust níét erin, zodat het niet meereist met de
+  plugin-cache) woont `connectors/`: het register van welke repo's elke plugin geïnstalleerd
   hebben en of ze in sync zijn (doctrine + format in het
-  [connectors-README](claude-code-plugins/claude-specialists/specialists/connectors/README.md)).
+  [connectors-README](claude-code-plugins/claude-specialists/connectors/README.md)).
   `specialists` draagt daarnaast `personas/` (de draagbare sjablonen van de
   hoofdloop-specialisten Chris/Bianca/Derek/Rendall) en `skills/specialists-init/` (het repo-neutrale
   bootstrap-adoptiepad, zie [`README.md`](README.md#adoptie-het-bootstrap-pad)); `specialists-shopify`
