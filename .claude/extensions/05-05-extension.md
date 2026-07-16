@@ -175,12 +175,14 @@ tijdelijk bestand aanlevert.
 
 Derek raakt de git-commando's het liefst niet met de hand aan. Zijn gereedschapskist:
 
-- `scripts/release/open-pr.ps1 -Title "…" [-Body "…"] [-SkipLint]` — branch pushen + PR openen, met
-  het juiste label uit de prefix. Zonder `-Body` **vult het script de template zelf in**.
-  **Lint-poort:** vóór de push draait `scripts/lint/check-plugin-integrity.ps1` (Sylvester); vindt die
-  een **error** — ongeldige `marketplace.json`/`plugin.json`, ontbrekende of niet-matchende
-  agent-def-/manual-frontmatter, of een dode link — dan wordt er **niet gepusht en geen PR geopend**.
-  `-SkipLint` is de bewuste noodklep.
+- `scripts/release/open-pr.ps1 -Title "…" [-Body "…"] [-SkipLint] [-SkipTests]` — branch pushen +
+  PR openen, met het juiste label uit de prefix. Zonder `-Body` **vult het script de template zelf
+  in**. **Lint-poort:** vóór de push draait `scripts/lint/check-plugin-integrity.ps1` (Sylvester);
+  vindt die een **error** — ongeldige `marketplace.json`/`plugin.json`, ontbrekende of
+  niet-matchende agent-def-/manual-frontmatter, of een dode link — dan wordt er **niet gepusht en
+  geen PR geopend**. **Test-poort** (les van PR #54, waar een rode suite pas op CI opviel): daarna
+  draaien álle testsuites (`scripts/tests/*.tests.ps1`), exact zoals CI; een falende suite
+  blokkeert eveneens. `-SkipLint`/`-SkipTests` zijn de bewuste noodkleppen.
 - `scripts/lib/branch-info.ps1` (dot-sourced, niet los draaien) — single source of truth voor de
   branch-conventies: de prefix-tabel (prefix → GitHub-label + changelog-type) en de branchnaam →
   entry-filename-conversie (`/` → `-`). Mapping wijzigen? Hier, nergens anders.

@@ -32,6 +32,10 @@
     dode links), dan wordt de branch NIET gepusht en GEEN PR geopend. Gebruik -SkipLint om de poort
     bewust over te slaan (noodklep).
 
+    Test-poort (les van PR #54, waar een rode suite pas op CI opviel): na de lint draaien ALLE
+    testsuites (scripts/tests/*.tests.ps1), exact zoals CI dat doet. Een falende suite blokkeert
+    de push en de PR. Gebruik -SkipTests om deze poort bewust over te slaan (noodklep).
+
 .PARAMETER Title
     PR-titel, bv. "feat: nieuwe domein-plugin" of "fix: kapotte agent-def-frontmatter".
 
@@ -45,7 +49,8 @@
 param(
     [Parameter(Mandatory = $true)][string]$Title,
     [string]$Body = '',
-    [switch]$SkipLint
+    [switch]$SkipLint,
+    [switch]$SkipTests
 )
 $ErrorActionPreference = 'Stop'
 
@@ -67,6 +72,27 @@ if (-not $SkipLint) {
         }
     } else {
         Write-Warning "check-plugin-integrity.ps1 niet gevonden op '$lintPath' - lint-poort overgeslagen."
+    }
+}
+
+# Test-poort: alle suites, exact zoals CI -- een rode suite hoort hier al te blokkeren, niet pas
+# op de PR (les van PR #54). -SkipTests is de bewuste noodklep.
+if (-not $SkipTests) {
+    $testsDir = Join-Path $PSScriptRoot '..\tests'
+    if (Test-Path $testsDir) {
+        Write-Host "test-poort: alle testsuites draaien voor de PR..." -ForegroundColor Cyan
+        $testFailed = $false
+        Get-ChildItem -Path $testsDir -Filter '*.tests.ps1' -File | ForEach-Object {
+            Write-Host "== $($_.Name) ==" -ForegroundColor Cyan
+            & powershell -NoProfile -ExecutionPolicy Bypass -File $_.FullName
+            if ($LASTEXITCODE -ne 0) { $testFailed = $true }
+        }
+        if ($testFailed) {
+            Write-Error "test-poort vond falende suites - branch niet gepusht, geen PR geopend. Fix de tests, of draai met -SkipTests om de poort over te slaan."
+            exit 1
+        }
+    } else {
+        Write-Warning "scripts/tests niet gevonden - test-poort overgeslagen."
     }
 }
 
