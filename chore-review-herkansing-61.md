@@ -1,0 +1,3 @@
+### Dossier: review-herkansing op de gemergde 61-diff · Chore · 2026-07-17
+
+Werkdossier toegevoegd (`dossiers/review-herkansing-61.md`) voor de nooit afgeronde Victor/Edith-review op de gemergde #61-diff (per-plugin CHANGELOGs): wat er gereviewd moet worden, waarom dat vóór de eerstvolgende release hoort te gebeuren, en wanneer het klaar is. De review zelf en eventuele vondsten landen ook op deze branch.
