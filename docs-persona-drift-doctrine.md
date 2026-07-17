@@ -1,0 +1,3 @@
+### Dossier: persona-drift uitzoeken en doctrine vastleggen · Docs · 2026-07-17
+
+Werkdossier toegevoegd (`dossiers/persona-drift-doctrine.md`): de connectors-check meldt persona-drift bij life-hub (4×) en smartwatchbanden (3×), maar er is nooit vastgesteld welk deel bewuste aanpassing is en welk deel achterstand — en er is geen doctrine hoe een consument een bewuste afwijking markeert. Het dossier beschrijft het uitzoekwerk (Rebecca), de doctrine-stap (Tessa) en wanneer het klaar is.
