@@ -103,6 +103,14 @@ function Get-PortableBody {
             if ($line -match '^#\s') { $started = $true } else { continue }
         }
         if ($line -match '^##\s+Eigen aan deze repo') { break }
+        # De index-link in de blockquote onder de titel wijst relatief naar de repo-CLAUDE.md; de
+        # pad-diepte verschilt per consument-layout (2 niveaus op het legacy-pad .claude/extensions/,
+        # 4 op het plugin-pad .claude/plugins/claude-specialists/<plugin>/). Normaliseer het
+        # link-doel voor de vergelijking, zodat die technisch noodzakelijke aanpassing niet als
+        # drift telt en echte inhoudelijke achterstand zichtbaar blijft (vondst Rebecca, 17-07-2026).
+        # Bewust alleen de twee geldige diepten (advies Victor): een andere diepte is een echt
+        # kapot pad en hoort wel als drift op te vallen.
+        $line = [regex]::Replace($line, '\]\((?:(?:\.\./){2}|(?:\.\./){4})CLAUDE\.md\)', '](CLAUDE.md)')
         $body.Add($line.TrimEnd())
     }
     return (($body -join "`n").Trim())

@@ -97,6 +97,30 @@ Synchroniseren zelf blijft **pull-based per consument**: elke aangesloten repo h
 op in zijn eigen sessie, onder zijn eigen governance — dit register signaleert, het schrijft
 nooit cross-repo.
 
+## Persona-drift: hoe je een DRIFTED-melding leest (doctrine)
+
+Vastgelegd na het drift-onderzoek van 17 juli 2026 (Rebecca; dossier `persona-drift-doctrine`),
+dat over alle zeven toenmalige meldingen vaststelde: **nul** bewuste aanpassingen van draagbare
+bodies, één echte achterstand, en zes vals-positieven door één structureel padverschil.
+
+- **Er bestaat geen "bewust afwijkend"-status voor de draagbare body.** De praktijk bevestigt het
+  model: repo-eigen inhoud hoort in het `## Eigen aan deze repo`-slot (de lens), en een gewenste
+  wijziging aan het draagbare deel gaat via de inbound-route hierboven — nooit als blijvende
+  lokale afwijking. De check hoeft bewuste drift dus niet te faciliteren of te markeren.
+- **Technisch noodzakelijke padverschillen zijn geen drift.** De index-link in de blockquote onder
+  de titel wijst relatief naar de repo-`CLAUDE.md` en ligt op het plugin-pad
+  (`.claude/plugins/claude-specialists/<plugin>/`) dieper dan op het legacy-pad
+  (`.claude/extensions/`).
+  `check-consumer-drift.ps1` normaliseert dat link-doel vóór de vergelijking; een correct
+  gesyncte consument leest dus gewoon `IDENTICAL`, op welk pad hij ook zit.
+- **Een `DRIFTED`-persona betekent daarmee altijd een werkpunt**: óf achterstand (de bron is
+  doorontwikkeld — ververs de kopie vanaf de bron in een sessie van de consument zelf), óf een
+  nog-niet-teruggelegde consument-wijziging (leg die eerst via de inbound-route terug). Niet
+  wegklikken, niet laten staan.
+- **Werk na een verversing ook het manifest bij** (`status`/`notes`): het onderzoek trof een al
+  uitgevoerde refresh aan die administratief nog als openstaand geboekt stond — de registerdata
+  hoort de werkelijkheid te volgen.
+
 ## De sessie-check (automatisch)
 
 De `specialists`-plugin draagt een **SessionStart-hook**
