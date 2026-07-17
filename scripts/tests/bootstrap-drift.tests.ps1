@@ -113,6 +113,18 @@ try {
     Assert-True ($d1.Out -match 'IDENTICAL\] 01-01-persona') 'persona 01-01 body IDENTICAL'
     Assert-True (-not ($d1.Out -match 'DRIFTED\]')) 'geen enkele DRIFTED op verse kopie'
 
+    # --- 3b. Een diepere index-link is geen drift (vondst Rebecca, 17-07-2026) -----------------------
+    # Een consument op het plugin-pad linkt de index 4 niveaus omhoog i.p.v. 2 -- dat is een
+    # technisch noodzakelijke aanpassing, geen inhoudelijke drift.
+    Write-Host "check-consumer-drift.ps1 -- diepere index-link = geen drift" -ForegroundColor Cyan
+    $ext = Join-Path $Fixture '.claude\extensions\01-01-extension.md'
+    $extText = [System.IO.File]::ReadAllText($ext, [System.Text.Encoding]::UTF8)
+    $extText = $extText.Replace('](../../CLAUDE.md)', '](../../../../CLAUDE.md)')
+    [System.IO.File]::WriteAllText($ext, $extText, (New-Object System.Text.UTF8Encoding($false)))
+    $d1b = Invoke-Script -Path $DriftLint -ScriptArgs @('-ConsumerPath', $Fixture, '-Quiet')
+    Assert-True ($d1b.Out -match 'IDENTICAL\] 01-01-persona') 'persona 01-01 blijft IDENTICAL bij diepere index-link'
+    Assert-True (-not ($d1b.Out -match 'DRIFTED\]   01-01-persona')) 'diepere index-link wordt niet als DRIFTED gemeld'
+
     # --- 4. Drift na een body-wijziging: DRIFTED (informatief, exit blijft 0) ------------------------
     Write-Host "check-consumer-drift.ps1 -- gewijzigde body = DRIFTED" -ForegroundColor Cyan
     $ext = Join-Path $Fixture '.claude\extensions\01-01-extension.md'

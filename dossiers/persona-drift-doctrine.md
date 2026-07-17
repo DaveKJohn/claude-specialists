@@ -42,10 +42,34 @@ veld in het connector-manifest, of een uitgebreidere check-uitvoer. Raakt de opl
 
 ## Klaar wanneer
 
-- [ ] Per drifted persona is vastgesteld: bewust of achterstand (bevindingen in dit dossier of in
-      het uitvoerings-PR beschreven).
-- [ ] Achterstand is gemeld als werkpunt (sync in de betreffende consument-repo, op de juiste
-      machine).
-- [ ] De doctrine staat in de docs (connectors-README en/of persona-sjablonen) en de check gedraagt
-      zich ernaar.
-- [ ] Dit dossier is opgeruimd.
+- [x] Per drifted persona is vastgesteld: bewust of achterstand — zie de uitkomst hieronder.
+- [x] Achterstand is gemeld als werkpunt (sync in de betreffende consument-repo, op de juiste
+      machine) — vastgelegd in het sessie-geheugen én hieronder.
+- [x] De doctrine staat in de docs (connectors-README, sectie "Persona-drift: hoe je een
+      DRIFTED-melding leest") en de check gedraagt zich ernaar.
+- [ ] Dit dossier is opgeruimd (na de merge).
+
+## Uitkomst (2026-07-17, onderzoek Rebecca)
+
+**De cijfers over de zeven meldingen:** 0× bewuste aanpassing van een draagbare body, 1× echte
+achterstand, 6× vals-positief door één structureel padverschil.
+
+- **Vals-positief (6×):** de index-link in de blockquote onder de titel wijst in het sjabloon twee
+  niveaus omhoog (`../../CLAUDE.md`, het legacy-pad), terwijl beide consumenten terecht vier
+  niveaus omhoog linken vanaf het plugin-pad. Elke correct gesyncte consument werd daardoor
+  permanent als `DRIFTED` gemeld. **Fix op deze branch:** `check-consumer-drift.ps1` normaliseert
+  het link-doel vóór de body-vergelijking (+ twee nieuwe asserts in `bootstrap-drift.tests.ps1`,
+  25 totaal).
+- **Echte achterstand (1×):** smartwatchbanden's Chris (`01-01`) mist de sectie
+  "Kern-verbeterpunten — de inbound-route" (toegevoegd in v1.3.0, PR #54). **Werkpunt in de
+  smartwatchbanden-repo:** de persona-kopie verversen vanaf de bron (en daarna het
+  connector-manifest bijwerken).
+- **Administratief naijlpunt:** `connectors/life-hub.json` boekt een refresh als openstaand die
+  inmiddels is uitgevoerd — het manifest bijwerken is een werkpunt voor een life-hub-sessie
+  (andere machine).
+- **Doctrine:** geen "bewust afwijkend"-mechaniek nodig (de praktijk kent geen bewuste
+  body-afwijkingen); een `DRIFTED`-persona is voortaan per definitie een werkpunt. Vastgelegd in
+  het [connectors-README](../claude-code-plugins/claude-specialists/connectors/README.md).
+- **Herclassificatie:** de branch heet nu `fix/persona-drift-ruis` (was `docs/persona-drift-doctrine`)
+  — het zwaartepunt bleek een fout in de bestaande check, niet een doc-wijziging; de doctrine-tekst
+  beweegt mee met het gedrag.
