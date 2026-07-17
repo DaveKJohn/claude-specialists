@@ -9,6 +9,14 @@ folden) staat in [`README.md`](README.md#bijdragen--changelog--pr-workflow).
 Alles wat sinds de laatste release naar `main` is gemergd — nieuwste bovenaan, één blok per pull
 request.
 
+### #63 · Connectors-check kent het plugin-pad van repo-lenzen · Fix · 2026-07-17
+
+`check-connectors.ps1` en `check-consumer-drift.ps1` zochten repo-lenzen alleen op het legacy-pad (`.claude/extensions/`), terwijl life-hub en smartwatchbanden hun lenzen inmiddels in `.claude/plugins/claude-specialists/<plugin>/` hebben staan — dat gaf valse "extension(s) ontbreken"-fouten en een persona-drift-check die stil in het luchtledige draaide. Beide scripts kennen nu beide locaties (plugin-pad eerst, legacy als terugval). Daarnaast: `06-23` (Sean) geregistreerd in het smartwatchbanden-manifest, en twee testgevallen toegevoegd voor de nieuwe lay-out (happy path + INFO-signaal vanaf het plugin-pad).
+
+[PR #63](https://github.com/DaveKJohn/davekjohns-workshop/pull/63)
+
+---
+
 ### #62 · Fold-plugindetectie hoofdlettergevoelig gemaakt (advies Sean) · Fix · 2026-07-16
 
 Sean's advies uit de review van #61 verwerkt: de plugin-detectie in `fold-changelog-entry.ps1`
