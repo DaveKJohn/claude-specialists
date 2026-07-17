@@ -9,6 +9,17 @@ folden) staat in [`README.md`](README.md#bijdragen--changelog--pr-workflow).
 Alles wat sinds de laatste release naar `main` is gemergd — nieuwste bovenaan, één blok per pull
 request.
 
+### #62 · Fold-plugindetectie hoofdlettergevoelig gemaakt (advies Sean) · Fix · 2026-07-16
+
+Sean's advies uit de review van #61 verwerkt: de plugin-detectie in `fold-changelog-entry.ps1`
+gebruikt nu `-cmatch` in plaats van het case-insensitieve `-match`, zodat de
+kleine-letters-tekenklasse doet wat hij belooft en een vreemd-gecapitaliseerd pad geen ruis in de
+`Plugins:`-regel kan zetten. Cosmetisch/defensief; het schrijfpad was al veilig.
+
+[PR #62](https://github.com/DaveKJohn/davekjohns-workshop/pull/62)
+
+---
+
 ### #61 · Per-plugin CHANGELOGs: consument-gerichte release-geschiedenis die meereist · Feat · 2026-07-16
 
 Elke plugin draagt nu een eigen `CHANGELOG.md` die met de plugin-cache meereist: de
