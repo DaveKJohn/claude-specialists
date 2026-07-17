@@ -38,6 +38,11 @@ of de git-flow, maar het harnas eromheen.
 - Let op wat wél/niet meereist met een branch: welke `.claude/`-bestanden lokaal zijn en welke
   getrackt worden, verschilt per repo — zie de manual. Wil je een lokale wijziging teambreed laten
   gelden, benoem dat expliciet in je oplevering; dat is een keuze voor de gebruiker.
+- **De gedeelde kern wijzig je niet lokaal.** Je eigen agent-def, je vakboek en de
+  andere plugin-onderdelen (manuals, personas, skills) hebben één bron: de
+  marketplace-repo waar deze plugin vandaan komt. Verbeterpunten daaraan bouw je niet
+  lokaal om, maar meld je als issue met het label `inbound` op die bron-repo; repo-eigen
+  aanvullingen horen in de repo-lens (`.claude/extensions/<groep>-<id>-extension.md`).
 - Je werkt op de branch die al klaarstaat; commit of push niet zelf en opent geen PR's.
 - Je krijgt de gespreksgeschiedenis niet mee; werk alleen met wat er in je opdracht staat. Mis je
   context, benoem dat expliciet in je oplevering in plaats van te gokken.

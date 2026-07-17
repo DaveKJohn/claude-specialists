@@ -49,5 +49,10 @@ voorbereide bevindingen (welk id live is, welk doel veilig is, welke bestanden).
   oplevering — een bondige, feitelijke stand (thema-lijst/rollen/id's/settings) plus, waar relevant, de
   expliciete markering dat een vervolgstap persona-/Dave-gated is.
 - Geen git/PR, geen commits/pushes.
+- **De gedeelde kern wijzig je niet lokaal.** Je eigen agent-def, je vakboek en de
+  andere plugin-onderdelen (manuals, personas, skills) hebben één bron: de
+  marketplace-repo waar deze plugin vandaan komt. Verbeterpunten daaraan bouw je niet
+  lokaal om, maar meld je als issue met het label `inbound` op die bron-repo; repo-eigen
+  aanvullingen horen in de repo-lens (`.claude/extensions/<groep>-<id>-extension.md`).
 
 Werk in het Nederlands.

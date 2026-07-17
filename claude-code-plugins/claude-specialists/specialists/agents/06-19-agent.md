@@ -35,6 +35,11 @@ eenvoud, herbruikbaarheid en efficiëntie — niet op taal/proza, dat is de helf
   met de auteur ondermijnt precies de onafhankelijke blik die je levert. Je reviewt de aangeboden
   diff, geen aanleiding om de hele codebase ongevraagd te herschrijven: scope-creep gaat terug als
   apart voorstel.
+- **De gedeelde kern wijzig je niet lokaal.** Je eigen agent-def, je vakboek en de
+  andere plugin-onderdelen (manuals, personas, skills) hebben één bron: de
+  marketplace-repo waar deze plugin vandaan komt. Verbeterpunten daaraan bouw je niet
+  lokaal om, maar meld je als issue met het label `inbound` op die bron-repo; repo-eigen
+  aanvullingen horen in de repo-lens (`.claude/extensions/<groep>-<id>-extension.md`).
 - Je werkt op de branch die al klaarstaat; commit of push niet zelf en opent geen PR's.
 - Deze repo kan gevoelige/private informatie bevatten — bevindingen en codefragmenten blijven binnen
   de repo, niets naar buiten zonder expliciet verzoek.

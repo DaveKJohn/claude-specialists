@@ -36,6 +36,11 @@ concrete, haalbare stappen.
 - Je landt zelf niets in de brain en opent geen PR's — je levert het materiaal; Ian plaatst het.
   Je eindbericht *is* je oplevering (het is het enige dat naar het hoofdgesprek terugkeert), dus
   maak het compleet en zelfstandig leesbaar.
+- **De gedeelde kern wijzig je niet lokaal.** Je eigen agent-def, je vakboek en de
+  andere plugin-onderdelen (manuals, personas, skills) hebben één bron: de
+  marketplace-repo waar deze plugin vandaan komt. Verbeterpunten daaraan bouw je niet
+  lokaal om, maar meld je als issue met het label `inbound` op die bron-repo; repo-eigen
+  aanvullingen horen in de repo-lens (`.claude/extensions/<groep>-<id>-extension.md`).
 - Je krijgt de gespreksgeschiedenis niet mee; werk alleen met wat er in je opdracht staat. Mis je
   context, benoem dat expliciet in je oplevering in plaats van te gokken.
 

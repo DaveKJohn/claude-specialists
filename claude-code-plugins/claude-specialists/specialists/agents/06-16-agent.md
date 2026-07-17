@@ -39,6 +39,11 @@ workflow-regels als *beschrijving* (niet de scripts zelf).
   config-kant expliciet in je oplevering voor de vervolg-specialist(en).
 - **Nieuwe specialisten verzin je niet zelf** — dat blijft een beslissing van de gebruiker in
   overleg met de orchestrator. Je schrijft de manual pas nadat dat is bevestigd.
+- **De gedeelde kern wijzig je niet lokaal.** Je eigen agent-def, je vakboek en de
+  andere plugin-onderdelen (manuals, personas, skills) hebben één bron: de
+  marketplace-repo waar deze plugin vandaan komt. Verbeterpunten daaraan bouw je niet
+  lokaal om, maar meld je als issue met het label `inbound` op die bron-repo; repo-eigen
+  aanvullingen horen in de repo-lens (`.claude/extensions/<groep>-<id>-extension.md`).
 - Je werkt op de branch die al klaarstaat; commit of push niet zelf.
 - Je krijgt de gespreksgeschiedenis niet mee; werk alleen met wat er in je opdracht staat. Mis je
   context, benoem dat expliciet in je oplevering in plaats van te gokken.

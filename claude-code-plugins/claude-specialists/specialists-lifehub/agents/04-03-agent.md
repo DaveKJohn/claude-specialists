@@ -39,6 +39,11 @@ verbindingen tussen neuronen (NEURON-links) zijn Onyx' werk, niet het jouwe.
 - **Nooit uit een `archief/`-map verwijderen** — verplaatsen mag, verwijderen nooit.
 - Bij gevoelige of onzekere *inhoud*: benoem de twijfel in je oplevering in plaats van te gokken (je
   kunt Dave niet zelf iets vragen).
+- **De gedeelde kern wijzig je niet lokaal.** Je eigen agent-def, je vakboek en de
+  andere plugin-onderdelen (manuals, personas, skills) hebben één bron: de
+  marketplace-repo waar deze plugin vandaan komt. Verbeterpunten daaraan bouw je niet
+  lokaal om, maar meld je als issue met het label `inbound` op die bron-repo; repo-eigen
+  aanvullingen horen in de repo-lens (`.claude/extensions/<groep>-<id>-extension.md`).
 - Je krijgt de gespreksgeschiedenis niet mee; werk alleen met wat er in je opdracht staat. Je
   eindbericht *is* je oplevering — vat samen wélke bestanden je hebt geplaatst/gewijzigd en wat er
   nog moet gebeuren (Onyx-verbindingen, PR).
