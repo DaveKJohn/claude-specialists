@@ -32,7 +32,10 @@
     .claude/extensions/<g>-<id>-extension.md. Voor elke
     plugin-persona vergelijkt dit script de DRAAGBARE BODY (alles boven de '## Eigen aan deze
     repo'-marker; de repo-lens eronder is per repo verschillend en wordt niet vergeleken) met de
-    body van de consument-kopie. Deze persona-bevindingen zijn INFORMATIEF: ze tellen niet mee in de
+    body van de consument-kopie. Een consument die het lens-only-model draait (de extension opent met
+    een '> Repo-lens (lens-only persona)'-blockquote en draagt bewust geen body-kopie) wordt als
+    LENS-ONLY gerapporteerd -- de body komt rechtstreeks uit de plugin, dus er valt niets te
+    vergelijken. Deze persona-bevindingen zijn INFORMATIEF: ze tellen niet mee in de
     exit-code, want een bestaande consument met een handgeschreven persona is per definitie DRIFTED
     tot hij gecoordineerd is gereconcilieerd -- dat is het signaal, geen poortbreuk.
 
@@ -219,9 +222,18 @@ if ($personaDirs.Count -gt 0) {
         if ($null -eq $consumerExt) {
             $personaResults.Add([pscustomobject]@{ Name = $_.Name; Status = 'MISSING'; Path = $null })
         } else {
-            $localBody = Get-PortableBody $consumerExt
-            $status = if ($localBody -eq $srcBody) { 'IDENTICAL' } else { 'DRIFTED' }
-            $personaResults.Add([pscustomobject]@{ Name = $_.Name; Status = $status; Path = $consumerExt })
+            $extRaw = [System.IO.File]::ReadAllText($consumerExt, [System.Text.Encoding]::UTF8)
+            if ($extRaw -match '(?m)^>\s*Repo-lens \(lens-only persona\)') {
+                # Lens-only-model: de extension is puur de repo-lens en draagt geen body-kopie -- de
+                # draagbare body komt rechtstreeks uit de plugin, dus er valt niets te vergelijken.
+                # Zonder deze herkenning vergelijkt Get-PortableBody de lens-tekst met de
+                # sjabloon-body en meldt de persona eeuwig als DRIFTED (inbound life-hub #69).
+                $personaResults.Add([pscustomobject]@{ Name = $_.Name; Status = 'LENS-ONLY'; Path = $consumerExt })
+            } else {
+                $localBody = Get-PortableBody $consumerExt
+                $status = if ($localBody -eq $srcBody) { 'IDENTICAL' } else { 'DRIFTED' }
+                $personaResults.Add([pscustomobject]@{ Name = $_.Name; Status = $status; Path = $consumerExt })
+            }
         }
     }
 }
@@ -234,6 +246,7 @@ if ($personaResults.Count -gt 0) {
         switch ($r.Status) {
             'MISSING'   { if (-not $Quiet) { Write-Host "  [MISSING]   $($r.Name) -- geen extensions-kopie in de consument (nog niet gebootstrapt)." -ForegroundColor DarkGray } }
             'IDENTICAL' { Write-Host "  [IDENTICAL] $($r.Name) -- body gelijk aan de canonieke bron." -ForegroundColor Green }
+            'LENS-ONLY' { Write-Host "  [LENS-ONLY] $($r.Name) -- lens-only-model: body komt uit de plugin, niets te vergelijken." -ForegroundColor Green }
             'DRIFTED'   { $pDrift++; Write-Host "  [DRIFTED]   $($r.Name) -- body wijkt af van de canonieke bron: $($r.Path)" -ForegroundColor Yellow }
         }
     }

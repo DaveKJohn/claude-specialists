@@ -76,6 +76,15 @@ try {
     Assert-True ($mdText -match [regex]::Escape('@.claude/extensions/01-01-extension.md')) 'CLAUDE.md draagt de orchestrator-import'
     Assert-True (Test-Path -LiteralPath (Join-Path $Fixture '.claude\settings.suggested.jsonc')) 'settings.suggested.jsonc neergezet'
 
+    # --- 1b. Persona-slot: sjabloon schoon, bootstrap voegt VUL-IN zelf toe (inbound #69) ------------
+    # Het persona-sjabloon draagt bewust geen '## Eigen aan deze repo'-slot meer (dat laadt bij een
+    # lens-only consument als ruis mee); de bootstrap genereert het slot zelf bij het kopieren.
+    Write-Host "persona-slot -- sjabloon schoon, bootstrap genereert VUL-IN" -ForegroundColor Cyan
+    $srcPersona = [System.IO.File]::ReadAllText((Join-Path $RepoRoot 'claude-code-plugins\claude-specialists\specialists\personas\01-01-persona.md'), [System.Text.Encoding]::UTF8)
+    Assert-True (-not ($srcPersona -match '(?m)^## Eigen aan deze repo')) 'persona-sjabloon draagt geen ## Eigen aan deze repo-slot meer'
+    $copiedPersona = [System.IO.File]::ReadAllText((Join-Path $Fixture '.claude\extensions\01-01-extension.md'), [System.Text.Encoding]::UTF8)
+    Assert-True ($copiedPersona -match '(?m)^## Eigen aan deze repo \(VUL-IN\)') 'bootstrap-kopie krijgt een vers VUL-IN-slot'
+
     # --- 2. Idempotentie: tweede run overschrijft niets ----------------------------------------------
     Write-Host "bootstrap.ps1 -- idempotent (tweede run)" -ForegroundColor Cyan
     $r2 = Invoke-Script -Path $Bootstrap -ScriptArgs @('-ConsumerRoot', $Fixture)
@@ -148,6 +157,31 @@ try {
     $d2 = Invoke-Script -Path $DriftLint -ScriptArgs @('-ConsumerPath', $Fixture, '-Quiet')
     Assert-Equal 0 $d2.Code 'drift exit blijft 0 (persona-drift is informatief)'
     Assert-True ($d2.Out -match 'DRIFTED\]   01-01-persona') 'persona 01-01 nu DRIFTED na body-wijziging'
+
+    # --- 4b. Lens-only-model: geen body-kopie -> LENS-ONLY, niet DRIFTED (inbound #69) ---------------
+    # Een consument-extension die met de '> Repo-lens (lens-only persona)'-blockquote opent heeft per
+    # definitie geen body-kopie; de body komt uit de plugin. De check moet dat herkennen en de
+    # persona als LENS-ONLY melden i.p.v. de (vals-positieve) DRIFTED die de body-vergelijking gaf.
+    Write-Host "check-consumer-drift.ps1 -- lens-only extension = LENS-ONLY" -ForegroundColor Cyan
+    $lensOnly = @'
+---
+id: 01
+group: 01
+---
+
+# Chris -- repo-lens (lens-only persona)
+
+> Repo-lens (lens-only persona) bij het draagbare vakboek in de plugin; de body komt uit de marketplace-clone.
+
+## Eigen aan deze repo (test-fixture)
+
+Repo-eigen lens-content, geen body-kopie.
+'@
+    [System.IO.File]::WriteAllText($ext, $lensOnly, (New-Object System.Text.UTF8Encoding($false)))
+    $d3 = Invoke-Script -Path $DriftLint -ScriptArgs @('-ConsumerPath', $Fixture, '-Quiet')
+    Assert-Equal 0 $d3.Code 'lens-only: drift exit blijft 0'
+    Assert-True ($d3.Out -match 'LENS-ONLY\] 01-01-persona') 'lens-only extension wordt als LENS-ONLY gemeld'
+    Assert-True (-not ($d3.Out -match 'DRIFTED\]   01-01-persona')) 'lens-only extension niet meer als DRIFTED gemeld'
 
     # --- 5. Lint-smoke: de repo zelf blijft groen ----------------------------------------------------
     Write-Host "check-plugin-integrity.ps1 -- smoke" -ForegroundColor Cyan

@@ -8,8 +8,10 @@ group: 05
 
   Persona die in de HOOFDLOOP draait, niet als subagent. Bij het bootstrappen (skill
   `specialists-init`) gekopieerd naar `.claude/extensions/<group>-<id>-extension.md` van de
-  consument. Alles boven de `## Eigen aan deze repo`-marker is de DRAAGBARE body die de drift-lint
-  bewaakt; vervang het slot eronder door de repo-lens.
+  consument. Dit sjabloon bevat alléén de DRAAGBARE body (repo-neutraal, identiek in elke repo)
+  die de drift-lint bewaakt; het `## Eigen aan deze repo`-slot voor de repo-lens hoort er bewust
+  niet meer in, zodat een consument die de body rechtstreeks importeert (lens-only-model) hem
+  schoon laadt. De bootstrap-skill voegt dat slot bij het kopiëren zelf toe.
 -->
 
 # Rendall 🎬 — de Release Manager (*Release Manager Rendall*)
@@ -41,16 +43,3 @@ Rendall is de ceremoniemeester van de release: hij geniet van het moment van vas
 nette versienummers en tags, en mag net iets theatraal zijn.
 - **Toon:** plechtig-enthousiast, net iets theatraal.
 - **Zo klinkt hij:** *"En… actie: we knippen `v1.2.0` en leggen 'm vast."*
-
-## Eigen aan deze repo (VUL-IN)
-
-> *Alles hierboven is Rendall's release-vak en verhuist mee naar elke repo. Dit deel is de repo-lens:
-> vervang deze placeholder door het concrete release-mechaniek en de conventies die JOUW repo koos.
-> Het `## Eigen aan deze repo`-slot hoort de naam van je repo te dragen.*
-
-<!-- TODO (in te vullen na bootstrap):
-     - De changelog-conventie van deze repo (entry-bestand, folden na merge, de scriptnamen).
-     - Het versioning-/release-model (SemVer, tags, wel/geen GitHub Release, lockstep of niet).
-     - De toegestane directe-op-hoofdbranch-uitzonderingen (fold- en release-commit) zoals die hier
-       gelden.
-     Zie het gesplitste manual-model in `.claude/README.md`. -->
