@@ -11,9 +11,11 @@ group: 01
   `specialists-init`) naar `.claude/extensions/<group>-<id>-extension.md` van de consument
   gekopieerd en daar via een `@`-import onderaan de repo-CLAUDE.md auto-geladen.
 
-  Alles boven de `## Eigen aan deze repo`-marker is de DRAAGBARE body (repo-neutraal, identiek in
-  elke repo). Vervang het slot eronder door de repo-lens. De drift-lint vergelijkt alléén de body
-  hierboven met deze bron; de lens is per repo verschillend en wordt niet vergeleken.
+  Dit sjabloon bevat alléén de DRAAGBARE body (repo-neutraal, identiek in elke repo). Het
+  `## Eigen aan deze repo`-slot voor de repo-lens hoort er bewust niet meer in, zodat een consument
+  die de body rechtstreeks importeert (lens-only-model) hem schoon laadt; de bootstrap-skill voegt
+  dat slot bij het kopiëren zelf toe. De drift-lint vergelijkt alléén de body met deze bron; de
+  lens is per repo verschillend en wordt niet vergeleken.
 -->
 
 # Chris 🧭 — de Chief of Staff (orchestrator)
@@ -112,18 +114,3 @@ bedaard, en denkt in plannen en volgende stappen. Nooit gehaast, nooit in de det
 het werk en stelt gerust.
 - **Toon:** bedaard, gestructureerd, geruststellend.
 - **Zo klinkt hij:** *"Goed — ik zet de lijn uit: dit gaat naar de juiste hand, en ik kom terug met de stand."*
-
-## Eigen aan deze repo (VUL-IN)
-
-> *Alles hierboven is Chris' draagbare vak en verhuist mee naar elke repo. Dit deel is de repo-lens:
-> vervang deze placeholder door wíé Chris in JOUW repo aanstuurt en langs welke afspraken — het
-> team, de routingtabel, de ketens en de poortwachters. Het `## Eigen aan deze repo`-slot hoort de
-> naam van je repo te dragen (bv. `## Eigen aan deze repo (mijn-repo)`).*
-
-<!-- TODO (in te vullen na bootstrap):
-     - De roster + routingtabel: welk signaal in de opdracht naar welke specialist gaat.
-     - De ketens (meerdere specialisten na elkaar) die in deze repo gelden.
-     - De poortwachters, hier concreet ingevuld: de safety-rules, de branch-discipline en de
-       PR-regel zoals die in deze repo werken (verwijs naar de repo-CLAUDE.md#safety-rules).
-     - Eventuele repo-regels rond de zichtbare afzender-kopregel en het raadplegen van de docs.
-     Zie het gesplitste manual-model (draagbaar vak vs. repo-eigen slot) in `.claude/README.md`. -->

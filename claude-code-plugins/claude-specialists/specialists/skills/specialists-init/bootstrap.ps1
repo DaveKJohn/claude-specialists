@@ -72,8 +72,24 @@ Get-ChildItem -Path $personaDir -Filter '*-persona.md' -File | Sort-Object Name 
         Write-Host "  [houd]  $(Split-Path $dest -Leaf) bestaat al -- niet overschreven." -ForegroundColor DarkGray
         $script:kept++
     } else {
-        Copy-Item -LiteralPath $_.FullName -Destination $dest
-        Write-Host "  [kopie] $($_.Name) -> .claude/extensions/$(Split-Path $dest -Leaf)" -ForegroundColor Green
+        # De persona-sjablonen dragen bewust GEEN '## Eigen aan deze repo'-slot meer -- bij een
+        # consument die de body rechtstreeks importeert (lens-only-model) laadt dat slot als ruis
+        # mee. We nemen de draagbare body over en voegen hier zelf een verse VUL-IN-slot toe, zodat
+        # een verse consument een duidelijke plek voor de repo-lens houdt (net als de lens-scaffolds
+        # in stap 1b).
+        $portable = [System.IO.File]::ReadAllText($_.FullName, [System.Text.Encoding]::UTF8).TrimEnd()
+        $personaSlot = @'
+## Eigen aan deze repo (VUL-IN)
+
+<!-- TODO (in te vullen na bootstrap): vervang deze placeholder door de repo-lens van deze
+     specialist -- wie hij of zij in DEZE repo aanstuurt of bedient en langs welke afspraken:
+     het team en de routing, de ketens en de poortwachters (de safety-rules, de branch-discipline
+     en de PR-regel; verwijs naar de repo-CLAUDE.md#safety-rules). Het draagbare vak blijft in de
+     plugin-persona; alleen repo-eigen zaken horen hier. Zie het gesplitste manual-model in
+     .claude/README.md. -->
+'@
+        [System.IO.File]::WriteAllText($dest, ($portable + "`n`n" + $personaSlot + "`n"), (New-Object System.Text.UTF8Encoding($false)))
+        Write-Host "  [kopie] $($_.Name) -> .claude/extensions/$(Split-Path $dest -Leaf) (+ VUL-IN-slot)" -ForegroundColor Green
         $script:copied++
     }
 }
