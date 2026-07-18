@@ -1,4 +1,4 @@
-# .claude/
+# .claude/plugins/claude-specialists
 
 Het thuis van het **Claude Specialists**-systeem *zoals deze repo het zelf consumeert*, plus het
 harnas waarin het draait. Dit document is zowel de plattegrond van deze map als het
