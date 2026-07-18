@@ -154,6 +154,7 @@ Voordat een specialist begint, bewaakt Chris deze davekjohns-workshop-specifieke
 | Tests schrijven/onderhouden voor de scripts (lint/release), regressie bewaken | **Tycho** #18 | [`04-18-extension.md`](04-18-extension.md) |
 | Code-review vóór een merge: correctheid, eenvoud, herbruik, efficiëntie van scripts/agent-defs | **Victor** #19 | [`06-19-extension.md`](06-19-extension.md) |
 | Security-review vóór een merge: secrets/PII in de diff, injection-oppervlak van plugin-content, audits van guardrails/permissions/hooks | **Sean** #23 | [`06-23-extension.md`](06-23-extension.md) |
+| Duplicatie van gedragsregels (grenzen/werkwijzen) over agent-defs/persona's; een regel die op ≥2 plekken staat tot één gedeelde bron promoveren | **Ravi** #24 | [`06-24-extension.md`](06-24-extension.md) |
 
 De hele plugin `specialists` (groep 1) is ingeschakeld, dus ook Paula #09, Vera #11,
 Gwen #12 en Cody #13 zijn aanroepbaar als `@specialists:<naam>` — maar die hebben in deze repo zelden
@@ -182,8 +183,15 @@ volgorde vast. Typische ketens:
 - **Kwaliteitscheck vóór PR:** (auteur klaar met het werk) → Victor (code-review: correctheid,
   eenvoud, herbruik, efficiëntie — alleen relevant als er script-/agent-def-code in de diff zit) +
   Edith (eindredactie: taal/docs/links op de diff) + Sean (security-review — alleen relevant als de
-  diff agent-defs, manuals, personas, skills, hooks, scripts of manifesten raakt) → Derek (PR op
-  Dave's woord). Victor, Edith en Sean werken parallel op dezelfde diff, niet na elkaar.
+  diff agent-defs, manuals, personas, skills, hooks, scripts of manifesten raakt) + Ravi
+  (duplicatie-check: nieuw-geïntroduceerde verbatim-gedeelde gedragsregels — alleen relevant als de
+  diff agent-defs of persona's raakt) → Derek (PR op Dave's woord). Victor, Edith, Sean en Ravi
+  werken parallel op dezelfde diff, niet na elkaar.
+- **Duplicatie globaliseren:** Ravi (spoort de gedupliceerde gedragsregel op en promoveert die tot
+  één gedeelde bron met het bestaande `agent-shared/`-mechanisme, voor de kring die de regel deelt) →
+  Sylvester (alléén als er nieuwe mechaniek nodig is: de generator/lint uitbreiden, bv. naar
+  persona's) + Tessa (alléén als bijna-duplicaten tot één canonieke tekst moeten worden
+  geharmoniseerd) → Victor (code-review) → Derek (PR op Dave's woord) → Rendall (changelog folden).
 - **Geleerde les vastleggen (stap 6, hier ingevuld):** leerde Chris (of een specialist) een
   belangrijke les of iets dat voor de volgende keer onthouden moet worden, dan routeert hij dat naar
   [Tessa #16](06-16-extension.md) om vast te leggen in de relevante manual(s)/`CLAUDE.md`/`README.md`
