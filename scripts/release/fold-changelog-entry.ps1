@@ -23,6 +23,10 @@ param(
 
 $ErrorActionPreference = "Stop"
 
+# Repo-naam uit de lokale repo-config (enige bron), niet langer hardcoded.
+. (Join-Path $PSScriptRoot '..\repo-config.ps1')
+$repo = Get-RepoName
+
 # BOM-loze UTF8 -- Set-Content -Encoding UTF8 voegt in Windows PowerShell 5.1 altijd een BOM
 # toe, en de rest van de repo (CHANGELOG.md etc.) heeft geen BOM.
 $Utf8NoBom = New-Object System.Text.UTF8Encoding $false
@@ -76,7 +80,7 @@ foreach ($file in $entryFiles) {
         $base = [System.IO.Path]::GetFileNameWithoutExtension($file)
         $branchForPr = $base -replace '^([^-]+)-', '$1/'
     }
-    $prJson = gh pr list --head $branchForPr --state all --json number,url --limit 1 --repo DaveKJohn/davekjohns-workshop
+    $prJson = gh pr list --head $branchForPr --state all --json number,url --limit 1 --repo $repo
     $prs = if ($LASTEXITCODE -eq 0 -and $prJson) { @($prJson | ConvertFrom-Json) } else { @() }
     if ($prs.Count -ge 1) {
         $num = $prs[0].number
@@ -86,7 +90,7 @@ foreach ($file in $entryFiles) {
         # claude-code-plugins/claude-specialists/<plugin>/ worden een 'Plugins:'-regel, waarmee
         # cut-release.ps1 later de per-plugin CHANGELOGs bijschrijft. De connectors-map is
         # werkplaats-administratie en telt niet mee.
-        $filesJson = gh pr view $num --json files --repo DaveKJohn/davekjohns-workshop
+        $filesJson = gh pr view $num --json files --repo $repo
         if ($LASTEXITCODE -eq 0 -and $filesJson) {
             $touched = @()
             foreach ($f in @(($filesJson | ConvertFrom-Json).files)) {
