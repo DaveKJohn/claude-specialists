@@ -9,62 +9,16 @@ folden) staat in [`README.md`](README.md#bijdragen--changelog--pr-workflow).
 Alles wat sinds de laatste release naar `main` is gemergd — nieuwste bovenaan, één blok per pull
 request.
 
-### #72 · Persona-sjablonen en drift-check kennen het lens-only-model · Fix · 2026-07-18
-
-Twee samenhangende punten uit inbound life-hub [#69](https://github.com/DaveKJohn/davekjohns-workshop/issues/69), beide gevolg van het lens-only-model dat een consument geen body-kopie meer laat bewaren:
-
-- **Het `## Eigen aan deze repo (VUL-IN)`-slot is uit de vier persona-sjablonen gehaald** (`01-01`, `03-02`, `05-05`, `05-06`). Bij een consument die de body rechtstreeks importeert (lens-only) laadde dat slot — een bootstrap-instructie, geen persona-inhoud — als ruis mee in elke sessie. De sjabloon-intro-comments zijn navenant bijgewerkt.
-- **`bootstrap.ps1` genereert het VUL-IN-slot nu zelf** bij het kopiëren van een persona, in plaats van het uit het sjabloon over te nemen — zo houdt een verse consument een duidelijke plek voor de repo-lens (DRY met de lens-scaffolds van stap 1b).
-- **`check-consumer-drift.ps1` kent het lens-only-model.** Een consument-extension die met de `> Repo-lens (lens-only persona)`-blockquote opent, heeft per definitie geen body-kopie; de check meldt die nu als `LENS-ONLY` in plaats van de vals-positieve `DRIFTED`. Zo betekent een `DRIFTED`-melding weer altijd een écht werkpunt.
-
-De regressietests in `scripts/tests/bootstrap-drift.tests.ps1` borgen dat het sjabloon schoon is, dat de bootstrap zelf een VUL-IN-slot toevoegt (geen drift-regressie op een verse kopie) en dat een lens-only extension als `LENS-ONLY` wordt gerapporteerd.
-
-Plugins: specialists
-
-[PR #72](https://github.com/DaveKJohn/davekjohns-workshop/pull/72)
-
----
-
-### #71 · Inbound-regel toegevoegd aan alle agent-defs · Docs · 2026-07-17
-
-Elk van de 19 agent-defs in de drie plugins (`specialists`, `specialists-lifehub`,
-`specialists-shopify`) heeft nu een eigen bullet in zijn **Grenzen**-sectie die de
-inbound-route benoemt: verbeterpunten aan de gedeelde kern (de eigen agent-def en vakboek,
-die van collega's, en alle andere onderdelen die de plugin draagt) bouwt een specialist
-niet lokaal om; hij meldt ze via de vaste, afgesproken route — een issue met het label
-`inbound` op de bron-repo van de plugin (het issue-sjabloon staat er al klaar), generiek
-beschreven en zonder repo-eigen, persoonlijke of gevoelige details uit de eigen repo.
-Werkt hij al in de bron-repo zelf, dan volgt hij daar gewoon de normale keten. Repo-eigen
-aanvullingen horen in de repo-lens. Zo kent ook een rechtstreeks aangeroepen
-werker-subagent deze regel, niet alleen Chris' persona-body en de QUICKSTART. De
-formulering is na twee correctierondes (Edith's eindredactie: generieke plugin-onderdelen
-+ collega's-agent-defs; Sean's security-review: standing-route-framing + de
-anonimiseringscaveat) tot deze definitieve tekst gekomen.
-
-Plugins: specialists, specialists-lifehub, specialists-shopify
-
-[PR #71](https://github.com/DaveKJohn/davekjohns-workshop/pull/71)
-
----
-
-### #70 · life-hub-manifest gesynct op v1.5.0 (lens-only-notitie, inbound #69) · Chore · 2026-07-17
-
-Het connector-manifest van life-hub is bijgewerkt na de plugin-update in de consument:
-`syncedVersion` van beide plugins (`specialists`, `specialists-lifehub`) van 1.4.1 naar 1.5.0,
-`lastChecked` op 2026-07-17 en `status` terug naar `in-sync` (de persona-verversing uit de oude
-notitie is uitgevoerd). De nieuwe notitie legt vast dat life-hub het lens-only-model hanteert
-voor de vier persona's (01-01, 03-02, 05-05, 05-06) en dat de vier persona-`DRIFTED`-meldingen
-van de drift-check daardoor bekende vals-positieven zijn tot inbound-issue
-[#69](https://github.com/DaveKJohn/davekjohns-workshop/issues/69) is verwerkt.
-
-[PR #70](https://github.com/DaveKJohn/davekjohns-workshop/pull/70)
-
----
-
 ## Releases
 
 De vastgelegde versies van de marketplace — nieuwste bovenaan. Elke release bumpt alle
 plugin-versies in lockstep en verwijst naar de volledige notes in `releases/development/`.
+
+### [v1.5.1] - 2026-07-18 — Patch
+
+Zie [releases/development/1.5/1.5.1.md](releases/development/1.5/1.5.1.md) voor de volledige release-notes.
+
+---
 
 ### [v1.5.0] - 2026-07-17 — Minor
 
