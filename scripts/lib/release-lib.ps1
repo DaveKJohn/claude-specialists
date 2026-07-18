@@ -26,6 +26,11 @@
     een BOM-loos script als ANSI en zou een literal anders verhaspelen.
 #>
 
+# De branch-typen (Feat/Fix/Docs/Chore) hebben een enige bron in branch-info.ps1; Build-ReleaseNotes
+# leest ze via Get-BranchTypes i.p.v. een eigen kopie. Zelfde map, dus CI-veilig vanaf een kale
+# checkout. Geen Set-StrictMode-wijziging: branch-info definieert alleen functies + data.
+. (Join-Path $PSScriptRoot 'branch-info.ps1')
+
 function Get-NextVersion {
     <# Verhoogt een SemVer X.Y.Z volgens $BumpKind (major|minor|patch). #>
     param(
@@ -284,6 +289,8 @@ function Convert-EntryLinksForPluginChangelog {
     #>
     param(
         [Parameter(Mandatory)][string]$EntryText,
+        # Live-waarde wordt door cut-release.ps1 geinjecteerd uit repo-config (Get-RepoBlobUrl); deze
+        # literal is enkel de fallback als de functie zonder -RepoBlobUrl wordt aangeroepen.
         [string]$RepoBlobUrl = 'https://github.com/DaveKJohn/davekjohns-workshop/blob/main/'
     )
     return Convert-RootRelativeLinks -EntryText $EntryText -Prefix $RepoBlobUrl
@@ -354,7 +361,11 @@ function Build-ReleaseNotes {
     $Entries = @($Entries | ForEach-Object {
         Convert-RootRelativeLinks -EntryText $_ -Prefix $LinkPrefix
     })
-    $catOrder = @('Feat', 'Fix', 'Docs', 'Chore', 'Overig')
+    # Categorie-volgorde = de canonieke branch-typen (branch-info.ps1, enige bron) + 'Overig' als
+    # vangnet voor entries met een onbekend type. $catTitle levert de weergavenaam per type; een type
+    # zonder eigen titel valt terug op het type zelf (zodat een nieuw branch-type niet stilzwijgend
+    # buiten de notes valt).
+    $catOrder = @(Get-BranchTypes) + 'Overig'
     $catTitle = @{
         Feat   = 'Nieuwe features & verbeteringen'
         Fix    = 'Fixes'
@@ -380,8 +391,11 @@ function Build-ReleaseNotes {
     $sections = @()
     foreach ($cat in $catOrder) {
         if ($grouped.ContainsKey($cat)) {
+            # NB: niet '$title' -- PowerShell-variabelen zijn case-insensitief, dus dat zou de
+            # $Title-parameter overschrijven en de titelregel uit de kop wissen.
+            $catLabel = if ($catTitle.ContainsKey($cat)) { $catTitle[$cat] } else { $cat }
             $body = ($grouped[$cat].ToArray() -join "`n`n---`n`n")
-            $sections += "## $($catTitle[$cat])`n`n$body"
+            $sections += "## $catLabel`n`n$body"
         }
     }
 

@@ -54,7 +54,9 @@ param(
 )
 $ErrorActionPreference = 'Stop'
 
-$repo = 'DaveKJohn/davekjohns-workshop'
+# Repo-naam uit de lokale repo-config (enige bron), niet langer hardcoded.
+. (Join-Path $PSScriptRoot '..\repo-config.ps1')
+$repo = Get-RepoName
 
 $branch = (git rev-parse --abbrev-ref HEAD).Trim()
 if ($branch -eq 'main') { Write-Error "Je staat op main; een PR maak je vanaf een branch."; exit 1 }

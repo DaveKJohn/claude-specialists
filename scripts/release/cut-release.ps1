@@ -64,6 +64,8 @@ $repoRoot = (git rev-parse --show-toplevel).Trim()
 Set-Location $repoRoot
 
 . (Join-Path $PSScriptRoot '..\lib\release-lib.ps1')
+# Repo-naam/blob-URL uit de lokale repo-config (enige bron) i.p.v. de literal-default in release-lib.
+. (Join-Path $PSScriptRoot '..\repo-config.ps1')
 
 # BOM-loze UTF8 -- de rest van de repo heeft geen BOM.
 $Utf8NoBom = New-Object System.Text.UTF8Encoding $false
@@ -190,7 +192,7 @@ foreach ($m in $manifests) {
     if ($pluginEntries.Count -eq 0) { continue }
     # De Plugins:-regel is interne administratie (stuurde de selectie hierboven) -- strip hem
     # voordat de entry in de consument-gerichte CHANGELOG belandt.
-    $pluginEntries = @($pluginEntries | ForEach-Object { Convert-EntryLinksForPluginChangelog -EntryText (Remove-EntryPluginsLine -EntryText $_) })
+    $pluginEntries = @($pluginEntries | ForEach-Object { Convert-EntryLinksForPluginChangelog -EntryText (Remove-EntryPluginsLine -EntryText $_) -RepoBlobUrl (Get-RepoBlobUrl) })
     $section = Build-PluginChangelogSection -Entries $pluginEntries -Version $new -Date $today
     $plChangelogPath = Join-Path $pluginDir 'CHANGELOG.md'
     $existing = if (Test-Path -LiteralPath $plChangelogPath) { Get-Content -Path $plChangelogPath -Raw -Encoding UTF8 } else { '' }

@@ -7,14 +7,23 @@
 
         . (Join-Path $PSScriptRoot '..\lib\branch-info.ps1')
 
-    Levert Get-BranchPrefix en Get-BranchInfo. De prefix-tabel bepaalt zowel het GitHub-label van de
-    PR als het changelog-entry-type, en volgt de standaard GitHub-labels:
+    Levert Get-BranchPrefix, Get-BranchInfo en Get-BranchTypes. De prefix-tabel bepaalt zowel het
+    GitHub-label van de PR als het changelog-entry-type, en volgt de standaard GitHub-labels:
     Enhancement -> label 'enhancement', Bug -> 'bug', Documentation -> 'documentation'.
     Wijzigt de tabel? Dan hier ook - en nergens anders: alle scripts lezen deze ene tabel.
+
+    De branch-typen (Feat/Fix/Docs/Chore) zijn hier de enige bron. release-lib.ps1 leest ze via
+    Get-BranchTypes voor de release-notes-groepering, zodat de lijst niet op twee plekken drift
+    (voorheen dupliceerde release-lib.ps1 diezelfde typen als $catOrder).
 
     Geen Set-StrictMode hier: dot-sourcen zou de strict-mode van het aanroepende script
     veranderen en daar losse code kunnen breken.
 #>
+
+# De canonieke branch-typen, in de volgorde waarin ze in de release-notes verschijnen. Enige bron:
+# elke Type-waarde in de tabel hieronder is lid van deze lijst, en release-lib.ps1 leest hem via
+# Get-BranchTypes. Voeg je een type toe, dan hier -- en nergens anders.
+$script:BranchTypeOrder = @('Feat', 'Fix', 'Docs', 'Chore')
 
 # prefix -> GitHub-label (PR) + branch-type (changelog-entry).
 # Let op: een release loopt NIET via een branch/PR (cut-release.ps1 commit rechtstreeks op main),
@@ -24,6 +33,11 @@ $script:BranchPrefixTable = @{
     fix   = @{ Label = 'bug';           Type = 'Fix' }
     docs  = @{ Label = 'documentation'; Type = 'Docs' }
     chore = @{ Label = 'documentation'; Type = 'Chore' }
+}
+
+function Get-BranchTypes {
+    # De canonieke branch-typen in release-notes-volgorde (SSOT voor release-lib.ps1).
+    return $script:BranchTypeOrder
 }
 
 function Get-BranchPrefix {

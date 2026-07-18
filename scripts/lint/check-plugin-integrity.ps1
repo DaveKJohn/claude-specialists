@@ -286,12 +286,15 @@ foreach ($lf in $linkFiles) {
 # --- 5. PowerShell-scripts moeten parsen ------------------------------------------------------------
 # Vangt syntaxfouten voor ze op main belanden. De pure logica van een script kun je los testen,
 # maar een parse-fout in de orkestratie zelf breekt pas bij uitvoering -- deze check trekt dat naar
-# voren, naar de PR-poort. Gescand: scripts/**/*.ps1 EN de scripts die een plugin-skill meedraagt
-# (<plugin>/skills/**/*.ps1, bv. de bootstrap van specialists-init).
+# voren, naar de PR-poort. Gescand: scripts/**/*.ps1 EN de scripts die een plugin meedraagt --
+# <plugin>/skills/**/*.ps1 (bv. de bootstrap van specialists-init) en <plugin>/scripts/**/*.ps1
+# (het gedeelde SSOT-thuis, issue #81). Uniek gemaakt zodat een pad dat beide filters raakt niet
+# dubbel geparsed wordt.
 $psScripts = @()
 $psScripts += (Get-ChildItem -Path (Join-Path $RepoRoot 'scripts') -Recurse -Filter '*.ps1' -File)
 $psScripts += (Get-ChildItem -Path $RepoRoot -Recurse -Filter '*.ps1' -File |
-    Where-Object { $_.FullName -match '\\skills\\' })
+    Where-Object { $_.FullName -match '\\skills\\' -or $_.FullName -match '\\claude-code-plugins\\.+\\scripts\\' })
+$psScripts = @($psScripts | Sort-Object -Property FullName -Unique)
 $psScripts | ForEach-Object {
     $parseErrors = $null
     [System.Management.Automation.Language.Parser]::ParseFile($_.FullName, [ref]$null, [ref]$parseErrors) | Out-Null
