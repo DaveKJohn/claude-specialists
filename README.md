@@ -50,7 +50,7 @@ lens in `.claude/extensions/<group>-<id>-extension.md`. De agent-def verwijst na
 zijn plugin, en elke consumerende repo houdt daarvan enkel nog de repo-lens in `.claude/extensions/`:
 
 - **`specialists` (groep 1)** → `claude-code-plugins/claude-specialists/specialists/manuals/` (Paula, Rebecca, Vera, Gwen, Cody, Tycho,
-  Sylvester, Tessa, Edith, Victor, Sean).
+  Sylvester, Tessa, Edith, Victor, Sean, Ravi).
 - **`specialists-lifehub` (groep 2)** → `claude-code-plugins/claude-specialists/specialists-lifehub/manuals/` (Astrid, Fiona, Hugo, Ian, Onyx).
 - **`specialists-shopify` (groep 3)** → `claude-code-plugins/claude-specialists/specialists-shopify/manuals/` (Liam, Sandra, Steven).
 

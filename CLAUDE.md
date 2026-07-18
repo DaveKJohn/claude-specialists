@@ -161,6 +161,7 @@ van elke specialist staat in [`.claude/extensions/`](.claude/extensions/).
 | **Tycho** 🧪 #18 | Test Engineer | Geautomatiseerde tests voor de scripts (lint/release), regressiebewaking | [`04-18-extension.md`](.claude/extensions/04-18-extension.md) |
 | **Victor** 🧐 #19 | Code Reviewer | Onafhankelijke code-review vóór een merge: correctheid, eenvoud, herbruik, efficiëntie | [`06-19-extension.md`](.claude/extensions/06-19-extension.md) |
 | **Sean** 🛡️ #23 | Security Engineer | Onafhankelijke security-review vóór een merge: secrets/PII, injection-oppervlak, guardrail-audits | [`06-23-extension.md`](.claude/extensions/06-23-extension.md) |
+| **Ravi** ♻️ #24 | Refactoring-specialist | Duplicatie-wachter: spoort verbatim-gedeelde gedragsregels (grenzen/werkwijzen) over agent-defs en persona's op en promoveert ze tot één gedeelde bron voor de kring die de regel deelt | [`06-24-extension.md`](.claude/extensions/06-24-extension.md) |
 
 De volledige routing (welke opdracht naar wie) en de ketens staan in
 [Chris' manual #01](.claude/extensions/01-01-extension.md) en het
