@@ -5,6 +5,25 @@ raakten. Automatisch bijgeschreven door `cut-release.ps1` van de marketplace-rep
 (davekjohns-workshop); de volledige werkplaats-geschiedenis staat daar in `CHANGELOG.md` en
 `releases/`.
 
+## v1.9.2 — 2026-07-19
+
+### #88 · specialists-init SKILL.md beschrijft het plugin-pad/lens-only-model (was: oude .claude/extensions-kopie) · Docs · 2026-07-19
+
+Corrigeert een bestaande doc-drift in `specialists-init/SKILL.md`: de skill-tekst beschreef het
+oude adoptiemodel (persona-bodykopie naar `.claude/extensions/`), terwijl `bootstrap.ps1` allang het
+huidige model hanteert — **lens-only** repo-lenzen op het **plugin-pad**
+`.claude/plugins/<familie>/<plugin>/`, met de draagbare body via een `@`-import uit de plugin-install,
+en **twee** `@`-imports onderaan `CLAUDE.md` (body + lens).
+
+- Frontmatter-`description`, de "Wat de skill doet"-stappen (persona-lenzen, lens-scaffolds, de
+  @-imports) en de "Afronden"/"Belangrijk"-secties volgen nu het feitelijke bootstrap-gedrag.
+- Puur documentatie: geen script- of gedragswijziging. De opgekomen drift was gesignaleerd tijdens
+  de #86-fix en is bewust apart opgepakt.
+
+[PR #88](https://github.com/DaveKJohn/davekjohns-workshop/pull/88)
+
+---
+
 ## v1.9.1 — 2026-07-19
 
 ### #87 · specialists-init scaffoldt repo-config + branch-info; open-pr/fold pre-flighten (schone consument) · Fix · 2026-07-19
