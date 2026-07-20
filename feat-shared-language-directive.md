@@ -8,7 +8,7 @@ agent defs. Ravi's duplication check recommended promoting it to a single source
   defs now carry it between `<!-- BEGIN/END shared:gedrag-taalkeuze -->` sentinels, filled and
   verified by `build-agent-defs.ps1` like the `grens-*` blocks.
 - **03-07 (Rebecca) stays local:** its line has a deliberate source-quoting nuance ("...quoting
-  sources in another language is fine"), a near-duplicate Ravi's own rule says not to force-merge.
+  sources in another language is fine") — a near-duplicate that Ravi's own rule says not to force-merge.
 - **Ravi's lens (06-24)** scope updated: the shared-block circle now names a third category
   (standalone behavior directives outside Boundaries/Working method) and lists `gedrag-taalkeuze`.
 
