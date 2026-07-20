@@ -4,6 +4,61 @@ Consumer-facing history of this plugin: per release, the changes that touched th
 Automatically appended by `cut-release.ps1` of the marketplace repo (davekjohns-workshop); the full
 workshop history lives there in `CHANGELOG.md` and `releases/`.
 
+## v1.12.0 — 2026-07-20
+
+### #109 · Shared block for the language directive (Ravi) · Feat · 2026-07-20
+
+Phase B left the closing "respond in the user's language" line verbatim-identical in 19 of the 20
+agent defs. Ravi's duplication check recommended promoting it to a single source via the existing
+`agent-shared/` mechanism — no new machinery needed, since the generator is line-based.
+
+- **New source `agent-shared/gedrag-taalkeuze.md`** with the canonical line; the 19 identical agent
+  defs now carry it between `<!-- BEGIN/END shared:gedrag-taalkeuze -->` sentinels, filled and
+  verified by `build-agent-defs.ps1` like the `grens-*` blocks.
+- **03-07 (Rebecca) stays local:** its line has a deliberate source-quoting nuance ("...quoting
+  sources in another language is fine") — a near-duplicate that Ravi's own rule says not to force-merge.
+- **Ravi's lens (06-24)** scope updated: the shared-block circle now names a third category
+  (standalone behavior directives outside Boundaries/Working method) and lists `gedrag-taalkeuze`.
+
+Naming note: the new source keeps the Dutch-style name of its `grens-*` siblings for uniformity;
+renaming the whole `agent-shared/` set to English is a later-phase consistency item.
+
+[PR #109](https://github.com/DaveKJohn/davekjohns-workshop/pull/109)
+
+---
+
+### #106 · Workshop switched to English — phase B: plugin content · Feat · 2026-07-20
+
+Follow-up to phase A (#105): the shipped plugin content itself is now English, so consumers
+worldwide read an English team. Covers all three plugins.
+
+- **Translated:** the 20 agent definitions (prose outside the shared sentinel blocks), all 26
+  manuals/playbooks, the 4 personas, `agent-shared/` (the canonical shared-bullet source), the
+  three core skills + the shopify `start-task` skill, `specialists/scripts/README.md`, and the
+  intro paragraphs of the three plugin `CHANGELOG.md` files (release history left as written).
+- **Shared blocks regenerated:** `build-agent-defs.ps1` refilled every `<!-- BEGIN/END shared -->`
+  region from the translated `agent-shared/`, so the sentinel content is English and byte-in-sync
+  in all 20 agent defs.
+- **Language directive aligned with the approved policy:** each agent def ended with a hard
+  "work in Dutch" instruction. That contradicts the phase-A Language policy (specialists reply in
+  the language the user writes in) and the worldwide-sharing goal, so all 20 now read "Respond in
+  the language the user addresses you in." This is a behavior change beyond pure translation —
+  flagged for review.
+- **Slot-heading canon:** the human-readable `## Specific to this repo` section heading is now
+  used consistently across manuals, lenses, and CLAUDE.md.
+
+**Deliberately deferred to a later phase (scripts):** the machine-coupled Dutch marker
+`## Eigen aan deze repo` still lives in `bootstrap.ps1` (the scaffold it writes),
+`check-consumer-drift.ps1` (`Get-PortableBody` splits on it) and its test fixture; likewise the
+`[FOUT]`/`[DRIFTED]` signal tokens, the `VUL-IN` scaffold marker, and the three Dutch PR-template
+strings `open-pr.ps1` matches. Migrating those to English needs bilingual back-compat for
+consumers that still carry the Dutch slot — a dedicated scripts phase. Lint and all seven test
+suites pass.
+
+[PR #106](https://github.com/DaveKJohn/davekjohns-workshop/pull/106)
+
+---
+
 ## v1.7.0 — 2026-07-18
 
 ### #77 · Repo-lenzen naar het plugin-pad als standaard (primair + legacy-fallback) · Feat · 2026-07-18
