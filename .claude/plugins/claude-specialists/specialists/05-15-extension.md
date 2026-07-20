@@ -77,8 +77,12 @@ infrastructure.
   under `Stop` PowerShell 5.1 aborts the script on the push before the `$LASTEXITCODE` check can run
   (this bit `open-pr.ps1`'s push step). Sibling of the rule above: don't lean
   on stderr-as-failure. Run the call with `$ErrorActionPreference = 'Continue'` around it, capture
-  `2>&1`, record `$LASTEXITCODE`, restore the preference, and only then judge. Applies to every
-  native call whose stderr is normal chatter (`git push`, `git fetch`, `gh`, …).
+  `2>&1` (or `2>$null` when you only want stdout, e.g. `gh ... --json`), record `$LASTEXITCODE`,
+  restore the preference, and only then judge. Applies to every native call whose stderr is normal
+  chatter — `git push`/`git fetch` (`remote:`), **`git add` (the autocrlf LF↔CRLF warning — this
+  broke `cut-release.ps1` while cutting v1.12.0)**, `gh` (auth/update notices), … Query commands
+  (`git rev-parse`, `git status`) write results to stdout and only real errors to stderr, so `Stop`
+  is correct there — don't wrap those. Swept across all release scripts after the v1.12.0 break.
 - This repo is **public**: config never contains secrets.
 
 In short: the **how** (managing the harness, scripts, config, safety guards) is portable; the **what**

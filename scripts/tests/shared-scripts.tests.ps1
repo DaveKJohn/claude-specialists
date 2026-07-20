@@ -172,6 +172,20 @@ $openPrSrc = ($pairs | Where-Object { $_.Name -eq 'open-pr' }).SourcePath
 $openPrText = [System.IO.File]::ReadAllText($openPrSrc)
 Assert-True ($openPrText -match "git push -u origin \`$branch 2>&1") 'open-pr vangt de push-output (2>&1)'
 Assert-True ($openPrText -match "ErrorActionPreference = 'Continue'") 'open-pr draait de push onder EAP=Continue'
+# open-pr's gh pr create moet ook onder de guard vallen (gh kan naar stderr schrijven).
+Assert-True ($openPrText -match "gh pr create.*2>&1") 'open-pr vangt de gh-pr-create-output (2>&1)'
+
+# Sweep-guard (na de v1.12.0-breuk): de andere release-scripts die native git/gh muteren mogen de
+# #107-valkuil niet dragen -- de mutatie-/gh-aanroepen horen onder EAP=Continue te draaien.
+$cutSrc = Join-Path $RepoRoot 'scripts\release\cut-release.ps1'
+$cutText = [System.IO.File]::ReadAllText($cutSrc)
+Assert-True ($cutText -match "ErrorActionPreference = 'Continue'") 'cut-release draait het git-mutatieblok onder EAP=Continue'
+Assert-True ($cutText -match "(?s)ErrorActionPreference = 'Continue'.*git add -A") 'cut-release: EAP=Continue staat voor git add'
+
+$foldSrc = ($pairs | Where-Object { $_.Name -eq 'fold-changelog-entry' }).SourcePath
+$foldText = [System.IO.File]::ReadAllText($foldSrc)
+Assert-True ($foldText -match "gh pr list.*2>\`$null") 'fold draait gh pr list met stderr-discard'
+Assert-True ($foldText -match "gh pr view.*2>\`$null") 'fold draait gh pr view met stderr-discard'
 
 Write-Host ""
 if ($script:fail -gt 0) {
