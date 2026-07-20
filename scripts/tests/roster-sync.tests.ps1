@@ -20,6 +20,10 @@
       - The $env:CLAUDE_PLUGIN_ROOT hook-context branch of Resolve-PluginDir is not covered; in
         practice this script is not a hook, so that env var is normally unset. The cache-resolution
         branch (incl. semantically-highest-version) IS covered.
+      - No test exercises TWO simultaneously-enabled plugins (the cross-plugin orphan aggregation over
+        the shared $allBackingIds/$pluginNames). Single-plugin aggregation is covered; the multi-plugin
+        path is deferred to layer 2, where the hook wiring exercises it naturally (fixture cache would
+        need a second plugin name to test here).
 #>
 $ErrorActionPreference = 'Stop'
 
@@ -102,7 +106,8 @@ function New-FixtureConsumer {
         [bool]$Enabled = $true,
         [bool]$WriteSettings = $true,
         [string]$RosterFile = 'CLAUDE.md',
-        [string]$RepoConfig = ''
+        [string]$RepoConfig = '',
+        [string]$EnabledPluginId = $PluginId
     )
     $root = Join-Path $Fixture 'consumer'
     if (Test-Path -LiteralPath $root) { Remove-Item -Recurse -Force -LiteralPath $root }
@@ -110,7 +115,7 @@ function New-FixtureConsumer {
 
     if ($WriteSettings) {
         $val = if ($Enabled) { 'true' } else { 'false' }
-        $settings = '{ "enabledPlugins": { "' + $PluginId + '": ' + $val + ' } }'
+        $settings = '{ "enabledPlugins": { "' + $EnabledPluginId + '": ' + $val + ' } }'
         [System.IO.File]::WriteAllText((Join-Path $root '.claude\settings.json'), $settings)
     }
 
@@ -241,6 +246,15 @@ try {
     Assert-Equal 0 $r.Code 'ignore-list: exit-code 0 (ignored agent not flagged)'
     Assert-Match "\[INFO\].*'04-11'.*deliberately kept out" $r.Out 'ignore-list: 04-11 reported as skipped'
     Assert-NotMatch "'04-11'.*no roster row" $r.Out 'ignore-list: 04-11 not an ERROR'
+
+    # --- 11. Guardrail: a malformed plugin id in settings.json is rejected before filesystem access ---
+    #     An uppercase/underscore plugin name fails the slug regex; the script must ERROR ("invalid
+    #     plugin id") and skip it rather than build a path from it. Security-relevant branch (Sean/Victor).
+    $cache = New-FixtureCache -VersionAgents @{ '1.11.0' = @('06-16') }
+    $c = New-FixtureConsumer -RosterIds @('06-16') -LensIds @('06-16') -EnabledPluginId 'Bad_Name@davekjohns-workshop'
+    $r = Invoke-Ps @('-ConsumerPathOverride', $c, '-CacheRootOverride', $cache)
+    Assert-Equal 1 $r.Code 'guardrail: exit-code 1 on malformed plugin id'
+    Assert-Match "\[ERROR\].*invalid plugin id" $r.Out 'guardrail: malformed plugin id rejected'
 } finally {
     if (Test-Path -LiteralPath $Fixture) { Remove-Item -Recurse -Force -LiteralPath $Fixture }
 }

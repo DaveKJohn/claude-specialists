@@ -1,7 +1,7 @@
-### Roster-sync detection (layer 1 of the roster-sync feature) · Feat · 2026-07-20
+### Roster-sync detection (layer 1 of the feature) · Feat · 2026-07-20
 
 When a plugin release adds a new specialist (e.g. Ravi 06-24), a consumer that updates the plugin
-got no signal that its roster (the specialists table in CLAUDE.md) and its repo lenses now lag
+gets no signal that its roster (the specialists table in CLAUDE.md) and its repo lenses now lag
 behind — the Ravi and Sean cases were both caught by chance. This is layer 1 of the fix: **detection**.
 The SessionStart signaling (layer 2) and the semi-automatic recovery skill (layer 3) follow; full
 user-facing docs land with layer 3 when the feature is complete.
