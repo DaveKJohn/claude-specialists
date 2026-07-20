@@ -32,8 +32,8 @@ temporary note in its own repo lens, which disappears again after the sync.
 An important nuance — **what syncs and what doesn't**:
 
 - **Synced (source here):** the portable persona bodies (everything above the
-  `## Eigen aan deze repo` marker) and all plugin content itself (agent defs, manuals, skills).
-- **Not synced (repo-specific):** the `## Eigen aan deze repo` slot of each extension — the repo
+  `## Specific to this repo` marker) and all plugin content itself (agent defs, manuals, skills).
+- **Not synced (repo-specific):** the `## Specific to this repo` slot of each extension — the repo
   lens differs per consumer and belongs there. The registry only tracks *that* a lens exists,
   never what it contains.
 - **Why extensions cannot live only here:** the session in a consuming repo reads the lens files
@@ -102,7 +102,7 @@ deliberate changes to portable bodies, one genuine lag, and six false positives 
 structural path difference.
 
 - **There is no "deliberately divergent" status for the portable body.** Practice confirms the
-  model: repo-specific content belongs in the `## Eigen aan deze repo` slot (the lens), and a
+  model: repo-specific content belongs in the `## Specific to this repo` slot (the lens), and a
   desired change to the portable part goes through the inbound route above — never as a permanent
   local divergence. So the check does not need to facilitate or mark deliberate drift.
 - **Lens-only personas produce no body drift.** A correctly set-up persona lens (on the plugin
@@ -131,7 +131,7 @@ security review: the found path is **verified** first (a marker check on the mar
 `.claude-plugin/marketplace.json` — never run code on a guessed path), and outside the workshop
 the check is **scoped** to the repo's own manifest, so a session never gets another consumer's
 registry data into its context. Beyond that the hook is deliberately soft: no verified workshop
-checkout means a notice and nothing more, only **blocking signals** (`[FOUT]`/`[DRIFTED]`) end up
+checkout means a notice and nothing more, only **blocking signals** (`[ERROR]`/`[DRIFTED]`) end up
 as a compact summary in the session context, and the hook never blocks a session start (always
 exit 0, read-only). `[INFO]` signals — registry administration about the sync state and the
 registration of consumers: sometimes something to update here, often the business of another
@@ -140,7 +140,7 @@ silent at session start (decision by Dave, July 20, 2026); they are visible on a
 `check-connectors.ps1` in the workshop. From this follows
 a classification rule for extensions of the check (security review advice, July 20, 2026): a new
 signal category that may be security-relevant (e.g. an indication of tampering) must never be
-classified as `[INFO]`, but as `[FOUT]` — otherwise it silently stays out of sight at session
+classified as `[INFO]`, but as `[ERROR]` — otherwise it silently stays out of sight at session
 start. This hook is — next to the `specialists-init` skill — the second named, repo-neutral
 exception to the rule that plugins carry no hooks/skills (see the root README). Mind the **version
 gate**: consumers only receive the hook after a release bump plus a `claude plugin update` +

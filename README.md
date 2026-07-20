@@ -40,7 +40,7 @@ see the
 ### Manuals — the split model
 
 A specialist handbook splits into a **portable** part (repo-neutral, identical in every repo: the
-craft, the hard rules, the tone) and a **repo lens** (the `## Eigen aan deze repo` part: which
+craft, the hard rules, the tone) and a **repo lens** (the `## Specific to this repo` part: which
 content/context of that repo the specialist serves). The portable part lives in
 `<plugin>/manuals/<group>-<id>-manual.md` in this marketplace; the consuming repo keeps only the
 lens in `.claude/plugins/claude-specialists/specialists/<group>-<id>-extension.md`. The agent def points to both.
@@ -62,7 +62,7 @@ requires direct back-and-forth with the client. They therefore deliberately have
 **portable body straight from the plugin install** via an `@` import in its `CLAUDE.md` (the
 orchestrator always, the other personas on demand). The local extension
 `.claude/plugins/claude-specialists/specialists/<group>-<id>-extension.md` is therefore **lens-only**:
-only the repo-specific `## Eigen aan deze repo` part, no body copy. The [drift lint](#maintenance-drift-lint)
+only the repo-specific `## Specific to this repo` part, no body copy. The [drift lint](#maintenance-drift-lint)
 recognizes such a lens-only extension and reports it as `LENS-ONLY`. The lint's agent-def↔manual
 coupling deliberately leaves personas alone (they have no agent def).
 
@@ -174,7 +174,7 @@ removing). The cleanup itself happens in the consuming repo, not by this script.
 
 The same script also compares the **personas**: it lays the portable body of each
 `personas/<group>-<id>-persona.md` next to the body of the consumer copy in
-`.claude/plugins/claude-specialists/specialists/<group>-<id>-extension.md` (everything above the `## Eigen aan deze repo` marker; the
+`.claude/plugins/claude-specialists/specialists/<group>-<id>-extension.md` (everything above the `## Specific to this repo` marker; the
 repo lens below it differs per repo and is not compared). Those persona findings are
 **informational** — they don't count toward the exit code, because a consumer with a handwritten
 persona is by definition `DRIFTED` until it has been reconciled in a coordinated way.

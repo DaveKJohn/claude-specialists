@@ -12,7 +12,7 @@
     skill zelf nog niet beschikbaar -- de kip-en-ei die de skill in stap 0 documenteert).
 
     De repo-lenzen wonen op het PLUGIN-PAD (.claude/plugins/<familie>/<plugin>/, de standaard) en de
-    persona-lenzen zijn LENS-ONLY: geen body-kopie, alleen het repo-eigen '## Eigen aan deze repo'-slot.
+    persona-lenzen zijn LENS-ONLY: geen body-kopie, alleen het repo-eigen '## Specific to this repo'-slot.
     De draagbare body komt via een @-import rechtstreeks uit de plugin-install (het ~/.claude/plugins/
     marketplaces/...-pad). Zo woont elke gedragsregel op een plek (de plugin), niet gedupliceerd.
 
@@ -173,7 +173,7 @@ $title
 > ``$bodyPath``.
 > $loadNote
 
-## Eigen aan deze repo (VUL-IN)
+## Specific to this repo (VUL-IN)
 
 <!-- TODO (in te vullen na bootstrap): vervang deze placeholder door de repo-lens van deze
      specialist -- wie hij of zij in DEZE repo aanstuurt of bedient en langs welke afspraken:
@@ -282,7 +282,7 @@ group: $group
 > door ``specialists-init`` als leeg sjabloon neergezet; de agent-def leest het automatisch mee.
 > Vul hieronder de repo-specifieke taken en context aan die $displayName in deze repo nodig heeft.
 
-## Eigen aan deze repo (VUL-IN)
+## Specific to this repo (VUL-IN)
 
 <!-- TODO: beschrijf hier wat deze specialist in DEZE repo doet:
      - welke bestanden/mappen zijn of haar domein zijn;
@@ -533,7 +533,7 @@ Write-Host "  [maak]  .claude/settings.suggested.jsonc neergezet (voorstel -- ni
 Write-Host ""
 Write-Host "Klaar: $copied persona-lens(en) neergezet, $kept al aanwezig; $scaffolded lens-scaffold(s) neergezet, $lensKept al aanwezig; $scriptScaffolded script-scaffold(s) neergezet, $scriptKept al aanwezig." -ForegroundColor Cyan
 Write-Host "Volgende stappen (handmatig -- dit script raakt settings.json/hooks bewust niet aan):" -ForegroundColor Cyan
-Write-Host "  1. Vul in elk $padRel/*/*-extension.md het '## Eigen aan deze repo'-slot met de repo-lens (de VUL-IN-scaffolds mogen leeg blijven tot een specialist hier echt werk krijgt)." -ForegroundColor Gray
+Write-Host "  1. Vul in elk $padRel/*/*-extension.md het '## Specific to this repo'-slot met de repo-lens (de VUL-IN-scaffolds mogen leeg blijven tot een specialist hier echt werk krijgt)." -ForegroundColor Gray
 if ($repoConfigDerived) {
     Write-Host "  2. Wil je de gedeelde workflow-skills (open-pr / fold-changelog) gebruiken? RepoName is al uit de git-remote afgeleid ($derivedRepo) -- vul in scripts/repo-config.ps1 nog Get-LintScript in en in scripts/lib/branch-info.ps1 je branch-prefix-tabel." -ForegroundColor Gray
 } else {

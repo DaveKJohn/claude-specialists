@@ -175,22 +175,28 @@ if (-not $Body) {
             }
         }
 
-        # Kruis aan / vul in wat het script deterministisch weet:
-        #   - het "Type wijziging"-vakje waarvan de regel `<prefix>/` bevat;
-        #   - de placeholder onder "Wat doet deze wijziging?" -> de beschrijving;
-        #   - "Changelog entry-bestand aangemaakt": waar zodra <SafeName>.md bestaat (net uitgelezen);
-        #   - "Aangevraagd door Dave": altijd waar -- dit script draait alleen op Dave's verzoek.
-        # De overige checklist-items blijven bewust leeg: menselijke oordeel-checks.
+        # Tick / fill in what the script deterministically knows:
+        #   - the "Type of change" box whose line contains `<prefix>/`;
+        #   - the placeholder under "What does this change do?" -> the description;
+        #   - "Changelog entry file created": true as soon as <SafeName>.md exists (just read);
+        #   - "Requested by Dave": always true -- this script only runs at Dave's request.
+        # The remaining checklist items stay empty on purpose: human judgement checks.
+        # Each of the three string matches is BILINGUAL: it accepts both the legacy Dutch template
+        # strings AND the new English ones, so a consumer whose PR template is still Dutch keeps working.
         $prefixPattern = '^- \[ \] `' + [regex]::Escape($info.Prefix) + '/`'
         $entryExists = Test-Path $entryPath
+        $descPlaceholders = @(
+            '<!-- Korte beschrijving van wat er verandert en waarom. -->',
+            '<!-- Short description of what changes and why. -->'
+        )
         $filled = foreach ($line in $templateLines) {
             if ($line -match $prefixPattern) {
                 $line -replace '^- \[ \]', '- [x]'
-            } elseif ($desc -and $line -eq '<!-- Korte beschrijving van wat er verandert en waarom. -->') {
+            } elseif ($desc -and ($descPlaceholders -contains $line)) {
                 $desc
-            } elseif ($entryExists -and $line -match '^- \[ \] Changelog entry-bestand aangemaakt') {
+            } elseif ($entryExists -and $line -match '^- \[ \] Changelog entry(-bestand aangemaakt| file created)') {
                 $line -replace '^- \[ \]', '- [x]'
-            } elseif ($line -match '^- \[ \] Aangevraagd door Dave') {
+            } elseif ($line -match '^- \[ \] (Aangevraagd door Dave|Requested by Dave)') {
                 $line -replace '^- \[ \]', '- [x]'
             } else {
                 $line

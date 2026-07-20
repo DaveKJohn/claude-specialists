@@ -13,11 +13,11 @@
 
     Per connector checkt dit script:
       1. Checkout aanwezig op deze machine?          nee -> [SKIP] (geen fout)
-      2. Per plugin: enabled in .claude/settings.json?  nee -> [FOUT]
-      3. Per plugin: alle geregistreerde extensions aanwezig?  mist er een -> [FOUT]
+      2. Per plugin: enabled in .claude/settings.json?  nee -> [ERROR]
+      3. Per plugin: alle geregistreerde extensions aanwezig?  mist er een -> [ERROR]
          Extensions van die plugin die in de consument bestaan maar NIET geregistreerd
          zijn -> [INFO] (inbound-signaal: register bijwerken of wijziging terughalen).
-      4. Per plugin: machine-record (installed_plugins.json)  ouder dan bron -> [FOUT];
+      4. Per plugin: machine-record (installed_plugins.json)  ouder dan bron -> [ERROR];
          geen record/geen administratie -> [INFO] (machine-specifiek, geen poortbreuk)
     Een syncedVersion-boekhouding kent het register niet (meer): de echte geinstalleerde versie
     leest de check uit het machine-record, en registeradministratie die alleen cijfers
@@ -73,7 +73,7 @@ $script:infos  = 0
 function Write-Ok   ([string]$Msg) { Write-Host "  [OK]    $Msg" -ForegroundColor Green }
 function Write-Skip ([string]$Msg) { Write-Host "  [SKIP]  $Msg" -ForegroundColor DarkGray }
 function Write-Info ([string]$Msg) { $script:infos++;  Write-Host "  [INFO]  $Msg" -ForegroundColor Yellow }
-function Write-Fout ([string]$Msg) { $script:errors++; Write-Host "  [FOUT]  $Msg" -ForegroundColor Red }
+function Write-Fout ([string]$Msg) { $script:errors++; Write-Host "  [ERROR] $Msg" -ForegroundColor Red }
 
 # Plugin-id (voor de '@') -> plugin-map onder de familie-root, alleen als de naam een simpele
 # slug is EN de map echt onder de familie-root bestaat; anders $null.
@@ -110,7 +110,7 @@ if ($Manifest) {
 }
 
 if ($manifestFiles.Count -eq 0) {
-    Write-Host 'Geen connectors-manifesten gevonden.' -ForegroundColor Yellow
+    Write-Host 'No connectors manifests found.' -ForegroundColor Yellow
     exit 0
 }
 
@@ -120,7 +120,7 @@ if ($OnlyConsumer) {
     if ($onlyResolved) { $onlyPath = $onlyResolved.Path }
 }
 
-Write-Host "== check-connectors -- $($manifestFiles.Count) manifest(en) ==" -ForegroundColor Cyan
+Write-Host "== check-connectors -- $($manifestFiles.Count) manifest(s) ==" -ForegroundColor Cyan
 
 $checkedConsumers = @{}
 $matched = 0
@@ -136,7 +136,7 @@ foreach ($mf in $manifestFiles) {
     } else {
         if ([System.IO.Path]::IsPathRooted($m.localCheckout)) {
             if ($OnlyConsumer) { continue }
-            Write-Fout "absoluut localCheckout-pad '$($m.localCheckout)' in $($mf.Name) -- geweigerd (alleen relatieve sibling-paden)."
+            Write-Fout "absolute localCheckout path '$($m.localCheckout)' in $($mf.Name) -- rejected (relative sibling paths only)."
             continue
         }
         $checkout = Join-Path $RepoRoot $m.localCheckout
@@ -144,7 +144,7 @@ foreach ($mf in $manifestFiles) {
     if (-not (Test-Path -LiteralPath $checkout)) {
         if (-not $OnlyConsumer) {
             Write-Host "`n== connector: $($m.repo)" -ForegroundColor Cyan
-            Write-Skip "checkout '$($m.localCheckout)' niet aanwezig op deze machine -- niet gecheckt."
+            Write-Skip "checkout '$($m.localCheckout)' not present on this machine -- not checked."
         }
         continue
     }
@@ -156,7 +156,7 @@ foreach ($mf in $manifestFiles) {
     if (-not $ConsumerPathOverride) {
         $scopeRoot = (Resolve-Path -LiteralPath (Join-Path $RepoRoot '..\..')).Path
         if (-not $checkout.StartsWith($scopeRoot, [System.StringComparison]::OrdinalIgnoreCase)) {
-            Write-Fout "localCheckout '$($m.localCheckout)' valt buiten de toegestane scope ('$scopeRoot') -- geweigerd."
+            Write-Fout "localCheckout '$($m.localCheckout)' falls outside the allowed scope ('$scopeRoot') -- rejected."
             continue
         }
     }
@@ -170,7 +170,7 @@ foreach ($mf in $manifestFiles) {
     if (Test-Path -LiteralPath $settingsPath) {
         $settings = Get-Content -LiteralPath $settingsPath -Raw -Encoding UTF8 | ConvertFrom-Json
     } else {
-        Write-Fout ".claude/settings.json niet gevonden in '$checkout'"
+        Write-Fout ".claude/settings.json not found in '$checkout'"
     }
 
     foreach ($p in @($m.plugins)) {
@@ -178,7 +178,7 @@ foreach ($mf in $manifestFiles) {
 
         $pluginDir = Get-PluginDir $p.id
         if ($null -eq $pluginDir) {
-            Write-Fout "ongeldig of onbekend plugin-veld '$($p.id)' in $($mf.Name) -- plugin-blok overgeslagen."
+            Write-Fout "invalid or unknown plugin field '$($p.id)' in $($mf.Name) -- plugin block skipped."
             continue
         }
 
@@ -189,8 +189,8 @@ foreach ($mf in $manifestFiles) {
                 $prop = $settings.enabledPlugins.PSObject.Properties | Where-Object { $_.Name -eq $p.id }
                 if ($prop -and $prop.Value -eq $true) { $enabled = $true }
             }
-            if ($enabled) { Write-Ok "plugin staat aan in .claude/settings.json" }
-            else          { Write-Fout "plugin '$($p.id)' staat NIET (meer) aan in $settingsPath" }
+            if ($enabled) { Write-Ok "plugin is enabled in .claude/settings.json" }
+            else          { Write-Fout "plugin '$($p.id)' is NOT (or no longer) enabled in $settingsPath" }
         }
 
         # 3. Geregistreerde extensions aanwezig? + niet-geregistreerde extensions van deze plugin.
@@ -210,8 +210,8 @@ foreach ($mf in $manifestFiles) {
             }
             if (-not $hit) { $missing += $id }
         }
-        if ($missing.Count -gt 0) { Write-Fout ("geregistreerde extension(s) ontbreken: " + ($missing -join ', ')) }
-        else                      { Write-Ok  "alle $(@($p.extensions).Count) geregistreerde extensions aanwezig" }
+        if ($missing.Count -gt 0) { Write-Fout ("registered extension(s) missing: " + ($missing -join ', ')) }
+        else                      { Write-Ok  "all $(@($p.extensions).Count) registered extensions present" }
 
         $ownedIds = Get-PluginIds $pluginDir
         $present = @()
@@ -221,7 +221,7 @@ foreach ($mf in $manifestFiles) {
         }
         $unregistered = @($present | Sort-Object -Unique | Where-Object { ($ownedIds -contains $_) -and ($p.extensions -notcontains $_) })
         foreach ($id in $unregistered) {
-            Write-Info "extension '$id' bestaat in de consument maar staat niet in het register -- register bijwerken of wijziging beoordelen."
+            Write-Info "extension '$id' exists in the consumer but is not in the register -- update the register or review the change."
         }
 
         # 4. Machine-record vs. bron.
@@ -244,14 +244,14 @@ foreach ($mf in $manifestFiles) {
                     }
                 }
                 if ($null -eq $record) {
-                    Write-Info "geen machine-record voor deze consument (installatie loopt mogelijk via een andere machine)."
+                    Write-Info "no machine record for this consumer (the install may run via a different machine)."
                 } elseif ($record.version -eq $sourceVersion) {
-                    Write-Ok "machine-record staat op de bronversie (v$sourceVersion)"
+                    Write-Ok "machine record is on the source version (v$sourceVersion)"
                 } else {
-                    Write-Fout "machine-record staat op v$($record.version), bron op v$sourceVersion -- update de plugin vanuit de consument (scope-les)."
+                    Write-Fout "machine record is on v$($record.version), source on v$sourceVersion -- update the plugin from the consumer (scope lesson)."
                 }
             } else {
-                Write-Info "geen plugin-administratie op deze machine gevonden -- versiecheck overgeslagen."
+                Write-Info "no plugin administration found on this machine -- version check skipped."
             }
         }
     }
@@ -260,7 +260,7 @@ foreach ($mf in $manifestFiles) {
 }
 
 if ($OnlyConsumer -and $matched -eq 0) {
-    Write-Info "niet-geregistreerd: geen manifest voor deze consument in het register."
+    Write-Info "not registered: no manifest for this consumer in the register."
 }
 
 # Content-drift per unieke consument (agent-defs = fout, persona's = informatief).
@@ -269,12 +269,12 @@ if (-not $SkipDrift) {
         if ($checkout -eq $RepoRoot) { continue }
         Write-Host "`n-- drift-check: $($checkedConsumers[$checkout])" -ForegroundColor Cyan
         & powershell -NoProfile -ExecutionPolicy Bypass -File $DriftLint -ConsumerPath $checkout -Quiet |
-            Where-Object { $_ -match 'DRIFTED|IDENTICAL|Samenvatting|drift' } |
+            Where-Object { $_ -match 'DRIFTED|IDENTICAL|summary|drift' } |
             ForEach-Object { Write-Host "  $_" }
-        if ($LASTEXITCODE -ne 0) { Write-Fout "agent-def-drift gevonden in $($checkedConsumers[$checkout]) -- zie check-consumer-drift." }
+        if ($LASTEXITCODE -ne 0) { Write-Fout "agent-def drift found in $($checkedConsumers[$checkout]) -- see check-consumer-drift." }
     }
 }
 
-Write-Host "`nSamenvatting: $($script:errors) fout(en), $($script:infos) info-signa(a)l(en)." -ForegroundColor $(if ($script:errors -gt 0) { 'Red' } else { 'Green' })
+Write-Host "`nSummary: $($script:errors) error(s), $($script:infos) info signal(s)." -ForegroundColor $(if ($script:errors -gt 0) { 'Red' } else { 'Green' })
 if ($script:errors -gt 0) { exit 1 }
 exit 0
