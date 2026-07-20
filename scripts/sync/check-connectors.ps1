@@ -7,7 +7,7 @@
     Het register woont op familie-niveau, naast de plugin-mappen (bewust NIET erin, zodat het
     niet meereist met de plugin-cache van consumenten): EEN manifest per aangesloten repo
     (claude-code-plugins/claude-specialists/connectors/<repo>.json), met daarin per plugin de
-    gesyncte versie en de extension-inventaris. Manifesten bevatten alleen METADATA -- nooit
+    extension-inventaris. Manifesten bevatten alleen METADATA -- nooit
     lens-inhoud en nooit absolute machine-paden; localCheckout is relatief aan de root van deze
     repo.
 
@@ -17,9 +17,11 @@
       3. Per plugin: alle geregistreerde extensions aanwezig?  mist er een -> [FOUT]
          Extensions van die plugin die in de consument bestaan maar NIET geregistreerd
          zijn -> [INFO] (inbound-signaal: register bijwerken of wijziging terughalen).
-      4. Per plugin: manifest-versie vs. bron-plugin.json  ouder -> [INFO]
-      5. Per plugin: machine-record (installed_plugins.json)  ouder dan bron -> [FOUT];
+      4. Per plugin: machine-record (installed_plugins.json)  ouder dan bron -> [FOUT];
          geen record/geen administratie -> [INFO] (machine-specifiek, geen poortbreuk)
+    Een syncedVersion-boekhouding kent het register niet (meer): de echte geinstalleerde versie
+    leest de check uit het machine-record, en registeradministratie die alleen cijfers
+    dupliceert leverde louter onderhouds-PR's op (besluit Dave, 20 juli 2026).
     Daarna draait per unieke consument eenmalig scripts/lint/check-consumer-drift.ps1
     (agent-def-drift = fout; persona-drift = informatief, zoals in dat script zelf).
 
@@ -222,17 +224,10 @@ foreach ($mf in $manifestFiles) {
             Write-Info "extension '$id' bestaat in de consument maar staat niet in het register -- register bijwerken of wijziging beoordelen."
         }
 
-        # 4. Manifest-versie vs. bron.
-        $pluginJsonPath = Join-Path $pluginDir '.claude-plugin\plugin.json'
-        $sourceVersion = (Get-Content -LiteralPath $pluginJsonPath -Raw -Encoding UTF8 | ConvertFrom-Json).version
-        if ($p.syncedVersion -ne $sourceVersion) {
-            Write-Info "manifest is gesynct op v$($p.syncedVersion), bron staat op v$sourceVersion -- sync en manifest bijwerken."
-        } else {
-            Write-Ok "manifest gesynct op de actuele bronversie (v$sourceVersion)"
-        }
-
-        # 5. Machine-record vs. bron.
+        # 4. Machine-record vs. bron.
         if (-not $SkipVersions) {
+            $pluginJsonPath = Join-Path $pluginDir '.claude-plugin\plugin.json'
+            $sourceVersion = (Get-Content -LiteralPath $pluginJsonPath -Raw -Encoding UTF8 | ConvertFrom-Json).version
             $adminPath = Join-Path $env:USERPROFILE '.claude\plugins\installed_plugins.json'
             if (Test-Path -LiteralPath $adminPath) {
                 $admin = Get-Content -LiteralPath $adminPath -Raw -Encoding UTF8 | ConvertFrom-Json

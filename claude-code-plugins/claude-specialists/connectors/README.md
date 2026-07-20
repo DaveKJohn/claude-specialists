@@ -2,8 +2,8 @@
 
 Dit is het register van **welke repo's de plugins van deze familie geïnstalleerd hebben en of ze
 nog in sync zijn met deze repo** — één `<repo>.json`-manifest per aangesloten repo, direct in
-deze map, met daarin per plugin de gesyncte versie en de extension-inventaris. De connector ís de
-repo. Dit README is de doctrine; de manifesten zijn de data.
+deze map, met daarin per plugin de extension-inventaris. De connector ís de repo. Dit README is
+de doctrine; de manifesten zijn de data.
 
 **Het register woont bewust op familie-niveau, náást de plugin-mappen — niet erin.** De
 marketplace-sources wijzen naar de plugin-mappen zelf, dus dit register reist *niet* mee met de
@@ -44,8 +44,7 @@ Belangrijke nuance — **wat synct en wat niet**:
 ## Privacy-grens (harde regel)
 
 Deze repo is **publiek**. Manifesten bevatten daarom uitsluitend **metadata**: repo-naam, plugin,
-versies, extension-inventaris (alleen `<group>-<id>`-nummers), status en een relatief
-checkout-pad. **Nooit** lens-inhoud, absolute machine-paden of andere gegevens uit de (private)
+extension-inventaris (alleen `<group>-<id>`-nummers) en een relatief checkout-pad. **Nooit** lens-inhoud, absolute machine-paden of andere gegevens uit de (private)
 consumerende repo's. De relatieve `localCheckout`-paden onthullen de sibling-indeling van de
 lokale checkouts; dat is een bewust geaccepteerde mate van transparantie (security-review,
 16 juli 2026).
@@ -57,12 +56,9 @@ lokale checkouts; dat is een bewust geaccepteerde mate van transparantie (securi
   "repo": "DaveKJohn/life-hub",
   "visibility": "private",
   "localCheckout": "../life-hub",
-  "lastChecked": "2026-07-16",
-  "status": "in-sync",
   "plugins": [
     {
       "id": "specialists@davekjohns-workshop",
-      "syncedVersion": "1.1.1",
       "extensions": ["01-01", "05-05"]
     }
   ],
@@ -73,18 +69,20 @@ lokale checkouts; dat is een bewust geaccepteerde mate van transparantie (securi
 - `localCheckout` is **relatief aan de root van deze repo** (de werkplaats-checkout); staat de
   checkout niet op de machine, dan slaat de check hem over. Absolute paden en paden buiten de
   scope-root worden door de check geweigerd.
-- `plugins` bevat per geïnstalleerde plugin de `syncedVersion` (de bronversie waarop deze
-  connector het laatst is gesynct; loopt de bron vooruit, dan signaleert de check dat) en de
-  `extensions`-inventaris van die plugin.
-- `status`/`notes` zijn de menselijke samenvatting (`in-sync` of `attentie` + toelichting); ze
-  worden bijgewerkt wanneer er daadwerkelijk gesynct is, niet bij elke check.
+- `plugins` bevat per geïnstalleerde plugin de `extensions`-inventaris van die plugin.
+- `notes` is de menselijke samenvatting/toelichting; bijgewerkt wanneer er inhoudelijk iets
+  verandert, niet bij elke check.
+- **Een versie-boekhouding kent het manifest bewust niet (meer)** (besluit Dave, 20 juli 2026):
+  de échte geïnstalleerde versie leest de check uit het machine-record
+  (`installed_plugins.json`), en een `syncedVersion`-veld dat die cijfers dupliceerde leverde
+  louter onderhouds-PR's op zonder dat iemand de signalen nog zag.
 
 ## De check
 
 [`scripts/sync/check-connectors.ps1`](../../../scripts/sync/check-connectors.ps1) draait de
 two-way-controle over alle manifesten: plugin nog enabled, geregistreerde extensions aanwezig
-(outbound), niet-geregistreerde extensions gesignaleerd (inbound), manifest- en machine-versies
-tegen de bron, en per consument de content-drift-check
+(outbound), niet-geregistreerde extensions gesignaleerd (inbound), de machine-versie tegen de
+bron, en per consument de content-drift-check
 ([`check-consumer-drift.ps1`](../../../scripts/lint/check-consumer-drift.ps1)). Draai hem aan
 het begin van een werkdag of sessie:
 
@@ -118,9 +116,10 @@ bodies, één echte achterstand, en zes vals-positieven door één structureel p
   doorontwikkeld — ververs de kopie vanaf de bron in een sessie van de consument zelf), óf een
   nog-niet-teruggelegde consument-wijziging (leg die eerst via de inbound-route terug). Niet
   wegklikken, niet laten staan.
-- **Werk na een verversing ook het manifest bij** (`status`/`notes`): het onderzoek trof een al
-  uitgevoerde refresh aan die administratief nog als openstaand geboekt stond — de registerdata
-  hoort de werkelijkheid te volgen.
+- **Werk na een verversing ook het manifest bij** (`notes`, en de `extensions`-inventaris als
+  er lenzen bij kwamen of verdwenen): het onderzoek trof een al uitgevoerde refresh aan die
+  administratief nog als openstaand geboekt stond — de registerdata hoort de werkelijkheid te
+  volgen.
 
 ## De sessie-check (automatisch)
 
