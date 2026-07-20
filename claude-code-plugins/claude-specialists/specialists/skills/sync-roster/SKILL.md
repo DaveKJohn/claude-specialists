@@ -3,8 +3,8 @@ name: sync-roster
 description: >-
   Stage the roster-sync catch-up after the roster-sessioncheck hook flags that a specialist is
   missing from this repo's roster/lenses. Creates the empty repo-lens scaffolds (additive, never
-  overwriting) and prints proposed roster rows for you to paste -- it never writes CLAUDE.md, never
-  commits, and never touches a branch. Use this when the SessionStart roster check reports drift and
+  overwriting) and prints proposed roster rows for you to paste -- it never writes to CLAUDE.md,
+  never commits, and never touches a branch. Use this when the SessionStart roster check reports drift and
   you want the mechanical part of the recovery done for you.
 ---
 
@@ -16,7 +16,7 @@ When a plugin release adds a new specialist, a consumer that updates the plugin 
 surfaces it at the top of a session. This skill is **layer 3**: it stages the catch-up so you only
 have to review and place it.
 
-It does the safe, mechanical part and leaves every judgement call -- and every write to the
+It does the safe, mechanical part and leaves every judgment call -- and every write to the
 governance doc -- to you.
 
 ## When to run it
@@ -48,7 +48,7 @@ The script:
 4. Prints a summary of what was staged, plus an explicit reminder that **main is sacred**: the skill
    wrote nothing to `CLAUDE.md` and committed nothing.
 
-## The human's follow-up (the judgement calls)
+## The human's follow-up (the judgment calls)
 
 After the script:
 
@@ -63,7 +63,7 @@ After the script:
 
 ## Important
 
-- **It never writes `CLAUDE.md`, never commits, never touches a branch.** Recovery is *staged*, not
+- **It never writes to `CLAUDE.md`, never commits, never touches a branch.** Recovery is *staged*, not
   applied -- the governance doc and the branch stay entirely in your hands.
 - **Additive only.** An existing lens is left untouched; the skill is safe to run again.
 - The source of this script lives in the workshop repo; do not modify it locally in a consumer. A

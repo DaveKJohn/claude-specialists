@@ -7,8 +7,9 @@ detection (#110) → signaling (#111) → recovery.
 
 - **`skills/sync-roster/sync-roster.ps1` (new):** delegates drift detection to
   `check-roster-sync.ps1` (it does not re-decide drift), then for each flagged agent creates the
-  missing lens scaffold (`## Specific to this repo (VUL-IN)`, byte-for-byte the bootstrap format,
-  additive — never overwriting) and prints a proposed roster row built from the agent's frontmatter
+  missing lens scaffold (`## Specific to this repo (VUL-IN)`, the same structure `specialists-init`
+  writes — frontmatter, lens-only intro, the VUL-IN slot; additive, never overwriting) and prints a
+  proposed roster row built from the agent's frontmatter
   (name + description, best-effort matched to the roster's table-or-list style). It prints a summary
   with an explicit "main is sacred — review and branch this yourself" reminder. The roster file is
   never modified.

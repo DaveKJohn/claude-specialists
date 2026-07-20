@@ -25,6 +25,8 @@
       - The best-effort "list" roster style is covered; matching an arbitrary real table's exact
         column layout is inherently best-effort and only the row content (id + name + description) is
         asserted, not column alignment.
+      - The Split-PluginId guardrail (malformed plugin id -> skip) is unreachable via the real check
+        (which validates ids first); case 2b forces it with a stub feeding a bad plugin id.
 #>
 $ErrorActionPreference = 'Stop'
 
@@ -185,6 +187,18 @@ try {
     Assert-Match 'already exists.*left untouched' $r.Out 'additive: existing lens reported as untouched'
     Assert-Equal $lensBefore (Get-B64 $lens16) 'additive: existing lens bytes unchanged (not overwritten)'
     Assert-Equal $rosterBefore2 (Get-B64 $rosterPath2) 'additive: CLAUDE.md bytes unchanged'
+
+    # --- 2b. Guardrail: a malformed plugin id in an [ERROR] line is skipped, not turned into a path --
+    #   Defense-in-depth: check-roster-sync validates plugin ids before it emits per-agent errors, so
+    #   this is unreachable via the real check -- forced here with a stub feeding a bad plugin id.
+    $c2b = New-FixtureConsumer -RosterIds @('06-16') -LensIds @('06-16')
+    $rosterBefore2b = Get-B64 (Join-Path $c2b 'CLAUDE.md')
+    $stub = New-StubCheck -Name 'stub-bad-plugin' -OutputLines @(
+        "  [ERROR] agent '06-24' (Bad_Name@davekjohns-workshop) has no roster row in CLAUDE.md -- add it to the roster.")
+    $r = Invoke-Ps @('-ConsumerPathOverride', $c2b, '-CacheRootOverride', $emptyCache, '-CheckScriptOverride', $stub)
+    Assert-Equal 0 $r.Code 'guardrail: exit-code 0'
+    Assert-Match 'invalid plugin id' $r.Out 'guardrail: malformed plugin id skipped'
+    Assert-Equal $rosterBefore2b (Get-B64 (Join-Path $c2b 'CLAUDE.md')) 'guardrail: CLAUDE.md bytes unchanged'
 
     # --- 3. Clean repo: nothing missing -> nothing staged, exit 0 -----------------------------------
     $cache = New-FixtureCache -Agents @{ '06-16' = @{ Name = 'victor'; Desc = 'Code Reviewer.' } }

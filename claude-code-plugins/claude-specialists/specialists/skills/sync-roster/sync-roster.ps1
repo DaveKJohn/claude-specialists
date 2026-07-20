@@ -6,7 +6,7 @@
 .DESCRIPTION
     Layer 1 (check-roster-sync.ps1) detects drift; layer 2 (the SessionStart hook) surfaces it. This
     script is layer 3: the human runs it to STAGE the recovery. It does the safe, mechanical part and
-    leaves every judgement call (and every write to the governance doc) to the human:
+    leaves every judgment call (and every write to the governance doc) to the human:
 
       - Detection is DELEGATED, not re-implemented. This script invokes check-roster-sync.ps1 (the
         single source of truth for what counts as drift) as a child process and parses its [ERROR]
@@ -323,7 +323,10 @@ foreach ($e in $missingRoster) {
     if ($rosterStyle -eq 'list') {
         $row = "- **$displayName** #$idNum -- $short ([``$lensName``]($lensPath))"
     } else {
-        $row = "| **$displayName** #$idNum | $short | [``$lensName``]($lensPath) |"
+        # Escape any pipe in the (plugin-derived) name/description so it cannot break the table row
+        # when the human pastes it (guardrail Sean).
+        $nCell = $displayName.Replace('|', '\|'); $sCell = $short.Replace('|', '\|')
+        $row = "| **$nCell** #$idNum | $sCell | [``$lensName``]($lensPath) |"
     }
 
     Write-Host "  agent $id ($displayName), plugin $($e.PluginId):" -ForegroundColor Yellow
@@ -334,8 +337,8 @@ foreach ($e in $missingRoster) {
 # --- Summary + the explicit sacred-main reminder ----------------------------------------------------
 Write-Host "`nSummary: $($script:created) lens scaffold(s) created, $($script:kept) already present; $($script:proposed) roster row(s) proposed." -ForegroundColor Cyan
 Write-Host "Reminder -- this skill wrote NOTHING to $rosterRel / CLAUDE.md and committed nothing (main is sacred)." -ForegroundColor Cyan
-Write-Host "Next (human, judgement calls):" -ForegroundColor Cyan
+Write-Host "Next (human, judgment calls):" -ForegroundColor Cyan
 Write-Host "  1. Fill in each created '## Specific to this repo (VUL-IN)' slot with the specialist's repo-lens." -ForegroundColor Gray
-Write-Host "  2. Paste the proposed roster row(s) into $rosterRel and adjust them to the roster's real columns/style." -ForegroundColor Gray
+Write-Host "  2. Review each proposed roster row before pasting into $rosterRel -- the name/description are lifted from plugin metadata, so read the wording (it lands in a governance doc) and adjust it to the roster's real columns/style." -ForegroundColor Gray
 Write-Host "  3. Put the changes on a branch and open a PR under your own governance -- never straight on main." -ForegroundColor Gray
 exit 0
