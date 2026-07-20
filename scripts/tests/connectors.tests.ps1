@@ -125,6 +125,7 @@ try {
     Assert-Equal 0 $r.Code 'happy path: exit-code 0'
     Assert-Match '\[OK\]\s+plugin staat aan' $r.Out 'happy path: enabled-check OK'
     Assert-Match 'alle 2 geregistreerde extensions aanwezig' $r.Out 'happy path: extensions OK'
+    Assert-NotMatch 'manifest is gesynct op' $r.Out 'happy path: geen manifest-versie-INFO meer (register-afslanking)'
 
     # --- 1b. Nieuwe lay-out: lenzen op het plugin-pad -> zelfde happy path -----------------------
     New-FixtureConsumer -ExtensionIds @('06-16', '06-17') -Layout 'plugins'
@@ -266,13 +267,13 @@ try {
     #      20 juli 2026): INFO is registeradministratie over consumenten-sync (vaak een andere
     #      machine/gebruiker) en hoort niet bij elke sessiestart gemeld te worden.
     $stub = New-StubWorkshop -Name 'stub-info' -ExitCode 0 -OutputLines @(
-        '  [INFO]  manifest is gesynct op v1.5.0, bron staat op v1.10.0 -- sync en manifest bijwerken.',
+        '  [INFO]  fixture-registeradministratie-signaal',
         '  [INFO]  extension 06-24 bestaat in de consument maar staat niet in het register.'
     )
     $r = Invoke-Ps $Hook @('-WorkshopPathOverride', $stub)
     Assert-Equal 0 $r.Code 'stub info: exit-code 0'
     Assert-Match 'geen fouten' $r.Out 'stub info: OK-tak (INFO geeft geen sessie-alert)'
-    Assert-NotMatch 'gesynct op v1\.5\.0' $r.Out 'stub info: INFO-regel NIET doorgegeven'
+    Assert-NotMatch 'fixture-registeradministratie-signaal' $r.Out 'stub info: INFO-regel NIET doorgegeven'
 
     # 9d. Stub-workshop met een echte FOUT -> signalen-tak, regel komt door.
     $stub = New-StubWorkshop -Name 'stub-fout' -ExitCode 1 -OutputLines @(
