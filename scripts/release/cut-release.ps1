@@ -210,7 +210,14 @@ foreach ($m in $manifests) {
 }
 
 # --- Commit + tag rechtstreeks op main ---------------------------------------------------------
+# Native git schrijft chatter naar stderr (de LF->CRLF-warning van `git add`, `remote:` bij push).
+# Onder ErrorActionPreference=Stop promoveert PowerShell 5.1 dat tot een terminating
+# NativeCommandError, nog voor de $LASTEXITCODE-checks -- dezelfde valkuil als #107 (open-pr), en die
+# brak het snijden van v1.12.0 op `git add`. Vanaf hier draaien we onder Continue en leunen puur op
+# $LASTEXITCODE. Dit is het laatste blok van het script, dus de preference hoeft niet hersteld.
+$ErrorActionPreference = 'Continue'
 git add -A
+if ($LASTEXITCODE -ne 0) { Write-Error "git add mislukte."; exit 1 }
 git commit -m "release: v$new"
 if ($LASTEXITCODE -ne 0) { Write-Error "git commit mislukte."; exit 1 }
 

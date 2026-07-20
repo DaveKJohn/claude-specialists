@@ -102,8 +102,14 @@ foreach ($file in $entryFiles) {
         $base = [System.IO.Path]::GetFileNameWithoutExtension($file)
         $branchForPr = $base -replace '^([^-]+)-', '$1/'
     }
-    $prJson = gh pr list --head $branchForPr --state all --json number,url --limit 1 --repo $repo
-    $prs = if ($LASTEXITCODE -eq 0 -and $prJson) { @($prJson | ConvertFrom-Json) } else { @() }
+    # gh can write notices to stderr; under ErrorActionPreference=Stop PS 5.1 would promote that to a
+    # terminating error before the graceful $LASTEXITCODE handling below (the #107 pitfall). Run under
+    # Continue and discard stderr (2>$null) so it cannot pollute the captured JSON either.
+    $prevEap = $ErrorActionPreference; $ErrorActionPreference = 'Continue'
+    $prJson = gh pr list --head $branchForPr --state all --json number,url --limit 1 --repo $repo 2>$null
+    $ghCode = $LASTEXITCODE
+    $ErrorActionPreference = $prevEap
+    $prs = if ($ghCode -eq 0 -and $prJson) { @($prJson | ConvertFrom-Json) } else { @() }
     if ($prs.Count -ge 1) {
         $num = $prs[0].number
         $entryContent = ([regex]'(?m)^### ').Replace($entryContent, "### #$num $midDot ", 1)
@@ -112,8 +118,11 @@ foreach ($file in $entryFiles) {
         # claude-code-plugins/claude-specialists/<plugin>/ worden een 'Plugins:'-regel, waarmee
         # cut-release.ps1 later de per-plugin CHANGELOGs bijschrijft. De connectors-map is
         # werkplaats-administratie en telt niet mee.
-        $filesJson = gh pr view $num --json files --repo $repo
-        if ($LASTEXITCODE -eq 0 -and $filesJson) {
+        $prevEap = $ErrorActionPreference; $ErrorActionPreference = 'Continue'
+        $filesJson = gh pr view $num --json files --repo $repo 2>$null
+        $ghViewCode = $LASTEXITCODE
+        $ErrorActionPreference = $prevEap
+        if ($ghViewCode -eq 0 -and $filesJson) {
             $touched = @()
             foreach ($f in @(($filesJson | ConvertFrom-Json).files)) {
                 # -cmatch (advies Sean): -match is case-insensitief en zou de kleine-letters-

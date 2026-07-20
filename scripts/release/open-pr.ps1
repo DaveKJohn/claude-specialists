@@ -210,10 +210,18 @@ if (-not $Body) {
 # verhaspelen bij native commando's, waardoor gh de body als losse argumenten leest.
 $bodyFile = Join-Path ([System.IO.Path]::GetTempPath()) "open-pr-body-$PID.md"
 [System.IO.File]::WriteAllText($bodyFile, $Body, (New-Object System.Text.UTF8Encoding $false))
+$prevEap = $ErrorActionPreference
 try {
-    gh pr create --base main --head $branch --title $Title --body-file $bodyFile --label $label --repo $repo
-    if ($LASTEXITCODE -ne 0) { Write-Error "PR aanmaken mislukte (is gh ingelogd?)."; exit 1 }
+    # gh writes its progress/URL partly to stderr; under EAP=Stop PS 5.1 would promote that to a
+    # terminating error before the $LASTEXITCODE check (same pitfall as the push above, #107). Run
+    # under Continue, capture the output, then judge on the exit code.
+    $ErrorActionPreference = 'Continue'
+    $createOut = & gh pr create --base main --head $branch --title $Title --body-file $bodyFile --label $label --repo $repo 2>&1
+    $createCode = $LASTEXITCODE
+    $createOut | ForEach-Object { Write-Host $_ }
+    if ($createCode -ne 0) { Write-Error "PR aanmaken mislukte (is gh ingelogd?)."; exit 1 }
 } finally {
+    $ErrorActionPreference = $prevEap
     Remove-Item -Path $bodyFile -Force -ErrorAction SilentlyContinue
 }
 Write-Host "PR aangemaakt voor '$branch'." -ForegroundColor Green
