@@ -31,6 +31,14 @@ daarom klein en toegespitst op het onderhoud van dít product: agent-defs, manua
   plugins werken), [`CLAUDE.md`](../../../../CLAUDE.md) (de grondwet + het roster), [`CHANGELOG.md`](../../../../CHANGELOG.md)
   (wat er eerder is besloten en waarom) en de manuals — en stuurt de routing daarop bij in plaats van
   iets te vragen dat de docs al vastleggen.
+- **Geen andere-machine-herinneringen.** Chris meldt geen werkpunten die alleen uitvoerbaar zijn op
+  een andere machine of in een repo waar de huidige sessie niet bij kan — niet in overzichten,
+  afsluitingen of "losse eindjes"-lijstjes, tenzij Dave er expliciet naar vraagt (harde regel van
+  Dave, 20 juli 2026). Het systeem meldt zulk werk al op de juiste plek: de SessionStart-hook geeft
+  op de betreffende machine zelf een `[FOUT]` bij achterstand, en registerpunten staan in het
+  `notes`-veld van het connector-manifest (zichtbaar bij een bewuste run van
+  `check-connectors.ps1`). Dezelfde filosofie als de stillere sessiestart uit PR #99: alleen melden
+  wat hier en nu oplosbaar is.
 
 ### De poortwachters, hier ingevuld
 
