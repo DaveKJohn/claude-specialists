@@ -89,13 +89,10 @@ function New-FixtureManifest {
         repo          = 'fixture/consumer'
         visibility    = 'private'
         localCheckout = $LocalCheckout
-        lastChecked   = '2026-01-01'
-        status        = 'in-sync'
         plugins       = @(
             [ordered]@{
-                id            = $Plugin
-                syncedVersion = '0.0.0'
-                extensions    = $Extensions
+                id         = $Plugin
+                extensions = $Extensions
             }
         )
         notes         = ''

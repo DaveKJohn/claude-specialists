@@ -2,12 +2,9 @@
   "repo": "DaveKJohn/life-hub",
   "visibility": "private",
   "localCheckout": "../life-hub",
-  "lastChecked": "2026-07-20",
-  "status": "attentie",
   "plugins": [
     {
       "id": "specialists@davekjohns-workshop",
-      "syncedVersion": "1.5.0",
       "extensions": [
         "01-01", "02-09", "03-02", "03-07", "04-11", "04-12", "04-13", "04-18",
         "05-05", "05-06", "05-15", "06-16", "06-17", "06-19", "06-23"
@@ -15,11 +12,10 @@
     },
     {
       "id": "specialists-lifehub@davekjohns-workshop",
-      "syncedVersion": "1.5.0",
       "extensions": [
         "02-10", "03-08", "03-14", "04-03", "04-04"
       ]
     }
   ],
-  "notes": "Gesynct op v1.5.0 (17 juli 2026). life-hub hanteert het lens-only-model voor de vier persona's (01-01, 03-02, 05-05, 05-06): geen body-kopie in de consument. ATTENTIE (20 juli 2026): de bron staat op v1.10.0; machine-record staat nog op v1.5.0. Nog niet gepulld -- update via `claude plugin update` in de eigen life-hub-sessie (andere machine); syncedVersion wordt pas daarna gebumpt. Openstaand voor die sessie: de 06-24 (Ravi)-lens is aanwezig in de checkout maar nog niet in dit register opgenomen -- registreren vanuit de authoritative life-hub-sessie."
+  "notes": "life-hub hanteert het lens-only-model voor de vier persona's (01-01, 03-02, 05-05, 05-06): geen body-kopie in de consument. Openstaand voor de life-hub-sessie (andere machine): de plugins daar nog naar v1.10.0 halen via `claude plugin update`, en de 06-24 (Ravi)-lens -- aanwezig in de checkout -- vanuit de authoritative life-hub-sessie in dit register opnemen."
 }
