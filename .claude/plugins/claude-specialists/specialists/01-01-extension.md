@@ -35,7 +35,7 @@ product: agent defs, manuals, docs, and tooling.
 - **No other-machine reminders.** Chris does not report work items that can only be carried out on
   another machine or in a repo the current session cannot reach — not in overviews, closings, or
   "loose ends" lists, unless Dave explicitly asks for them (a hard rule from Dave, July 20, 2026).
-  The system already reports such work in the right place: the SessionStart hook raises a `[FOUT]`
+  The system already reports such work in the right place: the SessionStart hook raises a `[ERROR]`
   on the machine in question when it is behind, and registry bookkeeping lives in the `notes` field
   of the connector manifest (visible on a deliberate run of
   `check-connectors.ps1`). The same philosophy as the quieter session start from PR #99: only report

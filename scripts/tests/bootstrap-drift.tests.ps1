@@ -135,10 +135,10 @@ try {
     # --- 1b. Persona-lens is LENS-ONLY: geen body-kopie, wel het VUL-IN-slot -------------------------
     Write-Host "persona-lens -- lens-only (geen body-kopie)" -ForegroundColor Cyan
     $srcPersona = [System.IO.File]::ReadAllText($PersonaSrc, [System.Text.Encoding]::UTF8)
-    Assert-True (-not ($srcPersona -match '(?m)^## Eigen aan deze repo')) 'persona-sjabloon draagt geen ## Eigen aan deze repo-slot meer'
+    Assert-True (-not ($srcPersona -match '(?m)^## (Eigen aan deze repo|Specific to this repo)')) 'persona-sjabloon draagt geen slot-marker meer (geen van beide talen)'
     $lens = [System.IO.File]::ReadAllText((Join-Path $Fixture "$Pp\01-01-extension.md"), [System.Text.Encoding]::UTF8)
     Assert-True ($lens -match 'Repo-lens \(lens-only persona\)') 'persona-lens opent met de lens-only-blockquote'
-    Assert-True ($lens -match '(?m)^## Eigen aan deze repo \(VUL-IN\)') 'persona-lens draagt een vers VUL-IN-slot'
+    Assert-True ($lens -match '(?m)^## Specific to this repo \(VUL-IN\)') 'persona-lens draagt een vers VUL-IN-slot (Engelse kop)'
     Assert-True (-not ($lens -match 'vaste ritueel')) 'persona-lens bevat GEEN body-kopie'
 
     # --- 2. Idempotentie: tweede run overschrijft niets ----------------------------------------------
@@ -213,10 +213,17 @@ try {
     # We zetten er zelf een neer (sjabloon-body + repo-lens-marker) om die vergelijking te testen.
     Write-Host "check-consumer-drift.ps1 -- legacy body-kopie: IDENTICAL, dan DRIFTED" -ForegroundColor Cyan
     $ext = Join-Path $Fixture "$Pp\01-01-extension.md"
+    # Legacy Nederlandse slot-marker: bewijst dat een oude Nederlandse consument nog steeds correct
+    # op de marker splitst (back-compat) -> de portable body is IDENTICAL aan de bron.
     $fullBody = $srcPersona.TrimEnd() + "`n`n## Eigen aan deze repo (test-fixture)`n`nrepo-eigen.`n"
     [System.IO.File]::WriteAllText($ext, $fullBody, $Utf8NoBom)
     $d2 = Invoke-Script -Path $DriftLint -ScriptArgs @('-ConsumerPath', $Fixture, '-Quiet')
-    Assert-True ($d2.Out -match 'IDENTICAL\] 01-01-persona') 'volledige body-kopie is IDENTICAL aan de bron'
+    Assert-True ($d2.Out -match 'IDENTICAL\] 01-01-persona') 'legacy NL slot-marker: body-kopie is IDENTICAL aan de bron'
+    # Parallel: de nieuwe Engelse slot-marker splitst identiek -> ook IDENTICAL.
+    $fullBodyEn = $srcPersona.TrimEnd() + "`n`n## Specific to this repo (test-fixture)`n`nrepo-specific.`n"
+    [System.IO.File]::WriteAllText($ext, $fullBodyEn, $Utf8NoBom)
+    $d2en = Invoke-Script -Path $DriftLint -ScriptArgs @('-ConsumerPath', $Fixture, '-Quiet')
+    Assert-True ($d2en.Out -match 'IDENTICAL\] 01-01-persona') 'nieuwe EN slot-marker: splitst identiek (IDENTICAL)'
     $extText = [System.IO.File]::ReadAllText($ext, [System.Text.Encoding]::UTF8).Replace('Chief of Staff', 'OPPERBAAS-TESTWIJZIGING')
     [System.IO.File]::WriteAllText($ext, $extText, $Utf8NoBom)
     $d3 = Invoke-Script -Path $DriftLint -ScriptArgs @('-ConsumerPath', $Fixture, '-Quiet')

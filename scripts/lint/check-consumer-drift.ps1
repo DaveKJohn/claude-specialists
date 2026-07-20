@@ -30,8 +30,9 @@
     de repo-laag van een consument gekopieerd: .claude/plugins/claude-specialists/<plugin>/
     <g>-<id>-extension.md (sinds de life-hub-pariteit) of het legacy-pad
     .claude/extensions/<g>-<id>-extension.md. Voor elke
-    plugin-persona vergelijkt dit script de DRAAGBARE BODY (alles boven de '## Eigen aan deze
-    repo'-marker; de repo-lens eronder is per repo verschillend en wordt niet vergeleken) met de
+    plugin-persona vergelijkt dit script de DRAAGBARE BODY (alles boven de slot-marker -- 'Eigen aan
+    deze repo' of 'Specific to this repo'; de repo-lens eronder is per repo verschillend en wordt niet
+    vergeleken) met de
     body van de consument-kopie. Een consument die het lens-only-model draait (de extension opent met
     een '> Repo-lens (lens-only persona)'-blockquote en draagt bewust geen body-kopie) wordt als
     LENS-ONLY gerapporteerd -- de body komt rechtstreeks uit de plugin, dus er valt niets te
@@ -73,11 +74,11 @@ $SourceDirs = @(
     (Join-Path $PluginRoot 'claude-code-plugins\claude-specialists\specialists-shopify\agents')
 ) | Where-Object { Test-Path -LiteralPath $_ }
 if ($SourceDirs.Count -eq 0) {
-    Write-Host "Kan geen canonieke agent-defs vinden onder $PluginRoot -- stop." -ForegroundColor Red
+    Write-Host "Cannot find any canonical agent-defs under $PluginRoot -- stopping." -ForegroundColor Red
     exit 1
 }
 if (-not (Test-Path -LiteralPath $ConsumerPath)) {
-    Write-Host "ConsumerPath '$ConsumerPath' bestaat niet -- stop." -ForegroundColor Red
+    Write-Host "ConsumerPath '$ConsumerPath' does not exist -- stopping." -ForegroundColor Red
     exit 1
 }
 $ConsumerRoot = (Resolve-Path -LiteralPath $ConsumerPath).Path
@@ -93,7 +94,8 @@ function Read-NormalizedText {
 
 function Get-PortableBody {
     # Haalt de DRAAGBARE body uit een persona-sjabloon of een extensions-kopie: alles vanaf de eerste
-    # markdown-H1-kop (^# ) tot NET VOOR de '## Eigen aan deze repo'-marker. Frontmatter en leidende
+    # markdown-H1-kop (^# ) tot NET VOOR de slot-marker ('Eigen aan deze repo' of 'Specific to this
+    # repo'). Frontmatter en leidende
     # HTML-commentaren vallen er vanzelf buiten (ze staan voor de eerste #-kop). Zelfde normalisatie
     # als Read-NormalizedText, zodat een puur tekstuele vergelijking mogelijk is.
     param([string]$Path)
@@ -105,7 +107,10 @@ function Get-PortableBody {
         if (-not $started) {
             if ($line -match '^#\s') { $started = $true } else { continue }
         }
-        if ($line -match '^##\s+Eigen aan deze repo') { break }
+        # Back-compat: herken zowel de legacy Nederlandse slot-kop ('Eigen aan deze repo') als de
+        # nieuwe Engelse ('Specific to this repo'), zodat een consument met een oude Nederlandse slot
+        # nog steeds correct op de marker splitst.
+        if ($line -match '^##\s+(Eigen aan deze repo|Specific to this repo)') { break }
         # De indexregel onder de titel is sinds inbound #64 locatie-onafhankelijk (platte tekst, geen
         # pad-diepte-afhankelijke CLAUDE.md-link meer). Een consument kan de body daardoor op elk pad
         # byte-identiek overnemen -- een zuiver tekstuele vergelijking volstaat, geen link-normalisatie.
@@ -121,7 +126,7 @@ Get-ChildItem -Path $SourceDirs -Filter '*-agent.md' -File | ForEach-Object {
     $idMatch = [regex]::Match($text, '(?m)^id:\s*(\d+)\s*$')
     $groupMatch = [regex]::Match($text, '(?m)^group:\s*(\d+)\s*$')
     if (-not $idMatch.Success -or -not $groupMatch.Success) {
-        Write-Host "Waarschuwing: $($_.Name) mist 'id:' of 'group:' in de frontmatter -- overgeslagen." -ForegroundColor Yellow
+        Write-Host "Warning: $($_.Name) is missing 'id:' or 'group:' in its frontmatter -- skipped." -ForegroundColor Yellow
         return
     }
     $id = $idMatch.Groups[1].Value
@@ -135,7 +140,7 @@ Get-ChildItem -Path $SourceDirs -Filter '*-agent.md' -File | ForEach-Object {
 }
 
 if ($sourceById.Count -eq 0) {
-    Write-Host "Geen agent-defs gevonden onder $PluginRoot -- niets te vergelijken." -ForegroundColor Yellow
+    Write-Host "No agent-defs found under $PluginRoot -- nothing to compare." -ForegroundColor Yellow
     exit 0
 }
 
@@ -176,20 +181,20 @@ foreach ($r in ($results | Sort-Object Id)) {
     switch ($r.Status) {
         'MISSING' {
             $missingCount++
-            if (-not $Quiet) { Write-Host "  [MISSING]   id $($r.Id) ($name) -- geen lokale kopie, al gemigreerd." -ForegroundColor DarkGray }
+            if (-not $Quiet) { Write-Host "  [MISSING]   id $($r.Id) ($name) -- no local copy, already migrated." -ForegroundColor DarkGray }
         }
         'IDENTICAL' {
             $identicalCount++
-            Write-Host "  [IDENTICAL] id $($r.Id) ($name) -- dode kopie op $($r.Path), veilig te verwijderen." -ForegroundColor Green
+            Write-Host "  [IDENTICAL] id $($r.Id) ($name) -- dead copy at $($r.Path), safe to remove." -ForegroundColor Green
         }
         'DRIFTED' {
             $driftCount++
-            Write-Host "  [DRIFTED]   id $($r.Id) ($name) -- wijkt af van de canonieke versie: $($r.Path)" -ForegroundColor Red
+            Write-Host "  [DRIFTED]   id $($r.Id) ($name) -- differs from the canonical version: $($r.Path)" -ForegroundColor Red
         }
     }
 }
 Write-Host ""
-Write-Host "Samenvatting agent-defs: $missingCount missing, $identicalCount identical (dode kopieen), $driftCount drifted." -ForegroundColor Cyan
+Write-Host "Agent-def summary: $missingCount missing, $identicalCount identical (dead copies), $driftCount drifted." -ForegroundColor Cyan
 
 # --- Persona-drift (informatief): draagbare body van de plugin-persona's vs. de consument-kopie -----
 $personaDirs = @(@(
@@ -235,22 +240,22 @@ if ($personaDirs.Count -gt 0) {
 
 if ($personaResults.Count -gt 0) {
     Write-Host ""
-    Write-Host "-- Persona's (draagbare body vs. de <g>-<id>-extension.md-kopie in de consument) --" -ForegroundColor Cyan
+    Write-Host "-- Personas (portable body vs. the <g>-<id>-extension.md copy in the consumer) --" -ForegroundColor Cyan
     $pDrift = 0
     foreach ($r in $personaResults) {
         switch ($r.Status) {
-            'MISSING'   { if (-not $Quiet) { Write-Host "  [MISSING]   $($r.Name) -- geen extensions-kopie in de consument (nog niet gebootstrapt)." -ForegroundColor DarkGray } }
-            'IDENTICAL' { Write-Host "  [IDENTICAL] $($r.Name) -- body gelijk aan de canonieke bron." -ForegroundColor Green }
-            'LENS-ONLY' { Write-Host "  [LENS-ONLY] $($r.Name) -- lens-only-model: body komt uit de plugin, niets te vergelijken." -ForegroundColor Green }
-            'DRIFTED'   { $pDrift++; Write-Host "  [DRIFTED]   $($r.Name) -- body wijkt af van de canonieke bron: $($r.Path)" -ForegroundColor Yellow }
+            'MISSING'   { if (-not $Quiet) { Write-Host "  [MISSING]   $($r.Name) -- no extensions copy in the consumer (not bootstrapped yet)." -ForegroundColor DarkGray } }
+            'IDENTICAL' { Write-Host "  [IDENTICAL] $($r.Name) -- body identical to the canonical source." -ForegroundColor Green }
+            'LENS-ONLY' { Write-Host "  [LENS-ONLY] $($r.Name) -- lens-only model: body comes from the plugin, nothing to compare." -ForegroundColor Green }
+            'DRIFTED'   { $pDrift++; Write-Host "  [DRIFTED]   $($r.Name) -- body differs from the canonical source: $($r.Path)" -ForegroundColor Yellow }
         }
     }
-    Write-Host "  Persona-drift is INFORMATIEF (telt niet mee in de exit-code): $pDrift drifted." -ForegroundColor DarkGray
+    Write-Host "  Persona drift is INFORMATIONAL (does not affect the exit code): $pDrift drifted." -ForegroundColor DarkGray
 }
 
 if ($driftCount -gt 0) {
     Write-Host ""
-    Write-Host "Bekijk de DRIFTED agent-def-bestanden voor het verwijderen -- kan een wijziging bevatten die eerst hierheen (canoniek) terug moet." -ForegroundColor Yellow
+    Write-Host "Review the DRIFTED agent-def files before removing them -- one may contain a change that must first be brought back here (canonical)." -ForegroundColor Yellow
     exit 1
 }
 exit 0

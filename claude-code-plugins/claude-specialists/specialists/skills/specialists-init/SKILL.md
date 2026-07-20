@@ -75,7 +75,7 @@ The script performs only **safe, additive** actions — it never overwrites exis
 After the script:
 
 1. **Fill in the repo lens.** Every `*-extension.md` put in place on the plugin path has an
-   `## Eigen aan deze repo (VUL-IN)` slot. Replace it with the repo-specific context: the roster/
+   `## Specific to this repo (VUL-IN)` slot. Replace it with the repo-specific context: the roster/
    routing (Chris), the branch/PR conventions (Derek), the release mechanics (Rendall). The portable
    body lives in the plugin install (not in the lens) and is loaded along via the `@`-import — the
    marketplace's drift lint guards the lenses against the canonical source.
