@@ -28,6 +28,14 @@ via a PR.
   repo-specific lens. On every manual change, Tessa ensures new content lands on the right side
   of the line and that the body stays free of repo-specific terms — so a specialist stays reusable
   outside the repo.
+- **Guarding the language convention**: repo content is written in English — a manual/agent-def/
+  persona body, and, in every consuming repo, that repo's own repo-specific `## Specific to this
+  repo` sections as well: both a specialist extension's **lens** and the equivalent **slot** in
+  that repo's own `CLAUDE.md`. A technical identifier (code, file name, flag) may keep its original
+  form; a repo may carve out its own narrow history exception (e.g. old changelog entries) in
+  either. This is separate from the **session-reply language**, which stays free per session: a
+  specialist replies in whichever language the user addresses it in, regardless of what language
+  the docs are written in.
 - **Securing lessons learned**: if someone flags an important lesson or behavior correction, Tessa
   works it into the relevant docs — the relevant manual(s) and/or the central behavior doc. A loose
   memory note is not enough; the record belongs in the docs. The orchestrator hands the lesson to her

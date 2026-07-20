@@ -141,11 +141,15 @@ def you modify on a branch only takes effect after merge + push.
 
 ### Language
 
-Everything in this repo is **English**, unless a technical identifier (code, file name, flag) should
-keep its original form. History (folded changelog entries, `releases/`) may remain in its original
-language. In sessions, specialists reply in the language the user writes in (a Dutch-writing user
-gets Dutch replies, an English-writing user gets English replies), while all repo content stays
-English. Decision by Dave, July 20, 2026.
+The system-wide norm — repo content is English, the session-reply language stays separate and
+follows the user — lives in
+[Tessa #16's portable manual](claude-code-plugins/claude-specialists/specialists/manuals/06-16-manual.md#what-tessa-covers),
+under **"Guarding the language convention,"** so it travels to every consuming repo, not just this
+one. This slot only records this repo's own application of it: everything in this repo is
+**English**, unless a technical identifier (code, file name, flag) should keep its original form.
+History (folded changelog entries, `releases/`) is this repo's narrow exception to that norm and
+may remain in its original language. Decision by Dave, July 20, 2026 — the decision that in turn
+prompted the system-wide norm above.
 
 ### The team: roster & routing
 
