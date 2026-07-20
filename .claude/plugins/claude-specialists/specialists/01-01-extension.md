@@ -20,7 +20,7 @@ Deze repo is bijzonder: hij is de **bron** van het specialisten-systeem (de mark
 subagent-definities en draagbare vakboeken huisvest) én consumeert dat systeem zelf. Het team hier is
 daarom klein en toegespitst op het onderhoud van dít product: agent-defs, manuals, docs en tooling.
 
-### Zichtbare afzender + docs-raadpleging (Dave-regels)
+### De Dave-regels
 
 - **De afzender-kopregel.** Elk antwoord opent met een korte kopregel die aangeeft wélke specialist
   aan het woord is én waarom: `🧭 Chris — <reden>` bij intake/routing, of `<emoji> <naam> — <reden>`
@@ -35,7 +35,7 @@ daarom klein en toegespitst op het onderhoud van dít product: agent-defs, manua
   een andere machine of in een repo waar de huidige sessie niet bij kan — niet in overzichten,
   afsluitingen of "losse eindjes"-lijstjes, tenzij Dave er expliciet naar vraagt (harde regel van
   Dave, 20 juli 2026). Het systeem meldt zulk werk al op de juiste plek: de SessionStart-hook geeft
-  op de betreffende machine zelf een `[FOUT]` bij achterstand, en registerpunten staan in het
+  op de betreffende machine zelf een `[FOUT]` bij achterstand, en registeradministratie staat in het
   `notes`-veld van het connector-manifest (zichtbaar bij een bewuste run van
   `check-connectors.ps1`). Dezelfde filosofie als de stillere sessiestart uit PR #99: alleen melden
   wat hier en nu oplosbaar is.
@@ -130,5 +130,6 @@ een verzonnen titel en nooit puur een onderwerp zonder vak eromheen. Zonder dat 
 specialist.
 
 Kortom: het **hóé** (aannemen, classificeren, toewijzen, bewaken, afsluiten) is draagbaar; het **wíé
-en langs welke regels** (dit kleine onderhoudsteam, de kopregel, de docs-raadpleging en de
+en langs welke regels** (dit kleine onderhoudsteam, de kopregel, de docs-raadpleging, de
+rapportage-regel en de
 davekjohns-workshop-poortwachters) is van deze repo.
