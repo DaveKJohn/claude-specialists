@@ -9,8 +9,8 @@ update instead of only when someone happens to run the check.
   deliberately soft — it surfaces only blocking `[ERROR]` signals (a missing specialist) as a
   compact summary, keeps `[INFO]` (orphans, ignore-list skips, uncached plugins) silent, and always
   exits 0 (a session start never strands here). Read-only.
-- **`hooks/hooks.json`:** a second `SessionStart` entry runs the new hook alongside the connector
-  check.
+- **`hooks/hooks.json`:** a second command is added to the existing `SessionStart` (startup) entry,
+  so the new hook runs alongside the connector check.
 - **`connectors/README.md`:** the named-exception note now covers this second hook.
 - **Tests:** `roster-sync.tests.ps1` gains hook cases (missing check script → skipped; an `[ERROR]`
   stub → drift summary + exit 0, never blocking; an `[INFO]`/`[OK]`-only stub → silent in-sync

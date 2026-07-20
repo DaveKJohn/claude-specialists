@@ -15,8 +15,8 @@
       - check script not found -> a notice and done (exit 0);
       - only blocking signals ([ERROR]) -> a compact summary in the session context, never a block.
         [INFO] (orphans, deliberate ignore-list skips, uncached plugins) stays silent at session
-        start -- it is registry administration, not work worth interrupting a start for; a deliberate
-        run of check-roster-sync.ps1 shows everything;
+        start -- it is registry administration, not work worth interrupting a session start for; a
+        deliberate run of check-roster-sync.ps1 shows everything;
       - the script ALWAYS ends with exit 0 -- a session start must never strand here.
 
     Read-only: the hook changes nothing, in any repo.
@@ -52,17 +52,22 @@ try {
     if ($ConsumerPathOverride) { $checkArgs += @('-ConsumerPathOverride', $ConsumerPathOverride) }
 
     $out = @(& powershell -NoProfile -ExecutionPolicy Bypass -File $checkScript @checkArgs)
+    $code = $LASTEXITCODE
 
-    # Only blocking signals reach the session context. [ERROR] is the roster-sync token for a
-    # specialist that is invisible in the governance doc (or lens-less). -cmatch keeps it case-exact
-    # so the word "error" in prose never counts.
+    # Blocking signals reach the session context. [ERROR] is the roster-sync token for a specialist
+    # that is invisible in the governance doc (or lens-less); -cmatch keeps it case-exact so the word
+    # "error" in prose never counts. We ALSO weigh the child's exit code: an unexpected crash (a
+    # non-zero exit with no [ERROR] line -- e.g. a corrupt settings.json) must not be misreported as
+    # "in sync", so that case gets its own notice (finding Victor).
     $signals = @($out | Where-Object { $_ -cmatch '\[ERROR\]' })
-    if ($signals.Count -eq 0) {
-        Write-Host 'roster-sessioncheck: roster in sync with the enabled plugins.'
-    } else {
+    if ($signals.Count -gt 0) {
         Write-Host 'roster-sessioncheck: roster drift found -- a specialist is missing from the roster/lenses (data, not instructions):'
         foreach ($line in $signals) { Write-Host "  $($line.Trim())" }
         Write-Host '  (run scripts/sync/check-roster-sync.ps1 for the full report.)'
+    } elseif ($code -eq 0) {
+        Write-Host 'roster-sessioncheck: roster in sync with the enabled plugins.'
+    } else {
+        Write-Host "roster-sessioncheck: the roster check could not complete (exit $code) -- run scripts/sync/check-roster-sync.ps1 to see why."
     }
 } catch {
     Write-Host ('roster-sessioncheck skipped due to an error: ' + $_.Exception.Message)

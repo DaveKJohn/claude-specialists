@@ -279,6 +279,15 @@ try {
     Assert-Match 'in sync' $r.Out 'hook: in-sync message'
     Assert-NotMatch 'roster drift found' $r.Out 'hook: no drift summary when clean'
 
+    # H4. Stub crashes (non-zero exit, NO [ERROR] line) -> not misreported as "in sync"; a distinct
+    #     "could not complete" notice, still exit 0 (finding Victor: a top-level crash in the check
+    #     must not read as all-good).
+    $stub = New-StubCheck -Name 'stub-crash' -ExitCode 1 -OutputLines @('some unexpected failure')
+    $r = Invoke-Hook @('-CheckScriptOverride', $stub)
+    Assert-Equal 0 $r.Code 'hook: exit 0 even when the check crashes'
+    Assert-Match 'could not complete' $r.Out 'hook: crash reported as could-not-complete'
+    Assert-NotMatch 'in sync' $r.Out 'hook: crash NOT misreported as in sync'
+
     # --- 11. Guardrail: a malformed plugin id in settings.json is rejected before filesystem access ---
     #     An uppercase/underscore plugin name fails the slug regex; the script must ERROR ("invalid
     #     plugin id") and skip it rather than build a path from it. Security-relevant branch (Sean/Victor).
