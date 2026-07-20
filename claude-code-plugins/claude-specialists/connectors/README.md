@@ -44,8 +44,7 @@ Belangrijke nuance — **wat synct en wat niet**:
 ## Privacy-grens (harde regel)
 
 Deze repo is **publiek**. Manifesten bevatten daarom uitsluitend **metadata**: repo-naam, plugin,
-versies, extension-inventaris (alleen `<group>-<id>`-nummers), status en een relatief
-checkout-pad. **Nooit** lens-inhoud, absolute machine-paden of andere gegevens uit de (private)
+extension-inventaris (alleen `<group>-<id>`-nummers) en een relatief checkout-pad. **Nooit** lens-inhoud, absolute machine-paden of andere gegevens uit de (private)
 consumerende repo's. De relatieve `localCheckout`-paden onthullen de sibling-indeling van de
 lokale checkouts; dat is een bewust geaccepteerde mate van transparantie (security-review,
 16 juli 2026).
