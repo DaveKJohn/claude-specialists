@@ -9,6 +9,14 @@ folden) staat in [`README.md`](README.md#bijdragen--changelog--pr-workflow).
 Alles wat sinds de laatste release naar `main` is gemergd — nieuwste bovenaan, één blok per pull
 request.
 
+### #98 · swb gesynct naar v1.10.0 -- manifest bijgewerkt · Chore · 2026-07-20
+
+De connector `davekokbwj/smartwatchbanden` is op deze machine via `claude plugin update` naar v1.10.0 gehaald (machine-record op v1.10.0, content-drift 0). Het register liep administratief achter: `syncedVersion` stond voor beide plugins (`specialists` en `specialists-shopify`) nog op v1.4.1. Bijgewerkt naar v1.10.0, `status` van `attentie` naar `in-sync`, `lastChecked` naar 2026-07-20 en de verlopen ATTENTIE-notitie opgeschoond.
+
+[PR #98](https://github.com/DaveKJohn/davekjohns-workshop/pull/98)
+
+---
+
 ### #97 · PowerShell-exitcode-valkuil geborgd in Sylvester's repo-lens · Docs · 2026-07-19
 
 Legt de scriptregel vast die de flaky CI-jacht (#94/#95/#96) opleverde, zodat een vierde herhaling
