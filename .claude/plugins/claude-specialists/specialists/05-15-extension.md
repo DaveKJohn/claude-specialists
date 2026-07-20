@@ -75,7 +75,7 @@ infrastructure.
 - **A native command's stderr under `$ErrorActionPreference = 'Stop'` becomes a *terminating*
   error — even when the command exits 0.** `git push` writes its `remote:` progress to stderr, so
   under `Stop` PowerShell 5.1 aborts the script on the push before the `$LASTEXITCODE` check can run
-  (this bit `open-pr.ps1`, fixed on `fix/open-pr-push-stderr`). Sibling of the rule above: don't lean
+  (this bit `open-pr.ps1`'s push step). Sibling of the rule above: don't lean
   on stderr-as-failure. Run the call with `$ErrorActionPreference = 'Continue'` around it, capture
   `2>&1`, record `$LASTEXITCODE`, restore the preference, and only then judge. Applies to every
   native call whose stderr is normal chatter (`git push`, `git fetch`, `gh`, …).

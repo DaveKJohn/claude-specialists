@@ -137,10 +137,13 @@ if (-not $SkipTests) {
 # Daarom de push met EAP=Continue draaien, de volledige output vangen, meteen de exitcode
 # vastleggen en pas daarna oordelen.
 $prevEap = $ErrorActionPreference
-$ErrorActionPreference = 'Continue'
-$pushOutput = & git push -u origin $branch 2>&1
-$pushCode = $LASTEXITCODE
-$ErrorActionPreference = $prevEap
+try {
+    $ErrorActionPreference = 'Continue'
+    $pushOutput = & git push -u origin $branch 2>&1
+    $pushCode = $LASTEXITCODE
+} finally {
+    $ErrorActionPreference = $prevEap
+}
 $pushOutput | ForEach-Object { Write-Host $_ }
 if ($pushCode -ne 0) { Write-Error "git push mislukte."; exit 1 }
 

@@ -142,15 +142,15 @@ function Get-BranchInfo { param([string]$Branch) [pscustomobject]@{ Branch = $Br
 Write-Host "git-push-stderr-valkuil (open-pr.ps1)" -ForegroundColor Cyan
 # De push in open-pr.ps1 stierf op de 'remote:'-stderr van git: onder ErrorActionPreference=Stop
 # promoveert PS 5.1 native stderr tot een terminating NativeCommandError, nog voor de exitcode-check.
-# (a) Mechanisme-bewijs: het naieve patroon breekt, het capture-patroon niet -- op een echt native
-# commando (cmd.exe echoot naar stderr en geeft exit 0).
+# (a) Mechanisme-bewijs: het kale patroon breekt, het capture-patroon niet -- op een echt native
+# commando (cmd.exe echoot naar stderr en geeft exit 0). NB: .ps1 is puur ASCII, dus geen trema's.
 $naiveThrew = $false
 try {
     $prevE = $ErrorActionPreference; $ErrorActionPreference = 'Stop'
     & cmd /c 'echo remote: iets 1>&2 & exit 0' 2>&1 | Out-Null
     $ErrorActionPreference = $prevE
 } catch { $naiveThrew = $true; $ErrorActionPreference = 'Stop' }
-Assert-True $naiveThrew 'naief patroon (native stderr onder EAP=Stop) is inderdaad terminating'
+Assert-True $naiveThrew 'kaal patroon (native stderr onder EAP=Stop) is inderdaad terminating'
 
 $fixThrew = $false; $fixCode = $null
 try {
@@ -165,7 +165,7 @@ try {
 Assert-True (-not $fixThrew) 'capture-patroon (EAP=Continue rond de aanroep) is NIET terminating'
 Assert-Equal 0 $fixCode 'capture-patroon leest de echte exitcode (0) van het commando'
 
-# (b) Regressie-guard: de bron van open-pr.ps1 mag niet terugvallen op de naieve 'git push' + directe
+# (b) Regressie-guard: de bron van open-pr.ps1 mag niet terugvallen op het kale 'git push' + directe
 # exitcode-check onder EAP=Stop; hij hoort de push met EAP=Continue te draaien en de output te vangen.
 # (De live push tegen een echte remote is hier bewust NIET testbaar -- eerlijke test-gap.)
 $openPrSrc = ($pairs | Where-Object { $_.Name -eq 'open-pr' }).SourcePath
