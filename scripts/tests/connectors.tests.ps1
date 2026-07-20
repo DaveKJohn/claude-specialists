@@ -250,7 +250,7 @@ try {
     #     deterministisch gedekt door de stub-tests 9c en 9d (les van CI-run PR #54).
     $r = Invoke-Ps $Hook @('-WorkshopPathOverride', $RepoRoot, '-SkipDrift', '-SkipVersions')
     Assert-Equal 0 $r.Code 'hook met workshop: exit-code 0'
-    Assert-Match 'connector-session-check:' $r.Out 'hook met workshop: session-check-uitvoer'
+    Assert-Match 'connector-sessioncheck:' $r.Out 'hook met workshop: session-check-uitvoer'
 
     # 9c. Stub-workshop met schone uitvoer incl. boilerplate-drifted-regels (vondst Victor):
     #     de kale samenvattingsregels mogen NIET als signaal tellen.

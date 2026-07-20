@@ -244,7 +244,7 @@ if ($personaResults.Count -gt 0) {
     $pDrift = 0
     foreach ($r in $personaResults) {
         switch ($r.Status) {
-            'MISSING'   { if (-not $Quiet) { Write-Host "  [MISSING]   $($r.Name) -- no extensions copy in the consumer (not bootstrapped yet)." -ForegroundColor DarkGray } }
+            'MISSING'   { if (-not $Quiet) { Write-Host "  [MISSING]   $($r.Name) -- no extension-file copy in the consumer (not bootstrapped yet)." -ForegroundColor DarkGray } }
             'IDENTICAL' { Write-Host "  [IDENTICAL] $($r.Name) -- body identical to the canonical source." -ForegroundColor Green }
             'LENS-ONLY' { Write-Host "  [LENS-ONLY] $($r.Name) -- lens-only model: body comes from the plugin, nothing to compare." -ForegroundColor Green }
             'DRIFTED'   { $pDrift++; Write-Host "  [DRIFTED]   $($r.Name) -- body differs from the canonical source: $($r.Path)" -ForegroundColor Yellow }
