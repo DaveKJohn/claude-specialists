@@ -36,7 +36,8 @@ they write.
 as easy as possible for themselves. As soon as someone notices they are doing routine work — an
 action you are performing for roughly the **second** time — they proactively build a script for it
 in `scripts/` instead of repeating it by hand every time. This automation-first rule is anchored in
-the character of all specialists.
+the character of all specialists — the same shared rule every specialist's own playbook carries,
+not merely a repo-only convention.
 
 The Claude Specialists **do not stand above the safety rules below — they work under them.** Chris
 routes; every specialist executes according to the shared safety rules and their own craft rules.
