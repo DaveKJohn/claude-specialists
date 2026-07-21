@@ -22,6 +22,18 @@
          judgement checks the script cannot honestly verify.
       If you do supply -Body, it is used literally (override).
 
+      The description placeholder(s) and the approval-checklist pattern used for steps 2 and 3 are
+      configurable per repo (#101): if scripts\repo-config.ps1 defines the optional
+      Get-PrDescriptionPlaceholder / Get-PrApprovalPattern functions, those are used; otherwise the
+      script falls back to this repo's own template markers (current behavior, unchanged) -- so a
+      consumer whose PR template uses different marker text can point at its own markers without a
+      wrapper script.
+
+    Optional assignee/milestone (#101): if scripts\repo-config.ps1 defines Get-PrAssignee and/or
+    Get-PrMilestone (both optional), a non-empty return value is passed to `gh pr create` as
+    --assignee / --milestone. Not defined, or an empty return value: the flag is simply omitted
+    (current behavior, unchanged).
+
     ALWAYS sets a GitHub label based on the branch prefix (every PR has a label). The
     prefix-to-label table lives in scripts/lib/branch-info.ps1 (shared with the other scripts) and
     follows the main categories of the PR template. Unknown prefix -> label 'question' + warning
@@ -185,10 +197,25 @@ if (-not $Body) {
         # strings AND the new English ones, so a consumer whose PR template is still Dutch keeps working.
         $prefixPattern = '^- \[ \] `' + [regex]::Escape($info.Prefix) + '/`'
         $entryExists = Test-Path $entryPath
-        $descPlaceholders = @(
-            '<!-- Korte beschrijving van wat er verandert en waarom. -->',
-            '<!-- Short description of what changes and why. -->'
-        )
+
+        # #101: the description placeholder(s) and the approval-checklist pattern are overridable
+        # via optional repo-config functions, so a consumer with its own PR template text does not
+        # need a wrapper. Guard via Get-Command so a repo-config.ps1 that does not define these
+        # (the workshop's own, and every existing consumer) keeps exactly today's behavior.
+        $descPlaceholders = if (Get-Command -Name Get-PrDescriptionPlaceholder -ErrorAction SilentlyContinue) {
+            @(Get-PrDescriptionPlaceholder)
+        } else {
+            @(
+                '<!-- Korte beschrijving van wat er verandert en waarom. -->',
+                '<!-- Short description of what changes and why. -->'
+            )
+        }
+        $approvalPattern = if (Get-Command -Name Get-PrApprovalPattern -ErrorAction SilentlyContinue) {
+            Get-PrApprovalPattern
+        } else {
+            '^- \[ \] (Aangevraagd door Dave|Requested by Dave)'
+        }
+
         $filled = foreach ($line in $templateLines) {
             if ($line -match $prefixPattern) {
                 $line -replace '^- \[ \]', '- [x]'
@@ -196,7 +223,7 @@ if (-not $Body) {
                 $desc
             } elseif ($entryExists -and $line -match '^- \[ \] Changelog entry(-bestand aangemaakt| file created)') {
                 $line -replace '^- \[ \]', '- [x]'
-            } elseif ($line -match '^- \[ \] (Aangevraagd door Dave|Requested by Dave)') {
+            } elseif ($line -match $approvalPattern) {
                 $line -replace '^- \[ \]', '- [x]'
             } else {
                 $line
@@ -210,13 +237,24 @@ if (-not $Body) {
 # commands, causing gh to read the body as separate arguments.
 $bodyFile = Join-Path ([System.IO.Path]::GetTempPath()) "open-pr-body-$PID.md"
 [System.IO.File]::WriteAllText($bodyFile, $Body, (New-Object System.Text.UTF8Encoding $false))
+
+# #101: optional assignee/milestone via repo-config. Not defined, or an empty return value: the
+# flag is simply omitted -- current behavior, unchanged (the workshop defines neither). Collected
+# as a splatted array of EXTRA args (kept separate from the fixed `gh pr create ...` call below) so
+# the #107 stderr-capture guard keeps its literal, single-line `gh pr create ... 2>&1` shape.
+$assignee = if (Get-Command -Name Get-PrAssignee -ErrorAction SilentlyContinue) { "$(Get-PrAssignee)".Trim() } else { '' }
+$milestone = if (Get-Command -Name Get-PrMilestone -ErrorAction SilentlyContinue) { "$(Get-PrMilestone)".Trim() } else { '' }
+$extraGhArgs = @()
+if ($assignee) { $extraGhArgs += @('--assignee', $assignee) }
+if ($milestone) { $extraGhArgs += @('--milestone', $milestone) }
+
 $prevEap = $ErrorActionPreference
 try {
     # gh writes some of its progress/URL to stderr; under EAP=Stop, PS 5.1 would promote that to a
     # terminating error before the $LASTEXITCODE check (the same pitfall as the push above, #107).
     # Run under Continue, capture the output, and only then judge on the exit code.
     $ErrorActionPreference = 'Continue'
-    $createOut = & gh pr create --base main --head $branch --title $Title --body-file $bodyFile --label $label --repo $repo 2>&1
+    $createOut = & gh pr create --base main --head $branch --title $Title --body-file $bodyFile --label $label --repo $repo @extraGhArgs 2>&1
     $createCode = $LASTEXITCODE
     $createOut | ForEach-Object { Write-Host $_ }
     if ($createCode -ne 0) { Write-Error "Creating the PR failed (is gh logged in?)."; exit 1 }

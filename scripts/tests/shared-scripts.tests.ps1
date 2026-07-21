@@ -224,6 +224,240 @@ Assert-True ($foldText -match "gh pr list.*2>\`$null") 'fold runs gh pr list wit
 Assert-True ($foldText -match "gh pr list.*--json number,url,files") 'fold already requests files in the gh pr list call'
 Assert-True (-not ($foldText -match '(?m)^\s*\$\w+\s*=\s*gh pr view')) 'fold no longer runs a separate gh pr view call (merged, #103)'
 
+Write-Host "open-pr + fold-changelog-entry: repo-config-driven overrides (#101)" -ForegroundColor Cyan
+# Shared fixture: a fake 'gh' on PATH (Sylvester's pattern -- a fake gh.cmd + a local bare git
+# remote), so both the open-pr and fold-RepoRoot scenarios below run for real (real git repo,
+# real script invocation) but fully offline and deterministically -- no dependency on a real `gh`
+# being installed/authenticated on the machine running the suite.
+$fakeBin = Join-Path ([System.IO.Path]::GetTempPath()) ("shared-scripts-fakegh-$PID")
+$prArgsCapture = Join-Path ([System.IO.Path]::GetTempPath()) ("shared-scripts-gh-args-$PID.txt")
+$prBodyCapture = Join-Path ([System.IO.Path]::GetTempPath()) ("shared-scripts-gh-body-$PID.md")
+$prFixtureRoot = Join-Path ([System.IO.Path]::GetTempPath()) ("openpr-fixture-$PID")
+$prBareRemote  = Join-Path ([System.IO.Path]::GetTempPath()) ("openpr-remote-$PID.git")
+$foldTarget  = Join-Path ([System.IO.Path]::GetTempPath()) ("fold-reporoot-target-$PID")
+$foldDecoy   = Join-Path ([System.IO.Path]::GetTempPath()) ("fold-reporoot-decoy-$PID")
+$foldDefault = Join-Path ([System.IO.Path]::GetTempPath()) ("fold-reporoot-default-$PID")
+$prBranch = 'feat/openpr-101-test'
+$foldBranch = 'chore/fold-reporoot-test'
+$Utf8NoBomTest = New-Object System.Text.UTF8Encoding $false
+$prevPath1 = $env:PATH
+$prevPd = $env:CLAUDE_PROJECT_DIR
+$prevLoc = (Get-Location).Path
+$prevEapShared = $ErrorActionPreference
+try {
+    $ErrorActionPreference = 'Continue'  # native git/gh calls below -- #107 pitfall guard
+
+    # --- Fake gh on PATH ---
+    # 'pr create' captures its full argument list + a copy of the --body-file content (read BEFORE
+    # open-pr.ps1's own finally removes the temp file) and prints a fake PR URL. 'pr list' (used by
+    # fold, not by open-pr) returns an empty JSON array, i.e. "no PR found" -- both exit 0.
+    New-Item -ItemType Directory -Path $fakeBin -Force | Out-Null
+    $ghImpl = @'
+if ($args -contains 'create') {
+    if ($env:GH_ARGS_CAPTURE) {
+        [System.IO.File]::WriteAllText($env:GH_ARGS_CAPTURE, ($args -join "`n"), [System.Text.Encoding]::UTF8)
+    }
+    $bfIdx = [array]::IndexOf($args, '--body-file')
+    if ($bfIdx -ge 0 -and $env:GH_BODY_CAPTURE) {
+        $bodyPath = $args[$bfIdx + 1]
+        if (Test-Path -LiteralPath $bodyPath) {
+            Copy-Item -LiteralPath $bodyPath -Destination $env:GH_BODY_CAPTURE -Force
+        }
+    }
+    Write-Output 'https://github.com/fake/repo/pull/999'
+    exit 0
+} elseif ($args -contains 'list') {
+    Write-Output '[]'
+    exit 0
+} else {
+    exit 1
+}
+'@
+    [System.IO.File]::WriteAllText((Join-Path $fakeBin 'gh-impl.ps1'), $ghImpl, $Utf8NoBomTest)
+    $ghCmd = "@echo off`r`npowershell -NoProfile -ExecutionPolicy Bypass -File `"%~dp0gh-impl.ps1`" %*`r`nexit /b %ERRORLEVEL%`r`n"
+    [System.IO.File]::WriteAllText((Join-Path $fakeBin 'gh.cmd'), $ghCmd, $Utf8NoBomTest)
+    $env:PATH = "$fakeBin;$env:PATH"
+
+    Write-Host "  open-pr: default path (regression) vs. override path" -ForegroundColor DarkCyan
+    # A real (throwaway) git repo + a local bare remote, so open-pr's own 'git push -u origin
+    # <branch>' succeeds without touching a real remote.
+    New-Item -ItemType Directory -Path $prBareRemote -Force | Out-Null
+    git init --bare --quiet $prBareRemote 2>&1 | Out-Null
+    New-Item -ItemType Directory -Path (Join-Path $prFixtureRoot '.github') -Force | Out-Null
+    New-Item -ItemType Directory -Path (Join-Path $prFixtureRoot 'scripts\lib') -Force | Out-Null
+    Copy-Item -Path (Join-Path $RepoRoot 'scripts\lib\branch-info.ps1') -Destination (Join-Path $prFixtureRoot 'scripts\lib\branch-info.ps1') -Force
+    $prEntryContent = @'
+### Open-PR 101 test - Feat - 2026-07-21
+
+This is the test description text.
+'@
+    [System.IO.File]::WriteAllText((Join-Path $prFixtureRoot 'feat-openpr-101-test.md'), $prEntryContent, $Utf8NoBomTest)
+
+    Set-Location $prFixtureRoot
+    git init --quiet 2>&1 | Out-Null
+    git config user.email 'tycho@test.local' 2>&1 | Out-Null
+    git config user.name 'Tycho Test' 2>&1 | Out-Null
+    git remote add origin $prBareRemote 2>&1 | Out-Null
+    git add -A 2>&1 | Out-Null
+    git commit --quiet -m 'initial' 2>&1 | Out-Null
+    git branch -M main 2>&1 | Out-Null
+    git push --quiet -u origin main 2>&1 | Out-Null
+    git checkout --quiet -b $prBranch 2>&1 | Out-Null
+
+    $env:CLAUDE_PROJECT_DIR = $prFixtureRoot
+    $env:GH_ARGS_CAPTURE = $prArgsCapture
+    $env:GH_BODY_CAPTURE = $prBodyCapture
+
+    # Scenario A: default path -- no repo-config overrides defined (today's behavior, unchanged).
+    Copy-Item -Path (Join-Path $RepoRoot 'scripts\repo-config.ps1') -Destination (Join-Path $prFixtureRoot 'scripts\repo-config.ps1') -Force
+    Copy-Item -Path (Join-Path $RepoRoot '.github\pull_request_template.md') -Destination (Join-Path $prFixtureRoot '.github\pull_request_template.md') -Force
+    Remove-Item -Path $prArgsCapture, $prBodyCapture -Force -ErrorAction SilentlyContinue
+    $codeA = $null
+    (& powershell -NoProfile -ExecutionPolicy Bypass -File $openPrSrc -Title 'feat-openpr-101-test' -SkipLint -SkipTests 2>&1 | Out-String) | Out-Null
+    $codeA = $LASTEXITCODE
+    Assert-Equal 0 $codeA 'default path: open-pr exits 0'
+    $argsA = if (Test-Path $prArgsCapture) { Get-Content -Path $prArgsCapture -Raw } else { '' }
+    $bodyA = if (Test-Path $prBodyCapture) { Get-Content -Path $prBodyCapture -Raw } else { '' }
+    Assert-True ($argsA -ne '') 'default path: fake gh pr create was invoked'
+    Assert-True ($argsA -notmatch '--assignee') 'default path: no --assignee passed (no repo-config override)'
+    Assert-True ($argsA -notmatch '--milestone') 'default path: no --milestone passed (no repo-config override)'
+    Assert-True ($bodyA -match 'This is the test description text\.') 'default path: description filled in from the changelog entry'
+    Assert-True ($bodyA -notmatch '<!-- Short description of what changes and why') 'default path: description placeholder was replaced'
+    Assert-True ($bodyA -match '- \[x\] `feat/`') 'default path: type-of-change box ticked'
+    Assert-True ($bodyA -match '- \[x\] Changelog entry file created') 'default path: changelog-entry checklist item ticked'
+    Assert-True ($bodyA -match '- \[x\] Requested by Dave') 'default path: approval checklist item ticked (default pattern)'
+
+    # Scenario B: override path -- repo-config defines all four optional #101 functions.
+    $rcOverride = @'
+$script:RepoName = 'DaveKJohn/davekjohns-workshop'
+function Get-RepoName { return $script:RepoName }
+function Get-RepoBlobUrl { return "https://github.com/$($script:RepoName)/blob/main/" }
+$script:LintScript = 'scripts\lint\check-plugin-integrity.ps1'
+function Get-LintScript { return $script:LintScript }
+function Get-PrDescriptionPlaceholder { return @('<!-- CUSTOM PLACEHOLDER TEXT -->') }
+function Get-PrApprovalPattern { return '^- \[ \] Custom approval line' }
+function Get-PrAssignee { return 'octocat' }
+function Get-PrMilestone { return 'v9.9.9' }
+'@
+    [System.IO.File]::WriteAllText((Join-Path $prFixtureRoot 'scripts\repo-config.ps1'), $rcOverride, $Utf8NoBomTest)
+    $templateOverride = @'
+## What does this change do?
+<!-- CUSTOM PLACEHOLDER TEXT -->
+
+## Type of change
+- [ ] `feat/` custom marker
+
+## Checklist
+- [ ] Changelog entry file created (`<branch-name>.md` in the repo root)
+
+## Explicit approval
+- [ ] Custom approval line here
+'@
+    [System.IO.File]::WriteAllText((Join-Path $prFixtureRoot '.github\pull_request_template.md'), $templateOverride, $Utf8NoBomTest)
+    Remove-Item -Path $prArgsCapture, $prBodyCapture -Force -ErrorAction SilentlyContinue
+    (& powershell -NoProfile -ExecutionPolicy Bypass -File $openPrSrc -Title 'feat-openpr-101-test' -SkipLint -SkipTests 2>&1 | Out-String) | Out-Null
+    $codeB = $LASTEXITCODE
+    Assert-Equal 0 $codeB 'override path: open-pr exits 0'
+    $argsB = if (Test-Path $prArgsCapture) { Get-Content -Path $prArgsCapture -Raw } else { '' }
+    $bodyB = if (Test-Path $prBodyCapture) { Get-Content -Path $prBodyCapture -Raw } else { '' }
+    Assert-True ($argsB -match '--assignee') 'override path: --assignee passed through to gh pr create'
+    Assert-True ($argsB -match 'octocat') 'override path: assignee value from Get-PrAssignee used'
+    Assert-True ($argsB -match '--milestone') 'override path: --milestone passed through to gh pr create'
+    Assert-True ($argsB -match 'v9\.9\.9') 'override path: milestone value from Get-PrMilestone used'
+    Assert-True ($bodyB -notmatch '<!-- CUSTOM PLACEHOLDER TEXT -->') 'override path: custom description placeholder was replaced (override function actually used)'
+    Assert-True ($bodyB -match 'This is the test description text\.') 'override path: description still filled in from the changelog entry'
+    Assert-True ($bodyB -match '- \[x\] Custom approval line') 'override path: custom approval pattern (Get-PrApprovalPattern) ticked the custom checklist line'
+
+    Write-Host "  fold-changelog-entry: -RepoRoot override vs. default path" -ForegroundColor DarkCyan
+    $changelogSkeleton = @'
+# Changelog
+
+## Pull Requests
+
+## Releases
+'@
+    $rcMinimal = @'
+$script:RepoName = 'DaveKJohn/davekjohns-workshop'
+function Get-RepoName { return $script:RepoName }
+'@
+    $targetEntryContent = @'
+### Fold RepoRoot Test - Chore - 2026-07-21
+
+Testing the -RepoRoot parameter.
+'@
+    $decoyChangelog = @'
+# Changelog
+
+## Pull Requests
+DECOY-MARKER-MUST-STAY
+
+## Releases
+'@
+    $decoyEntryContent = @'
+### DECOY entry - must not be touched - Chore - 2026-07-21
+
+Decoy body.
+'@
+    $defaultEntryContent = @'
+### Fold Default Path Test - Chore - 2026-07-21
+
+Testing the default (no -RepoRoot) path.
+'@
+
+    # Scenario C: -RepoRoot wins over the ambient CLAUDE_PROJECT_DIR (a decoy tree) -- the decoy
+    # tree's CHANGELOG.md and entry file must come out byte-identical, unfolded/unremoved.
+    New-Item -ItemType Directory -Path (Join-Path $foldTarget 'scripts') -Force | Out-Null
+    [System.IO.File]::WriteAllText((Join-Path $foldTarget 'CHANGELOG.md'), $changelogSkeleton, $Utf8NoBomTest)
+    [System.IO.File]::WriteAllText((Join-Path $foldTarget 'scripts\repo-config.ps1'), $rcMinimal, $Utf8NoBomTest)
+    [System.IO.File]::WriteAllText((Join-Path $foldTarget 'chore-fold-reporoot-test.md'), $targetEntryContent, $Utf8NoBomTest)
+
+    New-Item -ItemType Directory -Path (Join-Path $foldDecoy 'scripts') -Force | Out-Null
+    [System.IO.File]::WriteAllText((Join-Path $foldDecoy 'CHANGELOG.md'), $decoyChangelog, $Utf8NoBomTest)
+    [System.IO.File]::WriteAllText((Join-Path $foldDecoy 'scripts\repo-config.ps1'), $rcMinimal, $Utf8NoBomTest)
+    [System.IO.File]::WriteAllText((Join-Path $foldDecoy 'chore-fold-reporoot-test.md'), $decoyEntryContent, $Utf8NoBomTest)
+
+    $env:CLAUDE_PROJECT_DIR = $foldDecoy  # ambient context -- -RepoRoot must win over this
+    (& powershell -NoProfile -ExecutionPolicy Bypass -File $foldSrc -Branch $foldBranch -RepoRoot $foldTarget 2>&1 | Out-String) | Out-Null
+    $rrCode = $LASTEXITCODE
+    Assert-Equal 0 $rrCode '-RepoRoot: fold exits 0'
+    $targetChangelogAfter = Get-Content -Path (Join-Path $foldTarget 'CHANGELOG.md') -Raw
+    Assert-True ($targetChangelogAfter -match 'Fold RepoRoot Test') "-RepoRoot: the TARGET tree's CHANGELOG.md received the folded entry"
+    Assert-True (-not (Test-Path (Join-Path $foldTarget 'chore-fold-reporoot-test.md'))) '-RepoRoot: the entry file was removed from the TARGET tree'
+    $decoyChangelogAfter = Get-Content -Path (Join-Path $foldDecoy 'CHANGELOG.md') -Raw
+    Assert-Equal $decoyChangelog $decoyChangelogAfter "-RepoRoot: the DECOY (ambient CLAUDE_PROJECT_DIR) tree's CHANGELOG.md is untouched"
+    Assert-True (Test-Path (Join-Path $foldDecoy 'chore-fold-reporoot-test.md')) "-RepoRoot: the DECOY tree's entry file still exists (not removed)"
+    $decoyEntryAfter = Get-Content -Path (Join-Path $foldDecoy 'chore-fold-reporoot-test.md') -Raw
+    Assert-Equal $decoyEntryContent $decoyEntryAfter "-RepoRoot: the DECOY tree's entry file content is unchanged"
+
+    # Scenario D: default path (regression) -- no -RepoRoot, falls back to CLAUDE_PROJECT_DIR
+    # exactly like before #101.
+    New-Item -ItemType Directory -Path (Join-Path $foldDefault 'scripts') -Force | Out-Null
+    [System.IO.File]::WriteAllText((Join-Path $foldDefault 'CHANGELOG.md'), $changelogSkeleton, $Utf8NoBomTest)
+    [System.IO.File]::WriteAllText((Join-Path $foldDefault 'scripts\repo-config.ps1'), $rcMinimal, $Utf8NoBomTest)
+    [System.IO.File]::WriteAllText((Join-Path $foldDefault 'chore-fold-reporoot-test.md'), $defaultEntryContent, $Utf8NoBomTest)
+    $env:CLAUDE_PROJECT_DIR = $foldDefault
+    (& powershell -NoProfile -ExecutionPolicy Bypass -File $foldSrc -Branch $foldBranch 2>&1 | Out-String) | Out-Null
+    $defCode = $LASTEXITCODE
+    Assert-Equal 0 $defCode 'default path (no -RepoRoot): fold exits 0'
+    $defChangelogAfter = Get-Content -Path (Join-Path $foldDefault 'CHANGELOG.md') -Raw
+    Assert-True ($defChangelogAfter -match 'Fold Default Path Test') 'default path (no -RepoRoot): CLAUDE_PROJECT_DIR tree received the folded entry'
+    Assert-True (-not (Test-Path (Join-Path $foldDefault 'chore-fold-reporoot-test.md'))) 'default path (no -RepoRoot): entry file removed'
+} finally {
+    $ErrorActionPreference = $prevEapShared
+    Set-Location -Path $prevLoc
+    if ($null -eq $prevPd) { Remove-Item Env:\CLAUDE_PROJECT_DIR -ErrorAction SilentlyContinue } else { $env:CLAUDE_PROJECT_DIR = $prevPd }
+    Remove-Item Env:\GH_ARGS_CAPTURE -ErrorAction SilentlyContinue
+    Remove-Item Env:\GH_BODY_CAPTURE -ErrorAction SilentlyContinue
+    $env:PATH = $prevPath1
+    Remove-Item -Path $fakeBin -Recurse -Force -ErrorAction SilentlyContinue
+    Remove-Item -Path $prArgsCapture, $prBodyCapture -Force -ErrorAction SilentlyContinue
+    Remove-Item -Path $prFixtureRoot -Recurse -Force -ErrorAction SilentlyContinue
+    Remove-Item -Path $prBareRemote -Recurse -Force -ErrorAction SilentlyContinue
+    Remove-Item -Path $foldTarget -Recurse -Force -ErrorAction SilentlyContinue
+    Remove-Item -Path $foldDecoy -Recurse -Force -ErrorAction SilentlyContinue
+    Remove-Item -Path $foldDefault -Recurse -Force -ErrorAction SilentlyContinue
+}
+
 Write-Host ""
 if ($script:fail -gt 0) {
     Write-Host "FAILS: $($script:fail) failed, $($script:pass) passed." -ForegroundColor Red

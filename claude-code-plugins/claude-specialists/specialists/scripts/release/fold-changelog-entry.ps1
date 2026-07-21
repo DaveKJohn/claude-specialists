@@ -12,13 +12,19 @@ no number/url is added and the heading stays without #NN.
 Usage:
   .\scripts\release\fold-changelog-entry.ps1 -Branch feat/new-plugin
   .\scripts\release\fold-changelog-entry.ps1              # folds all present entry files
+  .\scripts\release\fold-changelog-entry.ps1 -RepoRoot C:\path\to\worktree   # explicit root (#101)
 
 Run this on main, right after merging a branch (after Dave has approved the merge).
 Commit the result (CHANGELOG.md + removed entry files) directly to main afterward.
 #>
 
 param(
-    [string]$Branch
+    [string]$Branch,
+    # #101: explicit override of the repo root, for a consumer that runs the fold from a
+    # temporary/detached worktree (e.g. a ship-pr.ps1 that checks out main elsewhere) and wants to
+    # write to that tree instead of whatever CLAUDE_PROJECT_DIR/git-root would resolve to. Default
+    # (omitted): unchanged behavior below.
+    [string]$RepoRoot
 )
 
 $ErrorActionPreference = "Stop"
@@ -27,7 +33,12 @@ $ErrorActionPreference = "Stop"
 # supplies its repo root; in the workshop root (or outside a session) it falls back to the git
 # root. This way the SAME file works in both locations, and the root copy and the plugin mirror
 # stay byte-identical (guarded by the shared-scripts drift lint).
-$repoRoot = if ($env:CLAUDE_PROJECT_DIR) { $env:CLAUDE_PROJECT_DIR } else { (git rev-parse --show-toplevel).Trim() }
+# -RepoRoot (#101), when supplied, wins over both -- see the param comment above. Note: PowerShell
+# variable names are case-insensitive, so $RepoRoot (the param) and $repoRoot (used below) are the
+# same variable; the guard below only computes the dual-context fallback when it is still empty.
+if (-not $repoRoot) {
+    $repoRoot = if ($env:CLAUDE_PROJECT_DIR) { $env:CLAUDE_PROJECT_DIR } else { (git rev-parse --show-toplevel).Trim() }
+}
 Set-Location $repoRoot
 
 # Pre-flight (#86): fold relies on scripts\repo-config.ps1 in the consumer's repo root. If that is
