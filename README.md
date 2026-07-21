@@ -37,6 +37,35 @@ signaling) and `roster-sessioncheck` (roster-drift signaling; see the
 [connectors README](claude-code-plugins/claude-specialists/connectors/README.md)); domain groups
 2/3 may carry domain skills that a repo shares.
 
+### Repo layout
+
+The full picture, top-level folder by folder:
+
+- **`.claude-plugin/marketplace.json`** — the marketplace definition: the plugins with their `source`.
+- **`claude-code-plugins/`** — the home of the plugin families (the bullets above cover each
+  plugin's `agents/`/`manuals/`/`personas/`/skills; each plugin also carries its own
+  `.claude-plugin/plugin.json`, `CHANGELOG.md`, and consumer-facing `RELEASE.md` card — see
+  [Versioning](#versioning) and [Consumption](#consumption)). Next to the plugin folders — deliberately *not* inside them, so it
+  doesn't travel along with the plugin cache — live `connectors/` (the register of which repos have
+  each plugin installed and whether they are in sync; doctrine + format in the
+  [connectors README](claude-code-plugins/claude-specialists/connectors/README.md)) and
+  `agent-shared/` (the canonical source of the shared blocks, see
+  [Shared agent-def blocks](#shared-agent-def-blocks--one-source-for-the-verbatim-boundaries) below).
+- **`scripts/lib/`, `scripts/lint/`, `scripts/release/`, `scripts/sync/`, `scripts/agents/`,
+  `scripts/tests/`** — the shared helpers (`branch-info.ps1`, `release-lib.ps1`,
+  `agent-shared-lib.ps1`), the lint gate + drift check, the changelog/PR/release scripts (incl.
+  `cut-release.ps1`), the connectors check (`check-connectors.ps1`), the agent-def generator
+  (`build-agent-defs.ps1` — fills in the shared blocks from `agent-shared/`), and the tests.
+- **`releases/`** — the release history: `development/<X.Y>/<X.Y.Z>.md` (full notes per version) +
+  `README.md` (overview table) — see [Cutting a release](#cutting-a-release). The `## Releases`
+  section of `CHANGELOG.md` points here.
+- **`.claude/`** — the repo layer: `plugins/claude-specialists/` (the repo lenses + persona manuals
+  in `specialists/` on the **plugin path** — the standard location — and the Specialists handbook
+  `README.md` next to them), and `settings.json` (harness config; see [Consumption](#consumption)).
+- **`CLAUDE.md`, `README.md`, `CHANGELOG.md`** — the root docs — and **`.github/`**
+  (`pull_request_template.md` + `workflows/ci.yml`, the CI gate that runs the lint + test suites on
+  every PR and push to `main`; see [Contributing](#contributing--changelog--pr-workflow)).
+
 ### Manuals — the split model
 
 A specialist handbook splits into a **portable** part (repo-neutral, identical in every repo: the
@@ -84,9 +113,9 @@ those blocks in **one place** instead of in every agent def, a **build-and-lint*
   check 7) fails as soon as a marked region deviates from its source (a hand edit or a forgotten
   rebuild), just like the drift lint for consumers.
 
-Current blocks: `inbound-behaviour` (19 agent defs), `webcontent-boundary` (3), and `artifact-publishing-boundary`
-(2). This way changing a shared boundary costs one edit + one build, not 19 manual
-changes.
+Current blocks: `inbound-behaviour`, `laziness-automation`, `language-behavior`, `webcontent-boundary`,
+`artifact-publishing-boundary`, and `browser-compatibility`. This way changing a shared boundary costs
+one edit + one build, not a manual change in every agent def that carries it.
 
 ## Consumption
 

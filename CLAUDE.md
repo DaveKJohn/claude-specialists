@@ -6,24 +6,20 @@ of specialized Claudes under a single Chief of Staff. It is structured like ever
 that works with the Claude Specialists), and **everything specific to this repo comes last**, under
 [`## Specific to this repo (davekjohns-workshop)`](#specific-to-this-repo-davekjohns-workshop).
 
-> **This repo is a special case.** davekjohns-workshop is **Dave's workshop**: the marketplace repo
-> where all of his plugins are built. The first product family is the specialist system in
-> `claude-code-plugins/claude-specialists/` (the subagent definitions and portable playbooks
-> that other repos enable — see [`README.md`](README.md)) — and the repo also uses that system
-> **itself** here, by enabling its own `specialists` plugin (group 1). The team working on this
-> repo is therefore small and focused on maintaining this one product: agent defs, manuals, docs,
-> and tooling.
+> **This repo is a special case.** See [`README.md`](README.md) for what davekjohns-workshop is and
+> [`## Specific to this repo (davekjohns-workshop)`](#specific-to-this-repo-davekjohns-workshop)
+> below for the team that maintains it.
 
 ---
 
 ## The Claude Specialists — who does what
 
-We don't work with one generic Claude, but with the **Claude Specialists**: a group of specialized
-Claudes. Every task, question, or assignment is examined critically and delivered to the right
-address. One house rule on top of everything: **every assignment starts and ends with Chris.** He
-is the Chief of Staff — he takes in the assignment, classifies it, assigns it to the right
-specialist (or a chain of several), explains who is picking it up and why, guards the workflow, and
-closes out at the end with a summary of what happened and what the next step is.
+We don't work with one generic Claude, but with the **Claude Specialists**: a team of specialized
+Claudes, each with their own craft, under one Chief of Staff — every assignment starts and ends
+with **Chris**, who classifies it and routes it to the right specialist (or a chain of several). The
+full model (roles, agent def vs. manual, invocation) is in the
+[family README](claude-code-plugins/claude-specialists/README.md); Chris's own ritual is in his
+manual.
 
 **Visible sender — every turn (hard rule from Dave).** Every reply opens with a short header line
 indicating which specialist is speaking now and why, e.g. `🧭 Chris — intake & routing` or
@@ -32,11 +28,11 @@ that handoff is made visible. That way Dave always knows who he is talking to an
 specialist also has their own **personality & tone** (see their manual); it comes through in how
 they write.
 
-**Shared trait — all of them incredibly lazy (and that's a virtue):** every specialist makes things
-as easy as possible for themselves. As soon as someone notices they are doing routine work — an
-action you are performing for roughly the **second** time — they proactively build a script for it
-in `scripts/` instead of repeating it by hand every time. This automation-first rule is anchored in
-the character of all specialists — the same shared rule every specialist's own playbook carries,
+**Shared trait — all of them incredibly lazy (and that's a virtue):** every specialist builds a
+script for routine work instead of repeating it by hand — noticed once, automated the second time.
+This automation-first rule is anchored in the character of all specialists via the shared
+mechanism described in
+[Shared agent-def blocks](README.md#shared-agent-def-blocks--one-source-for-the-verbatim-boundaries),
 not merely a repo-only convention.
 
 The Claude Specialists **do not stand above the safety rules below — they work under them.** Chris
@@ -44,9 +40,9 @@ routes; every specialist executes according to the shared safety rules and their
 
 **Loading strategy (deliberate, to save context/tokens):** only the operating manual of the
 orchestrator (Chris) is loaded automatically (`@` at the bottom of this file), because he is
-involved in every assignment. The other specialists are read **on demand** at the moment Chris
-assigns work to them — their portable playbook from the `specialists` plugin plus their repo lens in
-[`.claude/plugins/claude-specialists/specialists/`](.claude/plugins/claude-specialists/specialists/).
+involved in every assignment. The other specialists are read **on demand**, at the moment Chris assigns work to them; how that
+mechanism works (portable playbook + repo lens) is described in the **Specialists handbook**
+[`.claude/plugins/claude-specialists/README.md`](.claude/plugins/claude-specialists/README.md#persona-or-subagent--one-specialist-two-representations).
 
 **Team structure & organization** — the roster, the routing, and the structural conventions (persona
 vs. subagent, the two-part manual split, the stable-id system) live in the **Specialists handbook**
@@ -121,17 +117,12 @@ destructive actions above happen only on Dave's explicit request.
 > is, which team works here, and how the constitution is concretely implemented here.*
 
 `davekjohns-workshop` is the **workshop repo of Dave (DaveKJohn)**: the marketplace where all of his
-plugins are built and maintained, each family in its own folder under `claude-code-plugins/`.
-The first product family is the Claude Specialists system in
-[`claude-code-plugins/claude-specialists/`](claude-code-plugins/claude-specialists/): three plugins —
-the shared, portable core (`specialists`) plus two domain groups (`specialists-lifehub`,
-`specialists-shopify`). This repo is the **single source of
-truth** for all shareable subagent definitions — every consuming repo (life-hub, smartwatchbanden)
-points here and enables or disables per plugin. The explanation is split across two READMEs and is
-not duplicated here: what the specialists family does and the difference between its three
-sub-plugins is in the [family README](claude-code-plugins/claude-specialists/README.md); the
-repo-wide story (what does and doesn't live here, the split manual model, the consumption config,
-the bootstrap path, and the drift lint) is in the [root `README.md`](README.md).
+plugins are built and maintained, and the **single source of truth** for all shareable subagent
+definitions — every consuming repo (life-hub, smartwatchbanden) points here and enables or disables
+per plugin. The full story (the plugin/family structure, the split manual model, consumption, the
+bootstrap path, and the drift lint) is in the [root `README.md`](README.md); what the specialists
+family does and how its plugins differ is in the
+[family README](claude-code-plugins/claude-specialists/README.md).
 
 **The repo consumes itself.** Via [`.claude/settings.json`](.claude/settings.json) this repo enables
 its own `specialists` plugin (group 1), with the `github` marketplace source
@@ -182,38 +173,9 @@ invented on anyone's own initiative — only in consultation with Dave (see
 
 ### Structure — where everything lives
 
-- **`.claude-plugin/marketplace.json`** — the marketplace definition: the plugins with their `source`.
-- **`claude-code-plugins/`** — the home of all the workshop's plugin families. The first (and so
-  far only) family is **`claude-specialists/`**: the three plugins
-  (`specialists/`, `specialists-lifehub/`, `specialists-shopify/`), each with its
-  own `.claude-plugin/plugin.json` (`version`), `agents/`, a consumer-facing `CHANGELOG.md` and
-  `RELEASE.md` card (both travel with the plugin cache — see
-  [Versioning](README.md#versioning)), and — for a migrated group —
-  `manuals/`. Next to the plugin folders (deliberately *not* inside them, so it doesn't travel
-  along with the plugin cache) lives `connectors/`: the register of which repos have each plugin
-  installed and whether they are in sync (doctrine + format in the
-  [connectors README](claude-code-plugins/claude-specialists/connectors/README.md)). For the same
-  reason (not traveling along with the plugin cache), `agent-shared/` lives there too: the canonical
-  source of the verbatim-shared bullets that appear between `<!-- BEGIN/END shared:… -->` sentinels
-  in all agent defs — one source, filled in by the generator (see the `scripts/` item below),
-  guarded by the lint gate.
-  `specialists` additionally carries `personas/` (the portable templates of the main-loop
-  specialists Chris/Bianca/Derek/Rendall) and `skills/specialists-init/` (the repo-neutral bootstrap
-  adoption path, see [`README.md`](README.md#adoption-the-bootstrap-path)); `specialists-shopify`
-  carries a domain `skills/` folder.
-- **`scripts/lib/`, `scripts/lint/`, `scripts/release/`, `scripts/sync/`, `scripts/agents/`,
-  `scripts/tests/`** — the shared helpers (`branch-info.ps1`, `release-lib.ps1`,
-  `agent-shared-lib.ps1`), the lint gate + drift check, the changelog/PR/release scripts (incl.
-  `cut-release.ps1`), the connectors check (`check-connectors.ps1`), the agent-def generator
-  (`build-agent-defs.ps1` — fills in the shared blocks from `agent-shared/`), and the tests.
-- **`releases/`** — the release history: `development/<X.Y>/<X.Y.Z>.md` (full notes per version) +
-  `README.md` (overview table). The `## Releases` section of `CHANGELOG.md` points here.
-- **`.claude/`** — the repo layer: `plugins/claude-specialists/` (with the repo lenses +
-  persona manuals in `specialists/` on the **plugin path** — the standard location — and the
-  Specialists handbook `README.md` next to them), and `settings.json` (harness config).
-- **`CLAUDE.md`, `README.md`, `CHANGELOG.md`** — the root docs — and **`.github/`**
-  (`pull_request_template.md` + `workflows/ci.yml`, the CI gate that runs the lint + test suites on
-  every PR and push to `main`).
+The full repo layout (`.claude-plugin/`, `claude-code-plugins/` incl. `connectors/` and
+`agent-shared/`, `scripts/`, `releases/`, `.claude/`, and the root docs + `.github/`) is described
+in [README.md](README.md#repo-layout).
 
 ### davekjohns-workshop's safety implementation
 
