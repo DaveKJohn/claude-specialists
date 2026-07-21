@@ -169,6 +169,7 @@ specialist's repo lens lives in [`.claude/plugins/claude-specialists/specialists
 | **Victor** 🧐 #19 | Code Reviewer | Independent code review before a merge: correctness, simplicity, reuse, efficiency | [`06-19-extension.md`](.claude/plugins/claude-specialists/specialists/06-19-extension.md) |
 | **Sean** 🛡️ #23 | Security Engineer | Independent security review before a merge: secrets/PII, injection surface, guardrail audits | [`06-23-extension.md`](.claude/plugins/claude-specialists/specialists/06-23-extension.md) |
 | **Ravi** ♻️ #24 | Refactoring Specialist | Duplication watchdog: tracks down verbatim-shared behavioral rules (boundaries/working practices) across agent defs and personas and promotes them to a single shared source for the circle that shares the rule | [`06-24-extension.md`](.claude/plugins/claude-specialists/specialists/06-24-extension.md) |
+| **Nolan** ⚡ #25 | Performance Engineer | Measures and trims token/context budget: loading strategy, the size of agent defs/manuals/personas, and redundant or double-loaded context | [`06-25-extension.md`](.claude/plugins/claude-specialists/specialists/06-25-extension.md) |
 
 The full routing (which assignment goes to whom) and the chains are in
 [Chris's manual #01](.claude/plugins/claude-specialists/specialists/01-01-extension.md) and the
