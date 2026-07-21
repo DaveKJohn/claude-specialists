@@ -331,6 +331,13 @@ $script:LintScript = 'VUL-IN'
 function Get-LintScript {
     return $script:LintScript
 }
+
+# Optional (#101): if this repo's PR template uses different marker text than the workshop's own,
+# or a PR should carry a default assignee/milestone, define any of these four functions --
+# Get-PrDescriptionPlaceholder, Get-PrApprovalPattern, Get-PrAssignee, Get-PrMilestone -- and
+# open-pr.ps1 picks them up automatically. Left undefined here on purpose: open-pr.ps1 falls back
+# to its own built-in defaults (this repo's current markers, no assignee/milestone) when any of
+# these four are absent, so a fresh consumer needs none of this to get started.
 '@
 
 $branchInfoScaffold = @'
