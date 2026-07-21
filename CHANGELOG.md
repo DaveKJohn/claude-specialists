@@ -9,6 +9,16 @@ folden) staat in [`README.md`](README.md#contributing--changelog--pr-workflow).
 Alles wat sinds de laatste release naar `main` is gemergd — nieuwste bovenaan, één blok per pull
 request.
 
+### #117 · English names for agent-shared blocks + script-comment translations · Docs · 2026-07-21
+
+Completed the in-progress English-norm cleanup of the agent-shared machinery. Renamed the four verbatim-shared source blocks to English file names (`grens-inbound` → `inbound-behaviour`, `gedrag-taalkeuze` → `language-behavior`, `grens-webcontent` → `webcontent-boundary`, `grens-artifact-publish` → `artifact-publishing-boundary`) and pulled the whole chain along: the `shared:<name>` sentinels in all 21 agent defs across the three plugins, the generator-lib docstring, and the current-doc references in `README.md` and Ravi's lens. Also folded in the NL→EN comment translation of `connector-sessioncheck.ps1` and `bootstrap.ps1`. Functional/canonical markers deliberately keep their original form per the language convention's technical-identifier exception — the `VUL-IN` scaffold sentinel and a couple of marker phrases the drift tests key on stay as-is. History (`CHANGELOG.md` files, `releases/`) is left untouched. Generator, lint (0 errors), and all test suites are green.
+
+Plugins: agent-shared, specialists, specialists-lifehub, specialists-shopify
+
+[PR #117](https://github.com/DaveKJohn/davekjohns-workshop/pull/117)
+
+---
+
 ### #116 · Add Nolan #25, the Performance Engineer (token/context frugality) · Feat · 2026-07-21
 
 Added a new portable specialist to the Claude Specialists: **Nolan ⚡ #25 — Performance Engineer** (`@specialists:nolan`, stable id `06-25`, group 06). Nolan is a measure-and-advise role for token/context frugality: he measures what each session, agent def, manual, and loading chain costs, and proposes where it can come down without losing function. He reports findings and does not commit, edit, or open PRs himself — execution runs through Ravi #24 (DRY dedup), Sylvester #15 (harness/config), and Tessa #16 (doc-text rewrite). New portable manual (`manuals/06-25-manual.md`) and agent def (`agents/06-25-agent.md`) on the plugin side, a davekjohns-workshop repo lens (`06-25-extension.md`), and roster/routing updates in `CLAUDE.md`, Chris's lens, and the Specialists handbook.
