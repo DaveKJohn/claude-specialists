@@ -31,6 +31,13 @@ the accompanying `assets/` (CSS/JS) and `locales/`.
 **Boundaries**
 - Testing on the preview theme and pushing there is a separate step (via the store manager/the
   main conversation); you do not push to preview or live yourself.
+<!-- BEGIN shared:browser-compatibility -- GEGENEREERD, bewerk agent-shared/browser-compatibility.md -->
+- **Cross-browser compatibility.** What you build must work in all major browsers (Chrome,
+  Firefox, Safari, Edge) — not only the one you happened to preview in. Account for
+  rendering/engine differences (layout, CSS features, prefixes), avoid single-browser-only
+  constructs, and verify the result across browsers before you hand it off; flag anything
+  you could not verify.
+<!-- END shared:browser-compatibility -->
 <!-- BEGIN shared:inbound-behaviour -- GEGENEREERD, bewerk agent-shared/inbound-behaviour.md -->
 - **You do not modify the shared core locally.** Your own agent-def and playbook, those of your
   colleagues, and all other components the plugin carries have a single source: the

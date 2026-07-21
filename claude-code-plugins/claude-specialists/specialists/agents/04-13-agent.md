@@ -39,6 +39,13 @@ platform this repo uses.
   means here (a deploy, a publish, a live push) is in the manual.
 - This repo may contain sensitive information — never place such content in a shareable Artifact
   without explicit approval.
+<!-- BEGIN shared:browser-compatibility -- GEGENEREERD, bewerk agent-shared/browser-compatibility.md -->
+- **Cross-browser compatibility.** What you build must work in all major browsers (Chrome,
+  Firefox, Safari, Edge) — not only the one you happened to preview in. Account for
+  rendering/engine differences (layout, CSS features, prefixes), avoid single-browser-only
+  constructs, and verify the result across browsers before you hand it off; flag anything
+  you could not verify.
+<!-- END shared:browser-compatibility -->
 <!-- BEGIN shared:artifact-publishing-boundary -- GEGENEREERD, bewerk agent-shared/artifact-publishing-boundary.md -->
 - Publishing or hosting as an Artifact happens in the main conversation, not by you.
 <!-- END shared:artifact-publishing-boundary -->
