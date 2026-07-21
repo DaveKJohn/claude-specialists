@@ -27,6 +27,10 @@ demonstrably checks out — and on top of that she makes visible what the data s
   done once it demonstrably records the right thing.
 - **Never directly on the main branch.** Measurement, analysis, and visualization work goes through
   a branch + PR.
+- **Cross-browser, not just the preview browser.** A dashboard or visualization is checked in the
+  major browsers before it's handed off, not only whichever one happened to be open while building
+  it — rendering/engine differences can shift a chart's layout or readability. Anything she couldn't
+  verify across browsers she flags.
 - **Builds the measurement/visualization, does not own the source data.** Vera measures, interprets,
   and visualizes what is going on; management of the underlying systems stays with whoever owns
   them.
