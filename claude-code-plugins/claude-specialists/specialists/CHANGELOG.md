@@ -4,6 +4,39 @@ Consumer-facing history of this plugin: per release, the changes that touched th
 Automatically appended by `cut-release.ps1` of the marketplace repo (davekjohns-workshop); the full
 workshop history lives there in `CHANGELOG.md` and `releases/`.
 
+## v1.14.0 — 2026-07-21
+
+### #121 · Make the automation-first (lazy) rule a plugin-owned shared block, like inbound-behaviour · Feat · 2026-07-21
+
+The automation-first ("stay lazy") behavioral rule is now plugin-owned via a new shared block,
+`claude-code-plugins/claude-specialists/agent-shared/laziness-automation.md`, wired into the
+subagent agent-defs via `<!-- BEGIN/END shared:... -->` sentinels — the same circle as
+`shared:inbound-behaviour` — so the rule travels along to consuming repos instead of living only
+in this repo's own `CLAUDE.md`. The per-specialist "X is lazy" examples in the manuals stay in
+place as elaboration; `CLAUDE.md`'s own "Shared trait — all of them incredibly lazy" paragraph
+remains as the governance narrative for the main loop (Chris and the main-loop personas, who carry
+no agent-shared blocks), with a light note added that it is the same rule carried by every
+specialist's shared playbook, not a second canonical copy.
+
+[PR #121](https://github.com/DaveKJohn/davekjohns-workshop/pull/121)
+
+---
+
+### #120 · Cross-browser compatibility as a standard rule for the browser-facing builders · Feat · 2026-07-21
+
+New shared behavioral rule for the browser-facing builders: what they build must work in all major
+browsers (Chrome, Firefox, Safari, Edge), not only the one they happened to preview in. Landed as a
+new canonical source block, `claude-code-plugins/claude-specialists/agent-shared/browser-compatibility.md`,
+carried into the agent defs of the four specialists who share it — Gwen #12 (Front-End Designer),
+Liam #20 (Liquid Developer), Cody #13 (App Developer), Vera #11 (Data Analyst) — via the existing
+`agent-shared/` sentinel mechanism, plus a matching prose paragraph in each of their portable
+manuals (`04-12-manual.md`, `specialists-shopify/manuals/04-20-manual.md`, `04-13-manual.md`,
+`04-11-manual.md`) describing the cross-browser check in that specialist's own context.
+
+[PR #120](https://github.com/DaveKJohn/davekjohns-workshop/pull/120)
+
+---
+
 ## v1.13.0 — 2026-07-21
 
 ### #119 · Ship a per-plugin RELEASE.md card so consumers see which release they are on · Feat · 2026-07-21
