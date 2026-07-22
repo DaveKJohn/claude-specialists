@@ -9,6 +9,18 @@ folding) is described in [`README.md`](README.md#contributing--changelog--pr-wor
 Everything merged to `main` since the last release — newest at the top, one block per pull
 request.
 
+### #137 · document the wait-for-CI step before merge (Chris lens + README) · Docs · 2026-07-22
+
+The PR flow (Chris's lens 01-01-extension.md + README "Contributing" step 4) described the chain as
+"open -> merge -> fold" without noting that branch protection on `main` blocks the merge until the
+required CI check `lint-en-tests` is green -- a merge attempt before then returns BLOCKED. Someone
+following the chain literally would try to merge immediately and get stuck. Added the explicit
+"wait for CI green before merge" step in both places.
+
+[PR #137](https://github.com/DaveKJohn/davekjohns-workshop/pull/137)
+
+---
+
 ### #136 · ship-pr.ps1: open PR -> wait for CI -> merge -> fold in one command · Feat · 2026-07-22
 
 Adds `scripts/release/ship-pr.ps1`, which orchestrates the whole "on Dave's word" PR chain that was
