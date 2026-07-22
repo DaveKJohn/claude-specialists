@@ -9,6 +9,21 @@ folding) is described in [`README.md`](README.md#contributing--changelog--pr-wor
 Everything merged to `main` since the last release — newest at the top, one block per pull
 request.
 
+### #142 · ship-pr.ps1: wait for the CI check to register before watching/merging · Fix · 2026-07-22
+
+`ship-pr.ps1` (added in #136) called `gh pr checks <pr> --watch` once. But the CI checks can lag a
+few seconds behind the push, and `gh pr checks` prints "no checks reported" and exits 0 while none
+are registered yet -- indistinguishable by exit code from "all passed". So a fast run could sail
+past the watch and hit `gh pr merge`, which branch protection then blocks (BLOCKED); the script
+stopped safely but never actually shipped. Added a registration-wait loop before the watch: poll
+`gh pr checks` (inspecting the TEXT for "no checks reported", not the exit code) until at least one
+check exists, up to a 180s cap, then --watch as before. This is the same race the manual flow
+handled with a re-check. Test gap unchanged (the script drives live git/gh; not covered by a suite).
+
+[PR #142](https://github.com/DaveKJohn/davekjohns-workshop/pull/142)
+
+---
+
 ### #141 · README: note that per-plugin CHANGELOG/RELEASE.md now group by category · Docs · 2026-07-22
 
 The "Cutting a release" section (step 3) predated the grouped-release-output change: it described
