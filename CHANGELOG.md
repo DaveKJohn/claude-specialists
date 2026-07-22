@@ -9,6 +9,17 @@ folding) is described in [`README.md`](README.md#contributing--changelog--pr-wor
 Everything merged to `main` since the last release — newest at the top, one block per pull
 request.
 
+### #138 · README: stale Dutch 'Grenzen' -> 'Boundaries' section name · Docs · 2026-07-22
+
+The "Shared agent-def blocks" section of README.md still referred to the agent-def boundaries
+section by its old Dutch name ("under **Grenzen** (the boundaries section)"). The agent-def section
+labels were migrated to English long ago (they read **Boundaries** / **Working method** now), so the
+reference was stale. Updated to "in the **Boundaries** section".
+
+[PR #138](https://github.com/DaveKJohn/davekjohns-workshop/pull/138)
+
+---
+
 ### #137 · document the wait-for-CI step before merge (Chris lens + README) · Docs · 2026-07-22
 
 The PR flow (Chris's lens 01-01-extension.md + README "Contributing" step 4) described the chain as
