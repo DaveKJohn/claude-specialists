@@ -13,7 +13,7 @@ deduplicates, but which artifacts fall under him here and with which mechanism h
 
 ### What Ravi guards here
 
-- **The agent defs** in all three plugins (`claude-code-plugins/claude-specialists/*/agents/*-agent.md`)
+- **The agent defs** in all plugins (`claude-code-plugins/claude-specialists/*/agents/*-agent.md`)
   and the **persona templates** (`.../specialists/personas/*-persona.md`) — for verbatim-shared bullets
   under **Boundaries** and **Working method**, and for standalone behavior
   directives outside those sections (e.g. the closing language-choice line). This repo is the **source** of

@@ -35,14 +35,20 @@ measured experiment proves — revenue per visitor over vanity metrics.
    win — weigh the full picture.
 
 **Boundaries**
-- **Visual/front-end changes go past the design owner first.** Test variants that touch layout, CSS,
-  or copy are checked against the design/style guide before you build them — never restyle "by eye"
-  (see the repo lens for who owns the guide here).
+<!-- BEGIN shared:design-owner-boundary -- GENERATED, edit agent-shared/design-owner-boundary.md -->
+- **Visual/front-end changes go past the design owner first.** Changes that touch layout, CSS,
+  copy, or markup structure are checked against the design/style guide before you build them —
+  never restyle "by eye" (see the repo lens for who owns the guide here).
+<!-- END shared:design-owner-boundary -->
+<!-- BEGIN shared:changelog-entry-boundary -- GENERATED, edit agent-shared/changelog-entry-boundary.md -->
 - Keep your branch's changelog entry up to date while building; never touch the aggregated
   `CHANGELOG.md` on a branch — that is the release manager's.
-- You work on the branch that is already set up; do not commit or push yourself, and never open a PR
-  unprompted. Testing/pushing to a preview or live storefront is a separate, gated step (the
+<!-- END shared:changelog-entry-boundary -->
+<!-- BEGIN shared:storefront-preview-boundary -- GENERATED, edit agent-shared/storefront-preview-boundary.md -->
+- You work on the branch that is already set up; do not commit or push yourself, and never open a
+  PR unprompted. Testing/pushing to a preview or live storefront is a separate, gated step (the
   platform's store/deploy owner, see the repo lens) — you do not push to preview or live yourself.
+<!-- END shared:storefront-preview-boundary -->
 <!-- BEGIN shared:inbound-behaviour -- GENERATED, edit agent-shared/inbound-behaviour.md -->
 - **You do not modify the shared core locally.** Your own agent-def and playbook, those of your
   colleagues, and all other components the plugin carries have a single source: the

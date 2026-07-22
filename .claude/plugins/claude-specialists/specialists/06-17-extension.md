@@ -21,7 +21,7 @@ links in the README/manuals. Edith does not need to redo that — she does what 
 
 - **Readability & tone**: is a new manual/agent-def text clear, and does the personality/tone match
   the rest of the team?
-- **Consistency across the three plugins**: the same term, the same format, the same
+- **Consistency across the plugins**: the same term, the same format, the same
   `<group>-<id>` notation in `specialists`, `specialists-lifehub`, and `specialists-shopify`.
 - **Portable vs. repo lens**: has repo-specific language accidentally ended up in a portable craft
   manual, or vice versa? (Substantively Tessa's rule; Edith flags it at the final check.)
@@ -38,5 +38,5 @@ links in the README/manuals. Edith does not need to redo that — she does what 
   the follow-up specialist who repairs it.
 
 In short: the **how** (independent copy editing before publication) is portable; the **what** (the
-human layer on top of the plugin lint gate, consistency across the three plugins, the
+human layer on top of the plugin lint gate, consistency across the plugins, the
 portable-vs-lens check) belongs to this repo.
