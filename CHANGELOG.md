@@ -9,6 +9,20 @@ folden) staat in [`README.md`](README.md#contributing--changelog--pr-workflow).
 Alles wat sinds de laatste release naar `main` is gemergd — nieuwste bovenaan, één blok per pull
 request.
 
+### #132 · cut-release uses shared Invoke-NativeCapture (#114 follow-up) · Chore · 2026-07-22
+
+Follow-up to #114 item 1: `cut-release.ps1` now routes its five native git mutations (add, commit,
+tag, push main, push tag) through the shared `Invoke-NativeCapture` helper instead of a hand-rolled
+`ErrorActionPreference = 'Continue'` block with bare `git` calls. Same #107 protection, now from the
+one tested source -- and the deliberate "EAP not restored, this is the last block" special case goes
+away (each call restores EAP itself). Captured git chatter is echoed so a release run stays as
+verbose as before. The sweep guard in `shared-scripts.tests.ps1` was re-pointed from the old inline
+pattern to assert the helper is used.
+
+[PR #132](https://github.com/DaveKJohn/davekjohns-workshop/pull/132)
+
+---
+
 ### #131 · shared Invoke-NativeCapture helper (#114 item 1) · Chore · 2026-07-22
 
 Centralized the native-command stderr-capture pattern (#114 item 1) into a new shared helper
