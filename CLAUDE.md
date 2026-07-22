@@ -150,8 +150,9 @@ everything**, not just docs/manuals/agent-defs:
   release-notes, and per-plugin CHANGELOGs that `scripts/lib/release-lib.ps1` builds are English
   going forward: its document-generating template strings (the category labels, the reference line,
   the `## Releases`/plugin-CHANGELOG intro texts, the date label) were translated in this pass.
-  Already-folded history (`releases/`, existing CHANGELOG entries) stays in its original language,
-  so a mix of older Dutch and newer English release notes is expected.
+  `CHANGELOG.md` itself is now fully English (its intro paragraphs and every `## Releases`
+  reference line were translated on July 22, 2026 — Dave's decision). The archived
+  `releases/development/*.md` notes stay in their original language, so older ones remain Dutch.
 - **Technical identifiers/flags** keep their original form — the scaffold marker `VUL-IN` (used
   across the plugin's scaffold scripts, e.g. `bootstrap.ps1`, `new-branch.ps1`) is the concrete
   example here; Dave's explicit decision.
@@ -160,8 +161,10 @@ everything**, not just docs/manuals/agent-defs:
   legacy predecessor in the drift-check (`scripts/lint/check-consumer-drift.ps1`) and the bootstrap
   templates, and the `[ERROR]` marker alongside its legacy predecessor in the connector session
   hook (`connector-sessioncheck.ps1`).
-- **History** (folded changelog entries, `releases/`) is this repo's narrow exception to the norm
-  and may remain in its original language.
+- **History** — the archived per-release notes under `releases/development/*.md` are this repo's
+  narrow exception to the norm and may remain in their original language (older ones are Dutch).
+  `CHANGELOG.md` and `releases/README.md` are themselves fully English (translated July 22, 2026,
+  Dave's decision), so the exception no longer covers them.
 
 Decision by Dave, July 20, 2026 (repo-wide English) — the decision that in turn prompted the
 system-wide norm above — sharpened July 21, 2026 to make explicit that it covers the script layer

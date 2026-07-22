@@ -172,16 +172,15 @@ Write-Utf8NoBom -Path $notesAbs -Content $notesContent
 Write-Host "  created: $notesRelPath ($($entries.Count) entries)" -ForegroundColor DarkGray
 
 # --- Update the releases/README.md overview table ------------------------------------------------
-# NOTE: releases/README.md is history (deliberate language exception, see CLAUDE.md) -- its table
-# header stays in its original language ("Versie | Datum | Type | Titel"), so $headerRe below
-# deliberately keeps matching that literal text; do not "fix" it to English.
+# The overview table header is English ("Version | Date | Type | Title", #114 follow-up), so
+# $headerRe below matches that; a new row is inserted right after it.
 $relReadme = Join-Path $repoRoot 'releases\README.md'
 $shortTitle = if ($Title) { $Title } else { "$typeLabel release" }
 $newRow = "| [$new](development/$minorDir/$new.md) | $today | $typeLabel | $shortTitle |"
 if (Test-Path $relReadme) {
     $rm = Get-Content -Path $relReadme -Raw -Encoding UTF8
     $rmNl = if ($rm.Contains("`r`n")) { "`r`n" } else { "`n" }
-    $headerRe = [regex]"(?m)^\| Versie \| Datum \| Type \| Titel \|\r?\n\|[-| ]+\|\r?\n"
+    $headerRe = [regex]"(?m)^\| Version \| Date \| Type \| Title \|\r?\n\|[-| ]+\|\r?\n"
     $hm = $headerRe.Match($rm)
     if ($hm.Success) {
         $at = $hm.Index + $hm.Length
