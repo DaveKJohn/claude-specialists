@@ -1,20 +1,39 @@
-### Add SEO specialist Sergio (#26) in new specialists-ecomm plugin · Feat · 2026-07-22
+### New specialists-ecomm plugin with three e-commerce specialists (SEO, CRO, SEA) · Feat · 2026-07-22
 
 New fourth domain group — the plugin `specialists-ecomm`, for commercial webshop repos of any
-platform (not Shopify-only) — with its first specialist: **Sergio 📈 #26**, an SEO Specialist.
-Sergio owns technical/on-site SEO — anchor links and internal linking, canonical tags, structured
-data (schema.org/JSON-LD), XML sitemaps, and pagespeed — as an auditor-and-builder (measure first,
-fix at the source, validate, white-hat only). He carries the standard shared blocks
-(inbound-behaviour, laziness-automation, language-behavior) and defers visual/front-end changes to
-the design owner and any preview/live push to the platform's store owner.
+platform (not Shopify-only) — with its first three specialists, all group 06 (the
+measure-and-optimize family):
+
+- **Sergio 📈 #26 — SEO Specialist.** Technical/on-site SEO: anchor links and internal linking,
+  canonical tags, structured data (schema.org/JSON-LD), XML sitemaps, and pagespeed. Auditor and
+  builder: measure first, fix at the source, validate, white-hat only.
+- **Craig 🎯 #27 — CRO Specialist.** Conversion Rate Optimization: funnel/drop-off analysis, A/B
+  experiments, checkout and landing-page optimization. Test, don't guess — keep only what a measured
+  experiment proves.
+- **Sean 💸 #28 — Performance / SEA Specialist.** The paid side of acquisition and its in-repo
+  footprint: conversion tracking, product feeds, UTM conventions, ad-to-landing-page alignment.
+  Honest about the boundary that live campaigns live in the ad platforms, and coordinates with
+  Sergio so paid doesn't cannibalize organic.
+
+All three carry the standard shared blocks (inbound-behaviour, laziness-automation,
+language-behavior), defer visual/front-end changes to the design owner, and defer any preview/live
+push to the platform's store owner.
+
+**Rename to free the name for the SEA pun:** the existing Security Engineer **Sean 🛡️ #23** is
+renamed to **Sebastian** (keeps 🛡️, #23, and its call name changes `@specialists:sean` →
+`@specialists:sebastian`), so the new SEA specialist can be "Sean". Updated across the living
+team-definition surfaces — the #23 agent def, manual, and repo lens; the roster in `CLAUDE.md`; the
+family handbook; Chris's routing/chains lens; and the cross-references in the Ravi/Victor/Edith
+lenses; plus the group-1 listing in `README.md`. History (CHANGELOG/releases, the dated security
+baseline) and past-advice attribution comments in scripts/hooks/tests/CI are deliberately left as
+records.
 
 - **New plugin:** `claude-code-plugins/claude-specialists/specialists-ecomm/` with `plugin.json`
   (version 1.16.0, lockstep), `CHANGELOG.md`, and `RELEASE.md` card; registered as the fourth entry
   in `.claude-plugin/marketplace.json`.
-- **Sergio:** agent def `agents/06-26-agent.md` (group 06 — the measure-and-optimize family,
-  alongside Nolan #25 and Sean #23) and portable manual `manuals/06-26-manual.md`.
-- Group deliberately set up to grow into the wider e-commerce craft (conversion, lifecycle/email,
-  analytics) without restructuring.
+- **Specialists:** agent defs `agents/06-26|27|28-agent.md` and portable manuals
+  `manuals/06-26|27|28-manual.md`.
+- Group deliberately set up to grow further (lifecycle/email, analytics) without restructuring.
 
 Verified: `build-agent-defs.ps1 -Check` (shared blocks in sync) and `check-plugin-integrity.ps1`
 (0 errors).

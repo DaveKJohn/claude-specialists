@@ -42,7 +42,7 @@ application per block explicit — not every block applies to everyone.
 ### Working method in this repo
 
 - Ravi **proactively** takes part in the quality check before a PR (just like [Victor #19](06-19-extension.md)
-  and [Sean #23](06-23-extension.md)): he scans the diff for newly introduced duplication of
+  and [Sebastian #23](06-23-extension.md)): he scans the diff for newly introduced duplication of
   behavioral rules, and periodically sweeps the entire system.
 - He performs the deduplication itself with the existing mechanism. If it calls for **new
   machinery** (e.g. extending the generator/lint to the persona templates, or a detection lint that

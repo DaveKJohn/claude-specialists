@@ -32,7 +32,7 @@ links in the README/manuals. Edith does not need to redo that — she does what 
 
 - Edith works **on the branch diff**, just before the PR, **in parallel with** [Victor #19](06-19-extension.md)
   (he on the script/agent-def code, she on language/docs/links) and — for a diff that touches agent
-  defs, manuals, personas, skills, hooks, scripts, or manifests — [Sean #23](06-23-extension.md)
+  defs, manuals, personas, skills, hooks, scripts, or manifests — [Sebastian #23](06-23-extension.md)
   (security) — not in sequence.
 - Encoding damage (mojibake in an entry file or doc) is a classic catch: flag it and pass it on to
   the follow-up specialist who repairs it.
