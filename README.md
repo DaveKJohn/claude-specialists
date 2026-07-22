@@ -187,7 +187,7 @@ two-stage:
 
 ## Versioning
 
-Every plugin (`claude-code-plugins/claude-specialists/specialists/…`, `claude-code-plugins/claude-specialists/specialists-lifehub/…`, `claude-code-plugins/claude-specialists/specialists-shopify/…`) carries its own
+Every plugin (one folder per group under `claude-code-plugins/claude-specialists/`) carries its own
 `version` in its `plugin.json`. On a release those versions move **in lockstep** — they all get the
 same number and one repo-wide tag `vX.Y.Z` (see [Cutting a release](#cutting-a-release)).
 **That version number is also the update gate**: `claude plugin update` compares nothing but
@@ -202,6 +202,31 @@ check 9) guards that the card is present and its version matches `plugin.json`.
 Changes to a shared agent def land here first, are committed here, and only then picked up by the
 consuming repos — never the other way around (no repo may overwrite a shared agent def locally
 without contributing it back here).
+
+## Adding a new plugin group
+
+A domain group is its own plugin folder — but adding one touches more than that folder. The drift
+lint and the family docs enumerate the plugins and go stale silently if you forget them. The full
+checklist (learned from adding `specialists-ecomm`):
+
+1. **The plugin folder** `claude-code-plugins/claude-specialists/<plugin>/` with
+   `.claude-plugin/plugin.json` (the lockstep `version`, matching the other plugins), a
+   `CHANGELOG.md` intro, and a `RELEASE.md` card whose `# Release vX.Y.Z` heading matches
+   `plugin.json` (lint check 9).
+2. **The marketplace entry** — register the plugin in
+   [`.claude-plugin/marketplace.json`](.claude-plugin/marketplace.json) with a repo-relative `source`.
+3. **The specialists** — `agents/<group>-<id>-agent.md` + `manuals/<group>-<id>-manual.md` per
+   member, following the `<group>-<id>` convention (a globally unique `id`).
+4. **The drift lint** — add the plugin's `agents` folder to `$SourceDirs` in
+   [`scripts/lint/check-consumer-drift.ps1`](scripts/lint/check-consumer-drift.ps1), or a consumer's
+   drift check never covers the new ids.
+5. **The family docs** that enumerate the plugins — the root `README.md` (the plugin count + the
+   family bullet + the migration list), the family
+   [`README.md`](claude-code-plugins/claude-specialists/README.md) (count, the sub-plugins table,
+   the invocation list, and whether the group is mutually exclusive with the others or complementary),
+   and [`QUICKSTART.md`](claude-code-plugins/claude-specialists/QUICKSTART.md).
+6. **The gates** — `scripts/agents/build-agent-defs.ps1 -Check`,
+   `scripts/lint/check-plugin-integrity.ps1`, and the `scripts/tests/*.tests.ps1` suites, all green.
 
 ## Maintenance: drift lint
 
