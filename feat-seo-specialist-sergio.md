@@ -35,5 +35,19 @@ records.
   `manuals/06-26|27|28-manual.md`.
 - Group deliberately set up to grow further (lifecycle/email, analytics) without restructuring.
 
-Verified: `build-agent-defs.ps1 -Check` (shared blocks in sync) and `check-plugin-integrity.ps1`
-(0 errors).
+**Quality-round follow-ups (Victor/Edith/Sebastian/Ravi/Nolan on the diff):**
+- Registered the new plugin in the docs that describe the family — root `README.md`, the family
+  `README.md`, and `QUICKSTART.md` now say "four plugins" and list `specialists-ecomm`; reframed
+  "a repo needs at most one domain group" as **complementary** (a Shopify repo can enable
+  `specialists-shopify` + `specialists-ecomm`).
+- Fixed a real functional gap: `check-consumer-drift.ps1` hardcoded three plugins, so a consumer's
+  drift check would never cover ids 26/27/28 — added `specialists-ecomm`.
+- Language norm: translated the three pre-existing Dutch manifests (`marketplace.json` + the
+  `specialists`/`lifehub`/`shopify` `plugin.json`) to English, closing the mixed-language state
+  instead of extending it; generalized stale "three plugins" wording in scripts and lenses.
+- Ravi: promoted three verbatim-shared boundaries across the ecomm agent-defs to `agent-shared/`
+  blocks (`design-owner-boundary`, `changelog-entry-boundary`, `storefront-preview-boundary`),
+  scoped to Sergio/Craig/Sean.
+
+Verified: `build-agent-defs.ps1 -Check` (shared blocks in sync), `check-plugin-integrity.ps1`
+(0 errors), and all test suites green.
