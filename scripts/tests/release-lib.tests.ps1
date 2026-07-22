@@ -123,25 +123,25 @@ Assert-Match $notes '^# Release notes v0\.2\.0' 'heading with version'
 Assert-Match $notes '\*\*Date:\*\* 2026-07-14' 'date line'
 Assert-Match $notes '\*\*Type:\*\* Minor' 'type line'
 Assert-Match $notes 'Test-release' 'title included'
-Assert-Match $notes '## New features & improvements' 'Feat category section'
+Assert-Match $notes '## Features' 'Feat category section'
 Assert-Match $notes '## Fixes' 'Fix category section'
-Assert-Match $notes '(?s)## New features.*## Fixes' 'Feat comes before Fix (category order)'
+Assert-Match $notes '(?s)## Features.*## Fixes' 'Feat comes before Fix (category order)'
 Assert-Match $notes '### #2 .* Second feature' 'entry #2 present with full heading'
 Assert-Match $notes '\[PR #1\]' 'PR link of entry #1 preserved'
 
-Write-Host "Build-ReleaseNotes (full category label coverage: Docs, Chore, Other, #114 follow-up)" -ForegroundColor Cyan
-# Feat/Fix are already covered above; this closes the gap for the other two canonical catTitle
+Write-Host "Build-ReleaseNotes (full category label coverage: Docs, Chore, Other)" -ForegroundColor Cyan
+# Feat/Fix are already covered above; this closes the gap for the other two canonical category
 # labels (Docs, Chore) plus the 'Other' catch-all for an entry whose type is not a known branch
-# type at all -- guards catOrder/catTitle staying in sync after the Overig -> Other key rename.
+# type at all -- guards the category order/labels (Get-ReleaseCategories) staying in sync.
 $docsEntry  = "### #10 $midDot Docs sample $midDot Docs $midDot 2026-01-10`n`nBody docs.`n`n[PR #10](https://example.com/10)"
 $choreEntry = "### #11 $midDot Chore sample $midDot Chore $midDot 2026-01-11`n`nBody chore.`n`n[PR #11](https://example.com/11)"
 $otherEntry = "### #12 $midDot Other sample $midDot Weird $midDot 2026-01-12`n`nBody weird.`n`n[PR #12](https://example.com/12)"
 $catEntries = @($entries[0], $entries[1], $docsEntry, $choreEntry, $otherEntry)
 $catNotes = Build-ReleaseNotes -Entries $catEntries -Version '0.3.0' -Date '2026-07-21' -Type 'Minor'
 Assert-Match $catNotes '## Documentation' 'Docs category renders as Documentation'
-Assert-Match $catNotes '## Maintenance \(scripts, tooling, config\)' 'Chore category renders as Maintenance (scripts, tooling, config)'
+Assert-Match $catNotes '## Maintenance' 'Chore category renders as Maintenance'
 Assert-Match $catNotes '## Other' 'unrecognized type falls into the Other catch-all category'
-Assert-Match $catNotes '(?s)## New features.*## Fixes.*## Documentation.*## Maintenance \(scripts, tooling, config\).*## Other' 'category order: Feat, Fix, Docs, Chore, Other (canonical branch types + catch-all)'
+Assert-Match $catNotes '(?s)## Features.*## Fixes.*## Documentation.*## Maintenance.*## Other' 'category order: Feat, Fix, Docs, Chore, Other (canonical branch types + catch-all)'
 Assert-Match $catNotes '### #12 .* Other sample' 'entry with an unrecognized type still included under Other (not dropped)'
 
 # Link rewriting: repo-root-relative links get the prefix, external/anchor do not.
@@ -151,6 +151,24 @@ Assert-Match $ln '\[the lint\]\(\.\./\.\./\.\./scripts/lint/x\.ps1\)' 'root-rela
 Assert-Match $ln '\[the site\]\(https://example\.com\)' 'external link untouched'
 Assert-Match $ln '\[#heading\]\(#heading\)' 'anchor link untouched'
 Assert-Match $ln '\[PR #3\]\(https://example\.com/3\)' 'PR link untouched'
+
+Write-Host "Get-ReleaseCategories + Format-CategorizedEntries (shared grouping, short labels)" -ForegroundColor Cyan
+$cats = Get-ReleaseCategories
+Assert-Equal 'Features' $cats.Title['Feat'] 'short label: Feat -> Features'
+Assert-Equal 'Fixes' $cats.Title['Fix'] 'short label: Fix -> Fixes'
+Assert-Equal 'Documentation' $cats.Title['Docs'] 'short label: Docs -> Documentation'
+Assert-Equal 'Maintenance' $cats.Title['Chore'] 'short label: Chore -> Maintenance'
+Assert-Equal 'Other' $cats.Order[$cats.Order.Count - 1] 'Other is the last (catch-all) category'
+# $entries[0] is #2 (Feat), $entries[1] is #1 (Fix) from the shared $sample above.
+$fce2 = Format-CategorizedEntries -Entries @($entries[0], $entries[1]) -CategoryLevel 2
+Assert-Match $fce2 '(?m)^## Features' 'CategoryLevel 2 -> ## category heading'
+Assert-Match $fce2 '(?m)^### #2 ' 'CategoryLevel 2 -> entries stay at ### (one level under the ## category)'
+Assert-Match $fce2 '(?s)## Features.*## Fixes' 'categories rendered in canonical order (Feat before Fix)'
+$fce3 = Format-CategorizedEntries -Entries @($entries[0]) -CategoryLevel 3
+Assert-Match $fce3 '(?m)^### Features' 'CategoryLevel 3 -> ### category heading'
+Assert-Match $fce3 '(?m)^#### #2 ' 'CategoryLevel 3 -> entry demoted to #### (one level under the ### category)'
+$fceUnknown = Format-CategorizedEntries -Entries @("### #99 $midDot Mystery $midDot Weird $midDot 2026-01-09`n`nBody.") -CategoryLevel 2
+Assert-Match $fceUnknown '(?m)^## Other' 'unknown type falls into the Other catch-all'
 
 Write-Host "Get-PluginManifestPaths" -ForegroundColor Cyan
 # Pure (does not touch disk), so a fictional root suffices.
@@ -213,7 +231,9 @@ Assert-Match $conv '\[#heading\]\(#heading\)' 'anchor link untouched (plugin var
 Write-Host "Build-PluginChangelogSection + Add-PluginChangelogSection" -ForegroundColor Cyan
 $section = Build-PluginChangelogSection -Entries @($entryWithPlugins) -Version '1.5.0' -Date '2026-07-17'
 Assert-Match $section '^## v1\.5\.0 ' 'section heading with version'
-Assert-Match $section '### #4 ' 'entry included in the section'
+Assert-Match $section '(?m)^### Features' 'entries grouped under a category heading (### Features)'
+Assert-Match $section '(?m)^#### #4 ' 'entry included in the section, demoted under its category'
+Assert-Match $section '(?s)## v1\.5\.0 .*### Features.*#### #4 ' 'nesting: ## version -> ### category -> #### entry'
 $sectionClean = Build-PluginChangelogSection -Entries @(Remove-EntryPluginsLine -EntryText $entryWithPlugins) -Version '1.5.0' -Date '2026-07-17'
 Assert-Equal $false ([bool]($sectionClean -match '(?m)^Plugins:')) 'section via the cut-release path contains no Plugins line'
 $fresh = Add-PluginChangelogSection -Existing '' -Section $section -PluginName 'specialists'
@@ -248,7 +268,7 @@ Write-Host "Build-PluginChangelogSection (LF normalization, point e, #103)" -For
 $crlfEntry = "### #7 $midDot CRLF-test $midDot Fix $midDot 2026-01-07`r`n`r`nBody with`r`nCRLF lines.`r`n`r`n[PR #7](https://example.com/7)"
 $lfSection = Build-PluginChangelogSection -Entries @($crlfEntry) -Version '1.7.0' -Date '2026-07-20'
 Assert-Equal $false ($lfSection.Contains("`r")) 'Build-PluginChangelogSection output contains no CR, even with a CRLF input entry'
-Assert-Match $lfSection '### #7 .* CRLF-test' 'entry content still included correctly despite the normalization'
+Assert-Match $lfSection '#### #7 .* CRLF-test' 'entry content still included correctly despite the normalization'
 $cardWithCrlf = Build-PluginReleaseCard -PluginName 'specialists' -Version '1.7.0' -Date '2026-07-20' -Type 'Fix' -Entries @($crlfEntry)
 Assert-Equal $false ($cardWithCrlf.Contains("`r")) 'Build-PluginReleaseCard stays pure LF despite a CRLF input entry'
 
@@ -261,8 +281,9 @@ Assert-Match $card '\*\*Type:\*\* Minor' 'type line'
 Assert-Match $card 'Test-title' 'title included'
 Assert-Match $card 'You are on this release\.' 'you-are-on-this-release line'
 Assert-Match $card '(?s)Test-title.*You are on this release\.' 'title comes before the you-are-on-this-release line'
-Assert-Match $card '(?m)^## v1\.5\.0 ' 'section heading from Build-PluginChangelogSection (with entries)'
-Assert-Match $card '### #3 .* Something' 'entry fragment included in the body'
+Assert-Match $card '(?m)^## Fixes' 'card groups entries under a category heading (## Fixes), single-release view'
+Assert-Equal $false ([bool]($card -match '(?m)^## v1\.5\.0 ')) 'card carries no redundant inner ## vX.Y.Z heading (the # Release header already states the version)'
+Assert-Match $card '(?m)^### #3 .* Something' 'entry fragment included in the body, at ### under the ## category'
 Assert-Match $card '\[the lint\]\(https://gh\.test/blob/main/scripts/lint/x\.ps1\)' 'root-relative link in the body rewritten as Convert-EntryLinksForPluginChangelog does'
 Assert-Match $card '\[the site\]\(https://example\.com\)' 'external link in the body stays untouched'
 $card2 = Build-PluginReleaseCard -PluginName 'specialists' -Version '1.5.0' -Date '2026-07-19' -Type 'Minor' -Entries @() -RepoBlobUrl 'https://gh.test/blob/main/'

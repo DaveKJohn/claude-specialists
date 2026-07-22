@@ -331,17 +331,92 @@ function Convert-EntryLinksForPluginChangelog {
     return Convert-RootRelativeLinks -EntryText $EntryText -Prefix $RepoBlobUrl
 }
 
+function Get-ReleaseCategories {
+    <#
+        Single source of truth for the release-notes category grouping: the ordered categories (the
+        canonical branch types from branch-info.ps1 + an 'Other' catch-all for an entry with an
+        unknown type) and their short display labels. Shared by Build-ReleaseNotes (the full notes),
+        Build-PluginChangelogSection (per-plugin CHANGELOG) and Build-PluginReleaseCard (the
+        RELEASE.md card), so all three render the same categories with the same labels. Returns an
+        object with Order (string[]) and Title (hashtable type -> label).
+    #>
+    return [pscustomobject]@{
+        Order = @(Get-BranchTypes) + 'Other'
+        Title = @{
+            Feat  = 'Features'
+            Fix   = 'Fixes'
+            Docs  = 'Documentation'
+            Chore = 'Maintenance'
+            Other = 'Other'
+        }
+    }
+}
+
+function Format-CategorizedEntries {
+    <#
+        Pure: renders entry blocks grouped under category headings, in the canonical category order
+        (Get-ReleaseCategories); a category with no entries is omitted. The type of each entry is
+        read from its "### #NN <md> title <md> type <md> date" heading (the second-to-last
+        middot-separated field); an unknown type falls into 'Other', so a new branch type is never
+        silently dropped.
+
+        $CategoryLevel = the number of '#' for a category heading (e.g. 2 -> '## Features'). Each
+        entry's own heading is re-levelled to sit exactly one level under its category
+        (CategoryLevel + 1), so the nesting stays correct whether the container is a single-release
+        file ('#' title -> '##' category -> '###' entry) or a stacked CHANGELOG ('## vX' release ->
+        '###' category -> '####' entry). Entries within a category are separated by '---'; only the
+        entry's FIRST line (its title heading) is re-levelled -- a '#'-prefixed line inside a body
+        is left alone (^ without multiline = start of the whole block). Output is pure LF; $Entries
+        may arrive CRLF (from the root CHANGELOG) and are normalized here.
+    #>
+    param(
+        [Parameter(Mandatory)][string[]]$Entries,
+        [int]$CategoryLevel = 2
+    )
+    $md = [char]0x00B7
+    $cats = Get-ReleaseCategories
+    $catHashes = '#' * $CategoryLevel
+    $entryHashes = '#' * ($CategoryLevel + 1)
+
+    $grouped = @{}
+    foreach ($e in $Entries) {
+        $heading = ($e -split "`r?`n")[0]
+        $t = 'Other'
+        $parts = @(($heading -replace '^#+\s+', '') -split "\s*$md\s*")
+        if ($parts.Count -ge 2) {
+            $cand = $parts[$parts.Count - 2].Trim()
+            if ($cats.Order -contains $cand) { $t = $cand }
+        }
+        if (-not $grouped.ContainsKey($t)) { $grouped[$t] = New-Object System.Collections.Generic.List[string] }
+        $grouped[$t].Add(($e.Trim() -replace "`r`n", "`n"))
+    }
+
+    $sections = @()
+    foreach ($cat in $cats.Order) {
+        if ($grouped.ContainsKey($cat)) {
+            $label = if ($cats.Title.ContainsKey($cat)) { $cats.Title[$cat] } else { $cat }
+            $rendered = @($grouped[$cat].ToArray() | ForEach-Object {
+                [regex]::Replace($_, '^#{2,6}\s', "$entryHashes ")
+            })
+            $body = ($rendered -join "`n`n---`n`n")
+            $sections += "$catHashes $label`n`n$body"
+        }
+    }
+    return ($sections -join "`n`n")
+}
+
 function Build-PluginChangelogSection {
     <#
         Builds the '## v<Version> <emDash> <Date>' block for a plugin CHANGELOG from the entries
-        that touch that plugin. Pure string out -- DELIBERATELY hard LF (instead of the
-        $nl-detection pattern that Split-Changelog/Convert-ChangelogForRelease use): this block is
-        written into a NEW, standalone plugin-CHANGELOG.md, which has no existing newline style of
-        its own to match -- unlike the root CHANGELOG.md (which is CRLF and detects and keeps its
-        own style via $nl). $Entries, however, come from that CRLF root CHANGELOG (via
-        Get-PullRequestEntries) -- so here they are explicitly normalized to LF (#103, Victor #5),
-        otherwise the CRLF inside an entry body would still cross the promised pure-LF output
-        (the mixed-EOL effect found in the existing plugin CHANGELOGs/RELEASE.md's/release-notes).
+        that touch that plugin, grouped by category ('### <Category>' -> '#### <entry>', one level
+        under the '## v' release heading -- see Format-CategorizedEntries). Pure string out --
+        DELIBERATELY hard LF (instead of the $nl-detection pattern that
+        Split-Changelog/Convert-ChangelogForRelease use): this block is written into a NEW,
+        standalone plugin-CHANGELOG.md, which has no existing newline style of its own to match --
+        unlike the root CHANGELOG.md (which is CRLF and detects and keeps its own style via $nl).
+        $Entries, however, come from that CRLF root CHANGELOG (via Get-PullRequestEntries) -- so
+        Format-CategorizedEntries normalizes them to LF (#103, Victor #5), otherwise the CRLF inside
+        an entry body would still cross the promised pure-LF output.
     #>
     param(
         [Parameter(Mandatory)][string[]]$Entries,
@@ -349,7 +424,7 @@ function Build-PluginChangelogSection {
         [Parameter(Mandatory)][string]$Date
     )
     $emDash = [char]0x2014
-    $body = (@($Entries | ForEach-Object { ($_.Trim() -replace "`r`n", "`n") }) -join "`n`n---`n`n")
+    $body = Format-CategorizedEntries -Entries $Entries -CategoryLevel 3
     return "## v$Version $emDash $Date`n`n$body`n"
 }
 
@@ -389,9 +464,10 @@ function Build-PluginReleaseCard {
         Builds the full RELEASE.md card text for a plugin (Model A, plugin-carried): a consumer
         who only has the plugin cache sees immediately which release version they are on, even if
         this particular release did not touch the plugin (the version bumps lockstep, so every
-        plugin gets a fresh card on every release). Reuses Build-PluginChangelogSection /
-        Convert-EntryLinksForPluginChangelog for the body so the form stays consistent with the
-        per-plugin CHANGELOG. Pure string out (LF newlines), so separately testable.
+        plugin gets a fresh card on every release). The body groups entries by category via
+        Format-CategorizedEntries (a single-release view: '## <Category>' -> '### <entry>', like the
+        full notes) after Convert-EntryLinksForPluginChangelog rewrites their links. Pure string out
+        (LF newlines), so separately testable.
 
         $Entries is the array of entry blocks of THIS plugin for THIS release (may be empty --
         no changes simply means the "no changes" block, no error). $RepoBlobUrl is the base for
@@ -424,7 +500,9 @@ function Build-PluginReleaseCard {
         $converted = @($realEntries | ForEach-Object {
             Convert-EntryLinksForPluginChangelog -EntryText $_ -RepoBlobUrl $RepoBlobUrl
         })
-        $body = (Build-PluginChangelogSection -Entries $converted -Version $Version -Date $Date).Trim()
+        # Single-release view: categories at '##' -> entries at '###', exactly like the full notes.
+        # (No inner '## vX -- date' line -- the card header above already states the version + date.)
+        $body = (Format-CategorizedEntries -Entries $converted -CategoryLevel 2).Trim()
     } else {
         $body = "No changes to this plugin in this release $emDash see the full notes."
     }
@@ -455,54 +533,16 @@ function Build-ReleaseNotes {
         # the notes file (releases/development/<X.Y>/ = 3 folders deep -> '../../../').
         [string]$LinkPrefix = '../../../'
     )
-    $md = [char]0x00B7
-
     # Entries are written with repo-root-relative links; rewrite them so they resolve correctly
-    # from the notes file. External (http/mailto), anchor (#) and absolute (/) links are left
-    # alone, as are links that already start with ../. Also normalized to LF, so the CRLF of the
-    # source CHANGELOG does not cross the pure-LF output below.
-    $Entries = @($Entries | ForEach-Object {
-        (Convert-RootRelativeLinks -EntryText $_ -Prefix $LinkPrefix) -replace "`r`n", "`n"
-    })
-    # Category order = the canonical branch types (branch-info.ps1, single source) + 'Other' as a
-    # catch-all for entries with an unknown type. $catTitle supplies the display name per type; a
-    # type without its own title falls back to the type itself (so a new branch type does not
-    # silently fall outside the notes).
-    $catOrder = @(Get-BranchTypes) + 'Other'
-    $catTitle = @{
-        Feat  = 'New features & improvements'
-        Fix   = 'Fixes'
-        Docs  = 'Documentation'
-        Chore = 'Maintenance (scripts, tooling, config)'
-        Other = 'Other'
-    }
-
-    $grouped = @{}
-    foreach ($e in $Entries) {
-        $heading = ($e -split "`r?`n")[0]
-        $t = 'Other'
-        # Heading: "### #NN <md> title <md> type <md> date" -- type = the second-to-last field.
-        $parts = @(($heading -replace '^###\s+', '') -split "\s*$md\s*")
-        if ($parts.Count -ge 2) {
-            $cand = $parts[$parts.Count - 2].Trim()
-            if ($catOrder -contains $cand) { $t = $cand }
-        }
-        if (-not $grouped.ContainsKey($t)) { $grouped[$t] = New-Object System.Collections.Generic.List[string] }
-        $grouped[$t].Add(($e.Trim()))
-    }
-
-    $sections = @()
-    foreach ($cat in $catOrder) {
-        if ($grouped.ContainsKey($cat)) {
-            # NB: not '$title' -- PowerShell variables are case-insensitive, so that would
-            # overwrite the $Title parameter and wipe the title line from the heading.
-            $catLabel = if ($catTitle.ContainsKey($cat)) { $catTitle[$cat] } else { $cat }
-            $body = ($grouped[$cat].ToArray() -join "`n`n---`n`n")
-            $sections += "## $catLabel`n`n$body"
-        }
-    }
+    # from the notes file (releases/development/<X.Y>/ = 3 folders deep -> '../../../'). External
+    # (http/mailto), anchor (#) and absolute (/) links are left alone, as are links that already
+    # start with ../. Format-CategorizedEntries then groups the entries by category
+    # ('## <Category>' -> '### <entry>') and normalizes to LF, so the CRLF of the source CHANGELOG
+    # does not cross the pure-LF output.
+    $linked = @($Entries | ForEach-Object { Convert-RootRelativeLinks -EntryText $_ -Prefix $LinkPrefix })
+    $body = Format-CategorizedEntries -Entries $linked -CategoryLevel 2
 
     $titleLine = if ($Title) { "$Title`n`n" } else { '' }
     $header = "# Release notes v$Version`n`n**Date:** $Date  `n**Type:** $Type`n`n$titleLine"
-    return ($header + ($sections -join "`n`n") + "`n")
+    return ($header + $body + "`n")
 }
