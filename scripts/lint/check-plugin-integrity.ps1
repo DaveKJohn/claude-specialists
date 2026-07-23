@@ -17,10 +17,11 @@
          file name <group>-<id>-persona.md matches that frontmatter. Personas (orchestrator +
          main-loop specialists) DELIBERATELY have no agent def -- they run in the main loop, not
          as a subagent -- and are therefore left alone by check 6's agent-def<->manual link.
-      4. dead relative links AND broken anchors in README.md, CHANGELOG.md, CLAUDE.md, every
-         .claude/extensions/*.md, every <plugin>/skills/*/SKILL.md, every <plugin>/manuals/*-manual.md,
-         every <plugin>/personas/*-persona.md, every releases/**/*.md, every <plugin>/RELEASE.md,
-         claude-code-plugins/claude-specialists/README.md (the family README) and QUICKSTART.md, and
+      4. dead relative links AND broken anchors in README.md, CHANGELOG.md, CLAUDE.md,
+         CONTRIBUTING.md, every .claude/extensions/*.md, every <plugin>/skills/*/SKILL.md, every
+         <plugin>/manuals/*-manual.md, every <plugin>/personas/*-persona.md, every releases/**/*.md,
+         every <plugin>/RELEASE.md, claude-code-plugins/claude-specialists/README.md (the family
+         README) and QUICKSTART.md, claude-code-plugins/claude-specialists/connectors/README.md, and
          every plugin's own claude-code-plugins/claude-specialists/<plugin>/CHANGELOG.md (#103).
          Checked: (a) the linked
          file exists, and (b) if the link
@@ -178,11 +179,11 @@ Get-ChildItem -Path $RepoRoot -Recurse -Filter '*-persona.md' -File |
     }
 
 # --- 4. dead relative links + broken anchors ---------------------------------------------------------
-# Scanned files: README.md, CHANGELOG.md, CLAUDE.md, every .claude/extensions/*.md, every
-# <plugin>/skills/*/SKILL.md, every <plugin>/manuals/*-manual.md and every releases/**/*.md. For
-# every relative link it is checked (a) that the linked file exists, and (b) if the link has a
-# #anchor: that anchor exists as a heading in the target file (GitHub slug rules). External
-# http(s)/mailto links are skipped.
+# Scanned files: README.md, CHANGELOG.md, CLAUDE.md, CONTRIBUTING.md, every .claude/extensions/*.md,
+# every <plugin>/skills/*/SKILL.md, every <plugin>/manuals/*-manual.md, every releases/**/*.md and
+# the connectors README. For every relative link it is checked (a) that the linked file exists, and
+# (b) if the link has a #anchor: that anchor exists as a heading in the target file (GitHub slug
+# rules). External http(s)/mailto links are skipped.
 
 function ConvertTo-GhSlug {
     # Converts a heading text to a GitHub anchor slug.
@@ -218,7 +219,7 @@ function Get-HeadingSlugs {
 }
 
 $linkFiles = @()
-foreach ($root in 'README.md', 'CHANGELOG.md', 'CLAUDE.md') {
+foreach ($root in 'README.md', 'CHANGELOG.md', 'CLAUDE.md', 'CONTRIBUTING.md') {
     $p = Join-Path $RepoRoot $root
     if (Test-Path -LiteralPath $p) { $linkFiles += $p }
 }
@@ -232,6 +233,10 @@ foreach ($familyDoc in 'README.md', 'QUICKSTART.md') {
     $p = Join-Path $RepoRoot "claude-code-plugins\claude-specialists\$familyDoc"
     if (Test-Path -LiteralPath $p) { $linkFiles += $p }
 }
+# The connectors README (claude-code-plugins/claude-specialists/connectors/) did not yet belong to
+# the scan set either -- added alongside CONTRIBUTING.md (#159 follow-up, spotted by Edith).
+$connectorsReadme = Join-Path $RepoRoot 'claude-code-plugins\claude-specialists\connectors\README.md'
+if (Test-Path -LiteralPath $connectorsReadme) { $linkFiles += $connectorsReadme }
 $linkFiles += (Get-ChildItem -Path (Join-Path $RepoRoot 'claude-code-plugins\claude-specialists') -Recurse -Filter 'CHANGELOG.md' -File |
     Where-Object { $_.FullName -notmatch '\\connectors\\' } |
     Select-Object -ExpandProperty FullName)
