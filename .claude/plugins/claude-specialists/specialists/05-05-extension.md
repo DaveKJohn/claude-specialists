@@ -101,6 +101,16 @@ gh pr merge <branch> --merge --delete-branch --subject "merge: <branch> (#<PR-nu
 `--subject` gives the merge commit the `merge:` prefix. `--delete-branch` cleans up the branch
 (remote + local). Then synchronize: `git checkout main && git pull --ff-only`.
 
+**If the required check `lint-en-tests` never shows up (lesson of July 23, 2026, PR #152):**
+recognize it by the merge staying blocked with no rollup appearing on the PR at all —
+`mergeStateStatus` sits at `UNKNOWN` and several minutes pass without a workflow run starting.
+GitHub simply failed to fire a run on the `pull_request opened` event (a GitHub-side hiccup, not a
+repo error — a prior PR had triggered normally moments before). **Fix:** close and immediately
+reopen the PR (`gh pr close <branch>` → `gh pr reopen <branch>`); the `reopened` event fires a fresh
+run, which started within seconds in this case and went green. A lighter alternative — pushing an
+empty commit (`git commit --allow-empty`) — also retriggers CI, but close/reopen is preferred since
+it keeps the branch history free of noise commits.
+
 Folding the changelog entry on `main` (`fold-changelog-entry.ps1`) is then
 [Rendall #06](05-06-extension.md#changelog)'s work. `main` thus keeps a growing
 `## Pull Requests` section of everything that has been merged.
