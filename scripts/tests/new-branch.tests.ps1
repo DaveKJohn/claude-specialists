@@ -21,10 +21,13 @@
 #>
 $ErrorActionPreference = 'Stop'
 
-$RepoRoot        = (Resolve-Path -LiteralPath (Join-Path $PSScriptRoot '..\..')).Path
-$NewBranchSrc    = Join-Path $RepoRoot 'scripts\task\new-branch.ps1'
-$NewChangelogSrc = Join-Path $RepoRoot 'scripts\release\new-changelog-entry.ps1'
-$BranchInfoSrc   = Join-Path $RepoRoot 'scripts\lib\branch-info.ps1'
+$RepoRoot         = (Resolve-Path -LiteralPath (Join-Path $PSScriptRoot '..\..')).Path
+$NewBranchSrc     = Join-Path $RepoRoot 'scripts\task\new-branch.ps1'
+$NewChangelogSrc  = Join-Path $RepoRoot 'scripts\release\new-changelog-entry.ps1'
+$BranchInfoSrc    = Join-Path $RepoRoot 'scripts\lib\branch-info.ps1'
+# new-branch -Park dot-sources this sibling shared lib for its git push (the #107 stderr guard),
+# so the fixture must carry it too.
+$NativeCaptureSrc = Join-Path $RepoRoot 'scripts\lib\native-capture-lib.ps1'
 # Direct Test-BranchName calls (separate from the CLI) for the empty/whitespace-only case --
 # PowerShell's mandatory-param binding catches an empty -Name via the CLI with a generic error, so
 # the exact Reason text can only be tested directly.
@@ -67,9 +70,10 @@ function New-Fixture {
     New-Item -ItemType Directory -Path (Join-Path $dir 'scripts\task')    -Force | Out-Null
     New-Item -ItemType Directory -Path (Join-Path $dir 'scripts\release') -Force | Out-Null
     New-Item -ItemType Directory -Path (Join-Path $dir 'scripts\lib')    -Force | Out-Null
-    Copy-Item -LiteralPath $NewBranchSrc    -Destination (Join-Path $dir 'scripts\task\new-branch.ps1')             -Force
-    Copy-Item -LiteralPath $NewChangelogSrc -Destination (Join-Path $dir 'scripts\release\new-changelog-entry.ps1') -Force
-    Copy-Item -LiteralPath $BranchInfoSrc   -Destination (Join-Path $dir 'scripts\lib\branch-info.ps1')             -Force
+    Copy-Item -LiteralPath $NewBranchSrc     -Destination (Join-Path $dir 'scripts\task\new-branch.ps1')             -Force
+    Copy-Item -LiteralPath $NewChangelogSrc  -Destination (Join-Path $dir 'scripts\release\new-changelog-entry.ps1') -Force
+    Copy-Item -LiteralPath $BranchInfoSrc    -Destination (Join-Path $dir 'scripts\lib\branch-info.ps1')             -Force
+    Copy-Item -LiteralPath $NativeCaptureSrc -Destination (Join-Path $dir 'scripts\lib\native-capture-lib.ps1')      -Force
 
     $prevEap = $ErrorActionPreference
     try {
@@ -101,11 +105,15 @@ function Invoke-NewBranch {
     param(
         [Parameter(Mandatory = $true)][string]$Dir,
         [Parameter(Mandatory = $true)][string]$Name,
-        [string]$Title
+        [string]$Title,
+        [string]$Intent,
+        [switch]$Park
     )
     $scriptPath = Join-Path $Dir 'scripts\task\new-branch.ps1'
     $callArgs = @('-Name', $Name)
-    if ($PSBoundParameters.ContainsKey('Title')) { $callArgs += @('-Title', $Title) }
+    if ($PSBoundParameters.ContainsKey('Title'))  { $callArgs += @('-Title', $Title) }
+    if ($PSBoundParameters.ContainsKey('Intent')) { $callArgs += @('-Intent', $Intent) }
+    if ($Park) { $callArgs += '-Park' }
 
     $prevPd  = $env:CLAUDE_PROJECT_DIR
     $prevEap = $ErrorActionPreference
@@ -253,6 +261,9 @@ try {
     $entryText1 = [System.IO.File]::ReadAllText($entryPath, [System.Text.Encoding]::UTF8)
     Assert-True ($entryText1 -match [regex]::Escape('First title')) 'entry heading contains the given title'
     Assert-True ($entryText1 -match [regex]::Escape("$([char]0x00B7) Feat $([char]0x00B7)")) 'entry heading carries the derived branch type Feat'
+    # (#162) No -Intent given -> the body falls back to the directional block, not a bare TODO.
+    Assert-True ($entryText1 -match [regex]::Escape('**To do / where I left off:**')) 'no -Intent: entry body has the directional heading'
+    Assert-True ($entryText1 -match 'what still needs to happen on this branch') 'no -Intent: directional fallback TODO, not the old bare description line'
 
     Write-Host "new-branch.ps1 -- idempotent (second run, same name)" -ForegroundColor Cyan
     $r2 = Invoke-NewBranch -Dir $fixtureBC -Name 'feat/my-task' -Title 'Second title (should be ignored)'
@@ -341,6 +352,57 @@ try {
     Assert-True ($entryTextG -match [regex]::Escape('Explicit title')) 'explicit -Title wins -- appears in the heading line'
     Assert-True (-not ($entryTextG -match [regex]::Escape('Env title'))) 'env-var title NOT used while -Title was given explicitly'
     Assert-True ($null -eq $env:CLAUDE_NEWBRANCH_TITLE) 'test process itself leaves no leaking CLAUDE_NEWBRANCH_TITLE behind after this scenario'
+
+    # --- (h) -Intent given: recorded as the entry body under the directional heading (#162) --------
+    Write-Host "new-branch.ps1 -- -Intent recorded as the entry body" -ForegroundColor Cyan
+    $fixtureH = New-Fixture -Label 'h'
+    $intentText = 'Skeleton + routing done; next: wire the API client.'
+    $rH = Invoke-NewBranch -Dir $fixtureH -Name 'feat/park-intent' -Title 'Parked work' -Intent $intentText
+    Assert-Equal 0 $rH.Code '-Intent: new-branch exit 0'
+    $entryPathH = Join-Path $fixtureH 'feat-park-intent.md'
+    Assert-True (Test-Path -LiteralPath $entryPathH) '-Intent: entry file created'
+    $entryTextH = [System.IO.File]::ReadAllText($entryPathH, [System.Text.Encoding]::UTF8)
+    Assert-True ($entryTextH -match [regex]::Escape($intentText)) '-Intent: the intent text is the recorded entry body'
+    Assert-True ($entryTextH -match [regex]::Escape('**To do / where I left off:**')) '-Intent: still under the directional heading'
+    Assert-True (-not ($entryTextH -match 'what still needs to happen on this branch')) '-Intent: fallback TODO replaced by the intent'
+
+    # --- (i) -Park: commit the entry + push to origin, NO PR --------------------------------------
+    Write-Host "new-branch.ps1 -- -Park commits the entry and pushes to origin (no PR)" -ForegroundColor Cyan
+    $fixtureP = New-Fixture -Label 'p'
+    # A bare repo as 'origin' so the push has somewhere to land -- no auth/network needed.
+    $bareRemote = Join-Path ([System.IO.Path]::GetTempPath()) ("new-branch-test-$PID-p-origin.git")
+    if (Test-Path -LiteralPath $bareRemote) { Remove-Item -Recurse -Force -LiteralPath $bareRemote }
+    $script:fixtures += $bareRemote
+    $prevEap = $ErrorActionPreference
+    try {
+        $ErrorActionPreference = 'Continue'
+        & git init --bare -q $bareRemote 2>$null | Out-Null
+        & git -C $fixtureP remote add origin $bareRemote 2>$null | Out-Null
+    } finally {
+        $ErrorActionPreference = $prevEap
+    }
+
+    $rP = Invoke-NewBranch -Dir $fixtureP -Name 'feat/parked-branch' -Title 'Parked' -Intent 'WIP; continue on the laptop.' -Park
+    Assert-Equal 0 $rP.Code '-Park: new-branch exit 0'
+    Assert-True ($rP.Out -match 'parked on origin') '-Park: reports the branch was parked on origin'
+
+    # entry committed: no longer untracked/dirty in the working tree
+    $statusP = ((& git -C $fixtureP status --porcelain) -join "`n")
+    Assert-True (-not ($statusP -match 'feat-parked-branch\.md')) '-Park: entry file committed (not untracked/dirty)'
+    $commitCountP = @(& git -C $fixtureP log --oneline).Count
+    Assert-Equal 2 $commitCountP '-Park: exactly one park commit on top of the initial fixture commit'
+
+    # pushed: the branch ref exists on the bare origin, and upstream tracking is set
+    & git -C $bareRemote rev-parse --verify --quiet 'refs/heads/feat/parked-branch' | Out-Null
+    Assert-True ($LASTEXITCODE -eq 0) '-Park: branch ref present on origin (pushed)'
+    $prevEap = $ErrorActionPreference
+    try {
+        $ErrorActionPreference = 'Continue'
+        $upstream = ((& git -C $fixtureP rev-parse --abbrev-ref --symbolic-full-name '@{u}' 2>$null) | Out-String).Trim()
+    } finally {
+        $ErrorActionPreference = $prevEap
+    }
+    Assert-Equal 'origin/feat/parked-branch' $upstream '-Park: upstream tracking set to origin/<branch>'
 } finally {
     foreach ($f in $script:fixtures) {
         if (Test-Path -LiteralPath $f) { Remove-Item -Recurse -Force -LiteralPath $f -ErrorAction SilentlyContinue }
