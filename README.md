@@ -145,6 +145,32 @@ and the [docs](https://code.claude.com/docs/en/skills)). Not confirmed: whether 
 Claude Agent SDK, or whether a Cowork subagent shares its definition format with — or is
 interchangeable with — a Claude Code subagent.
 
+### How we use skills — and what we deliberately don't
+
+Every skill in this repo today (`fold-changelog`, `open-pr`, `new-branch`, `specialists-init`,
+`sync-roster`, `start-task`) is a thin wrapper around a script — procedural **mechanism** (branch,
+PR, fold, bootstrap, roster-sync). The specialists' craft and judgment live in the persona/manual
+context (agent defs), not in skills. That's a deliberate split, but it also means we currently use
+only one half of what Agent Skills can carry.
+
+The unused half is a noted opportunity, not an open task: of the three progressive-disclosure levels
+described in [Where this runs](#where-this-runs-chat-cowork-and-claude-code) above, none of our
+skills use level 3 (bundled reference material/templates/examples) — all of them sit at level 1/2. A
+repeatable specialist *procedure* — a review or copy-edit checklist, for instance — could become a
+knowledge-skill with bundled reference material, which would then work on every surface, including a
+plain Chat session where subagents and hooks are unavailable.
+
+That doesn't mean maximizing skill usage everywhere. The discipline is: add a skill only where it
+makes a repeatable procedure or piece of knowledge genuinely portable, and where that value covers
+the maintenance cost. Living example: `cut-release` is deliberately **not** a skill — workshop-only,
+rare, and already documented — a choice already recorded in
+[`scripts/sync/check-script-contract.ps1`](scripts/sync/check-script-contract.ps1) ("workshop-only
+scripts ... are not mirrored into the plugin and are not part of the consumer contract").
+
+Cowork is positioned for non-code knowledge work; this repo is a code/plugin-maintenance repo, so
+Claude Code is the right tool here and the repo stays deliberately Claude-Code-centric. Cowork's
+value sits in other, non-code work — not in this workshop.
+
 ## Consumption
 
 A consuming repo adds this marketplace via `extraKnownMarketplaces` in
