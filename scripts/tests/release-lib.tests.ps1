@@ -104,7 +104,7 @@ Assert-Match $entries[0] '\[PR #2\]' 'first entry contains the PR link'
 Assert-Throws { Get-PullRequestEntries -Content "# Changelog`n`n## Pull Requests`n`nIntro.`n`n## Releases`n" } 'empty PR section throws'
 
 Write-Host "Convert-ChangelogForRelease (reference)" -ForegroundColor Cyan
-$notesPath = 'releases/development/0.2/0.2.0.md'
+$notesPath = 'releases/development/0.x/0.2.0.md'
 $result = Convert-ChangelogForRelease -Content $sample -Version '0.2.0' -Date '2026-07-14' -Type 'Minor' -NotesRelPath $notesPath
 Assert-Match $result '### \[v0\.2\.0\] - 2026-07-14 .* Minor' 'reference heading with version/date/type'
 Assert-Match $result ([regex]::Escape("[$notesPath]($notesPath)")) 'reference to the notes file'
@@ -290,9 +290,9 @@ $card2 = Build-PluginReleaseCard -PluginName 'specialists' -Version '1.5.0' -Dat
 Assert-Match $card2 "No changes to this plugin in this release $([char]0x2014) see the full notes\." 'empty-entries branch: exactly the no-changes block'
 Assert-Equal $false ([bool]($card2 -match '(?m)^## v')) 'empty-entries branch: no section heading'
 Assert-Match $card2 '\*\*Type:\*\* Minor' 'empty-entries branch: heading stays intact'
-Assert-Match $card '\[releases/development/1\.5/1\.5\.0\.md\]\(https://gh\.test/blob/main/releases/development/1\.5/1\.5\.0\.md\)' 'footer: blob URL to the full release notes'
+Assert-Match $card '\[releases/development/1\.x/1\.5\.0\.md\]\(https://gh\.test/blob/main/releases/development/1\.x/1\.5\.0\.md\)' 'footer: blob URL to the full release notes'
 Assert-Match $card '\[CHANGELOG\.md\]\(CHANGELOG\.md\)' 'footer: folder-relative link to CHANGELOG.md'
-Assert-Match $card2 '\[releases/development/1\.5/1\.5\.0\.md\]\(https://gh\.test/blob/main/releases/development/1\.5/1\.5\.0\.md\)' 'empty-entries branch: footer links stay correct'
+Assert-Match $card2 '\[releases/development/1\.x/1\.5\.0\.md\]\(https://gh\.test/blob/main/releases/development/1\.x/1\.5\.0\.md\)' 'empty-entries branch: footer links stay correct'
 
 $cardNoTitle = Build-PluginReleaseCard -PluginName 'specialists' -Version '2.0.0' -Date '2026-07-19' -Type 'Major' -Entries @()
 Assert-Match $cardNoTitle '(?s)\*\*Type:\*\* Major\n\nYou are on this release\.' 'without -Title exactly one blank line (no extra) before you-are-on-this-release'

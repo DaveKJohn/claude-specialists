@@ -18,7 +18,7 @@
     string/value out) so they can be tested separately without running a release --
     scripts/release/cut-release.ps1 uses them, and the tests cover them.
 
-    Model: the release content moves to releases/development/<X.Y>/<X.Y.Z>.md; the ## Releases
+    Model: the release content moves to releases/development/<X>.x/<X.Y.Z>.md; the ## Releases
     block in CHANGELOG.md becomes a short REFERENCE to that file (like life-hub, but without GitHub
     Releases). The ## Pull Requests section is emptied down to its intro in the process.
 
@@ -485,8 +485,8 @@ function Build-PluginReleaseCard {
         [string[]]$Entries = @(),
         [string]$RepoBlobUrl = 'https://github.com/DaveKJohn/davekjohns-workshop/blob/main/'
     )
-    $minorDir = ($Version -split '\.')[0..1] -join '.'
-    $notesRelPath = "releases/development/$minorDir/$Version.md"
+    $majorDir = ($Version -split '\.')[0] + '.x'
+    $notesRelPath = "releases/development/$majorDir/$Version.md"
     $notesUrl = "$RepoBlobUrl$notesRelPath"
 
     $titleLine = if ($Title) { "$Title`n`n" } else { '' }
@@ -516,7 +516,7 @@ function Build-PluginReleaseCard {
 
 function Build-ReleaseNotes {
     <#
-        Builds the full release notes (the releases/development/<X.Y>/<X.Y.Z>.md file) from the
+        Builds the full release notes (the releases/development/<X>.x/<X.Y.Z>.md file) from the
         entry blocks, grouped by branch type. Pure string out -- DELIBERATELY hard LF (see
         Build-PluginChangelogSection above for the same trade-off: this is a NEW, standalone file
         with no existing newline style of its own, unlike the root CHANGELOG.md which detects and
@@ -530,11 +530,11 @@ function Build-ReleaseNotes {
         [Parameter(Mandatory)][string]$Type,
         [string]$Title = '',
         # Prefix to resolve repo-root-relative links in entry bodies from the deeper location of
-        # the notes file (releases/development/<X.Y>/ = 3 folders deep -> '../../../').
+        # the notes file (releases/development/<X>.x/ = 3 folders deep -> '../../../').
         [string]$LinkPrefix = '../../../'
     )
     # Entries are written with repo-root-relative links; rewrite them so they resolve correctly
-    # from the notes file (releases/development/<X.Y>/ = 3 folders deep -> '../../../'). External
+    # from the notes file (releases/development/<X>.x/ = 3 folders deep -> '../../../'). External
     # (http/mailto), anchor (#) and absolute (/) links are left alone, as are links that already
     # start with ../. Format-CategorizedEntries then groups the entries by category
     # ('## <Category>' -> '### <entry>') and normalizes to LF, so the CRLF of the source CHANGELOG

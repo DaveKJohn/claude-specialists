@@ -106,7 +106,7 @@ a bump. If work must propagate to consumers, Rendall reports that to Dave as a r
 (which remains at Dave's explicit request).
 
 The `releases/` directory (modeled on life-hub, but without GitHub Releases):
-- **`releases/development/<X.Y>/<X.Y.Z>.md`** — the full release notes, from the `## Pull Requests`
+- **`releases/development/<X>.x/<X.Y.Z>.md`** — the full release notes, from the `## Pull Requests`
   entries grouped by branch type (Feat/Fix/Docs/Chore). Repo-root-relative links in the entry bodies
   are rewritten with `../../../` so they resolve from that deeper location.
 - **`releases/README.md`** — an overview table of all versions (newest at the top).
@@ -121,7 +121,7 @@ does everything in one motion:
 
 `cut-release.ps1 (-Version <X.Y.Z> | -Bump <major|minor|patch>) [-Title "…"]` on a clean `main`:
 1. bumps all plugin versions in lockstep to `X.Y.Z`;
-2. generates `releases/development/<X.Y>/<X.Y.Z>.md`, adds a row to `releases/README.md`, and puts a
+2. generates `releases/development/<X>.x/<X.Y.Z>.md`, adds a row to `releases/README.md`, and puts a
    reference in `CHANGELOG.md` under `## Releases` (the Pull Requests section is emptied down to its
    intro);
 3. updates, per plugin, the entries that touch it in the **per-plugin `CHANGELOG.md`**
