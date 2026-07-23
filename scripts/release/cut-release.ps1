@@ -19,7 +19,7 @@
       1. Guardrails: clean main, no unfolded entry files in the root, lint gate green.
       2. Reads the current lockstep version from every <plugin>/.claude-plugin/plugin.json;
          determines the new version (-Version or -Bump) and the bump type.
-      3. Generates releases/development/<X.Y>/<X.Y.Z>.md from the ## Pull Requests entries
+      3. Generates releases/development/<X>.x/<X.Y.Z>.md from the ## Pull Requests entries
          (grouped by branch type), adds a row to releases/README.md, puts a reference in
          CHANGELOG.md under ## Releases and empties the Pull-Requests section, and bumps all
          plugin.json's.
@@ -153,8 +153,8 @@ if (-not $SkipLint) {
 }
 
 # --- Build content (before the write actions, so a parse error leaves nothing behind) --------
-$minorDir = ($new -split '\.')[0..1] -join '.'
-$notesRelPath = "releases/development/$minorDir/$new.md"
+$majorDir = ($new -split '\.')[0] + '.x'
+$notesRelPath = "releases/development/$majorDir/$new.md"
 $today = (Get-Date -Format 'yyyy-MM-dd')
 
 $changelogPath = Join-Path $repoRoot 'CHANGELOG.md'
@@ -164,7 +164,7 @@ $notesContent = Build-ReleaseNotes -Entries $entries -Version $new -Date $today 
 $changelogNew = Convert-ChangelogForRelease -Content $changelogRaw -Version $new -Date $today -Type $typeLabel -NotesRelPath $notesRelPath
 
 # --- Write the release-notes file -------------------------------------------------------------
-$notesDir = Join-Path $repoRoot ("releases\development\$minorDir")
+$notesDir = Join-Path $repoRoot ("releases\development\$majorDir")
 New-Item -ItemType Directory -Force -Path $notesDir | Out-Null
 $notesAbs = Join-Path $repoRoot ($notesRelPath -replace '/', '\')
 if (Test-Path $notesAbs) { Write-Error "$notesRelPath already exists."; exit 1 }
@@ -180,7 +180,7 @@ Write-Host "  created: $notesRelPath ($($entries.Count) entries)" -ForegroundCol
 # manually first (a deliberate milestone moment), after which its table becomes the insertion target.
 $relReadme = Join-Path $repoRoot 'releases\README.md'
 $shortTitle = if ($Title) { $Title } else { "$typeLabel release" }
-$newRow = "| [$new](development/$minorDir/$new.md) | $today | $typeLabel | $shortTitle |"
+$newRow = "| [$new](development/$majorDir/$new.md) | $today | $typeLabel | $shortTitle |"
 if (Test-Path $relReadme) {
     $rm = Get-Content -Path $relReadme -Raw -Encoding UTF8
     $rmNl = if ($rm.Contains("`r`n")) { "`r`n" } else { "`n" }

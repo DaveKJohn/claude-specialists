@@ -57,7 +57,7 @@ The full picture, top-level folder by folder:
   `agent-shared-lib.ps1`), the lint gate + drift check, the changelog/PR/release scripts (incl.
   `cut-release.ps1`), the connectors check (`check-connectors.ps1`), the agent-def generator
   (`build-agent-defs.ps1` — fills in the shared blocks from `agent-shared/`), and the tests.
-- **`releases/`** — the release history: `development/<X.Y>/<X.Y.Z>.md` (full notes per version) +
+- **`releases/`** — the release history: `development/<X>.x/<X.Y.Z>.md` (full notes per version) +
   `README.md` (overview table) — see [Cutting a release](#cutting-a-release). The `## Releases`
   section of `CHANGELOG.md` points here.
 - **`.claude/`** — the repo layer: `plugins/claude-specialists/` (the repo lenses + persona manuals
@@ -325,7 +325,7 @@ In one motion, on a clean `main`:
 [`scripts/release/cut-release.ps1`](scripts/release/cut-release.ps1)`(-Version <X.Y.Z> | -Bump <major|minor|patch>) [-Title "…"]`
 
 1. bumps all `plugin.json` versions in lockstep to `X.Y.Z`;
-2. generates the full release notes in `releases/development/<X.Y>/<X.Y.Z>.md` (from the folded
+2. generates the full release notes in `releases/development/<X>.x/<X.Y.Z>.md` (from the folded
    `## Pull Requests` entries, per branch type), adds a row to `releases/README.md`, and places in
    `CHANGELOG.md` a reference under `## Releases` (the Pull Requests section is emptied down to its intro);
 3. appends, per plugin, the entries that touched that plugin (selected via the `Plugins:` line that
