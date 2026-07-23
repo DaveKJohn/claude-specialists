@@ -9,137 +9,16 @@ folding) is described in [`CONTRIBUTING.md`](CONTRIBUTING.md).
 Everything merged to `main` since the last release — newest at the top, one block per pull
 request.
 
-### #165 · cut-release: stop flagging legitimate root docs (CONTRIBUTING/SECURITY) as unfolded entries · Fix · 2026-07-23
-
-`cut-release.ps1` refuses to cut a release while an unfolded changelog entry file sits in the repo
-root, recognising an entry by exclusion: every root `*.md` not in the `$reservedRootMd` allowlist is
-treated as one. The allowlist listed only `CHANGELOG/CLAUDE/README/LICENSE.md`, so the permanent
-root docs `CONTRIBUTING.md` and `SECURITY.md` (added in #159/#161) were mistaken for unfolded
-entries and falsely blocked a release. Added both to the allowlist, with a comment noting that any
-new permanent root doc must be listed there.
-
-Added `scripts/tests/cut-release-guardrail.tests.ps1`: a drift guard asserting that every tracked,
-non-branch-prefixed root `*.md` is covered by the allowlist, so this exact drift (a new root doc
-silently blocking releases) is caught automatically going forward.
-
-[PR #165](https://github.com/DaveKJohn/davekjohns-workshop/pull/165)
-
----
-
-### #164 · Park move (intent + push) and portable post-merge branch cleanup · Feat · 2026-07-23
-
-Two inbound improvements to the shared branch lifecycle, landing in the source (closes #162 and #163).
-
-**#162 — parking a branch (intent + push, no PR).** `new-changelog-entry.ps1` gains an optional
-`-Intent`; when given it becomes the recorded entry body, and when omitted the body now falls back
-to a directional block (`**To do / where I left off:**` + a prompting TODO) instead of a bare
-one-line TODO — so a forgotten intent still leaves a "what is next / where was I" prompt. `new-branch.ps1`
-gains `-Intent` (passed to the child via `CLAUDE_NEWBRANCH_INTENT`, the same injection-safe env-var
-handoff as `-Title`) and an opt-in `-Park` switch that commits the entry and pushes the branch to
-`origin` with `git push -u` — **no PR** (push is not a PR; the PR rule stays intact and separate).
-The push reuses the shared `Invoke-NativeCapture` helper (the `#107` stderr guard). The default
-path is unchanged: without `-Park` nothing is committed or pushed.
-
-**#163 — post-merge branch cleanup as a fixed closing step.** Documented in the portable layer: the
-`fold-changelog` skill (the last chain step) now names the local cleanup — `git fetch --prune` +
-`git branch -d <branch>`, with the remote handled by the repo's auto-delete-on-merge setting — as a
-fixed closing step (the canonical exact commands live there); Derek's portable persona body and repo
-lens cross-reference that rule, and the `specialists-init` setup checklist tells a new consumer to
-enable `deleteBranchOnMerge`.
-
-Regression tests for `-Intent`, the directional fallback, and `-Park` (branch pushed to a bare
-`origin`, entry committed, upstream set, no PR) added to `scripts/tests/new-branch.tests.ps1`; the
-plugin mirrors were regenerated from the canonical source.
-
-Plugins: specialists
-
-[PR #164](https://github.com/DaveKJohn/davekjohns-workshop/pull/164)
-
----
-
-### #161 · Add .gitattributes (line-ending normalization) and SECURITY.md · Chore · 2026-07-23
-
-Added a root `.gitattributes` (`* text=auto eol=lf`, plus explicit `text eol=lf` entries for
-`.ps1`/`.md`/`.json`/`.jsonc`/`.yml`/`.yaml`/`.txt` and `binary` for common image/font types) to fix
-the recurring "LF will be replaced by CRLF" warning on every commit in this Windows-authored repo.
-`.ps1` files run fine with LF line endings on both PowerShell 5.1 and 7+, so `eol=lf` is the safe,
-conventional choice here, not just for the Markdown/JSON/YAML content. Scoped deliberately to just
-the new file — no repo-wide `git add --renormalize .` in this change, deliberately left for a
-later, separate pass. Lint gate (`check-plugin-integrity.ps1`) verified green after the addition.
-
-Added a root `SECURITY.md`: scope (unsafe agent-def/script/hook content, accidental secret
-exposure) vs. out of scope (no hosted service/user data), the GitHub Security Advisory reporting
-route, and best-effort/single-maintainer response expectations — no invented SLAs.
-
-[PR #161](https://github.com/DaveKJohn/davekjohns-workshop/pull/161)
-
----
-
-### #160 · Extend dead-link scan to cover CONTRIBUTING.md and connectors/README.md · Chore · 2026-07-23
-
-The dead-link/anchor scan in `scripts/lint/check-plugin-integrity.ps1` (check 4) had an explicit
-list of scanned files that had not been updated to include two files added by the docs
-redistribution in PR #159: the root `CONTRIBUTING.md` and
-`claude-code-plugins/claude-specialists/connectors/README.md`. Link/anchor changes in those two
-files therefore silently escaped the automatic gate — spotted by Edith during copy edit.
-
-`CONTRIBUTING.md` now joins the existing root loop (README.md/CHANGELOG.md/CLAUDE.md); the
-connectors README is added as a single, targeted addition (it is not covered by any existing glob,
-since the CHANGELOG.md glob under `claude-code-plugins/claude-specialists/**` explicitly excludes
-`\connectors\`, and the family README/QUICKSTART loop only targets the family root, not the
-`connectors/` subfolder). The scan docstring and the check-4 comment block were updated to match.
-
-Verified: the lint gate still passes green (0 errors) after the change, and a temporary fake dead
-link + broken anchor introduced in both files was correctly reported by the gate, then reverted.
-
-[PR #160](https://github.com/DaveKJohn/davekjohns-workshop/pull/160)
-
----
-
-### #159 · Redistribute root README content across family/connectors/releases READMEs + new CONTRIBUTING.md · Docs · 2026-07-23
-
-The root `README.md` had grown to carry family-specific mechanics that broke its own "family
-mechanics belong in the family README" rule. Moved out of root: "Manuals — the split model"
-(merged into the family README as the single canonical explanation of manual/agent-def/persona-template,
-replacing three near-duplicate versions across root, the family README, and the Specialists handbook),
-"Shared agent-def blocks", "Where this runs: Chat, Cowork, and Claude Code", "How we use skills —
-and what we deliberately don't", "Adoption: the bootstrap path" (next to the existing Quickstart
-pointer), and "Adding a new plugin group" — all five now live in the family
-README (`claude-code-plugins/claude-specialists/README.md`); "Maintenance: drift lint" moved into
-`connectors/README.md`, consolidated with its existing drift/persona-drift sections instead of
-duplicating them; "Cutting a release" and the scripty part of "Versioning" moved into
-`releases/README.md` with proper section anchors; "Contributing — changelog & PR workflow" moved
-into a new root `CONTRIBUTING.md`. The root README itself is slimmed to a short TOC (intro, plugin
-families, what lives here, a shortened repo layout, a shortened consumption section, a short
-versioning fact + link, a short contributing pointer, and a closing "Want to know more?" block) with
-every internal/external cross-reference into the moved sections repointed to its new home
-(`CLAUDE.md`, `CHANGELOG.md`, `QUICKSTART.md`, and the family README's own self-references included).
-
-[PR #159](https://github.com/DaveKJohn/davekjohns-workshop/pull/159)
-
----
-
-### #158 · Record how this repo uses Skills (and what it deliberately does not) · Docs · 2026-07-23
-
-Adds a compact `### How we use Skills — and what we deliberately don't` subsection to `README.md`,
-right after "Where this runs: Chat, Cowork, and Claude Code" and before "## Consumption", recording
-as durable knowledge a reflection that otherwise only lived in a conversation. Notes: today every
-skill (`fold-changelog`, `open-pr`, `new-branch`, `specialists-init`, `sync-roster`, `start-task`) is
-a thin wrapper around a script — procedural mechanism, not craft, which lives in the persona/manual
-context instead; Anthropic's Agent Skills model supports a third, unused level (bundled reference
-material via progressive disclosure) that a future knowledge-skill could use; the discipline stays
-"only where it's worth the maintenance cost," pointing at `cut-release` staying deliberately
-skill-less (`scripts/sync/check-script-contract.ps1`) as the living example; and Cowork's non-code
-positioning is why this code-maintenance repo rightly stays Claude-Code-centric.
-
-[PR #158](https://github.com/DaveKJohn/davekjohns-workshop/pull/158)
-
----
-
 ## Releases
 
 The recorded versions of the marketplace — newest at the top. Each release bumps all plugin
 versions in lockstep and references the full notes in `releases/development/`.
+
+### [v2.1.0] - 2026-07-23 — Minor
+
+See [releases/development/2.x/2.1.0.md](releases/development/2.x/2.1.0.md) for the full release notes.
+
+---
 
 ### [v2.0.2] - 2026-07-23 — Patch
 
