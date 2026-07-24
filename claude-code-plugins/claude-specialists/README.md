@@ -136,8 +136,8 @@ Cowork and in Claude Code — in a plain Claude.ai Chat session they show up gra
 Concretely for davekjohns-workshop: the specialists roster (the subagents under Chris) and the three
 SessionStart hooks (`connector-sessioncheck`, `roster-sessioncheck`, `script-contract-sessioncheck`)
 function in Claude Code and in Cowork, but not in a plain Claude.ai Chat session — only the skills
-(`fold-changelog`, `open-pr`, `new-branch`, `specialists-init`, `sync-roster`, `start-task`) remain
-available there.
+(`fold-changelog`, `open-pr`, `new-branch`, `park`, `specialists-init`, `sync-roster`, `start-task`)
+remain available there.
 
 Skills themselves are Anthropic's general **Agent Skills** mechanism — organized folders of
 instructions/scripts/resources that an agent discovers and loads progressively (name + description
@@ -150,8 +150,8 @@ interchangeable with — a Claude Code subagent.
 
 ## How we use skills — and what we deliberately don't
 
-Every skill in davekjohns-workshop today (`fold-changelog`, `open-pr`, `new-branch`, `specialists-init`,
-`sync-roster`, `start-task`) is a thin wrapper around a script — procedural **mechanism** (branch,
+Every skill in davekjohns-workshop today (`fold-changelog`, `open-pr`, `new-branch`, `park`,
+`specialists-init`, `sync-roster`, `start-task`) is a thin wrapper around a script — procedural **mechanism** (branch,
 PR, fold, bootstrap, roster-sync). The specialists' craft and judgment live in the persona/manual
 context (agent defs), not in skills. That's a deliberate split, but it also means we currently use
 only one half of what Agent Skills can carry.
