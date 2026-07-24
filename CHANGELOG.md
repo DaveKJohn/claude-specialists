@@ -9,32 +9,16 @@ folding) is described in [`CONTRIBUTING.md`](CONTRIBUTING.md).
 Everything merged to `main` since the last release — newest at the top, one block per pull
 request.
 
-### #176 · Shared park-branch script + skill · Feat · 2026-07-24
-
-Add a shared **`park-branch`** step to the centralized branch-workflow layer (issue #81), alongside
-`new-branch` and `open-pr`, so consumers do not duplicate it. New script
-`scripts/task/park-branch.ps1` + `park` skill: commit **all** outstanding work on the current branch
-(`git add -A` + commit) and `git push -u origin <branch>`, so the exact state is immediately
-continuable on another device. Guardrails: refuses on `main`, opens **no PR**, does **no live/deploy
-action** (git only). Self-contained — depends only on `git` and the shared `native-capture` helper,
-so it needs no repo-owned config. Optional `-Intent` records where you left off in the park commit
-message. Distinct from `new-branch -Park` (which parks at creation and commits only the changelog
-entry): `park-branch` parks an existing branch mid-work and commits everything.
-
-Registered in the shared-scripts registry (mirror generated), covered by
-`scripts/tests/park-branch.tests.ps1`, and documented in Derek's lens, the plugin scripts README, and
-the family README. From inbound issue #175 (source: BWJ-ecommerce/smartwatchbanden).
-
-Plugins: specialists
-
-[PR #176](https://github.com/DaveKJohn/davekjohns-workshop/pull/176)
-
----
-
 ## Releases
 
 The recorded versions of the marketplace — newest at the top. Each release bumps all plugin
 versions in lockstep and references the full notes in `releases/development/`.
+
+### [v2.5.0] - 2026-07-24 — Minor
+
+See [releases/development/2.x/2.5.0.md](releases/development/2.x/2.5.0.md) for the full release notes.
+
+---
 
 ### [v2.4.1] - 2026-07-24 — Patch
 
