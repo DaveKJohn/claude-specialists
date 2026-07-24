@@ -60,10 +60,10 @@ function Get-RosterPath {
 
 # Agent ids ('<group>-<id>') that are ENABLED but deliberately have no roster row and no lens, so
 # check-roster-sync.ps1 must not flag them as drift. In this workshop, Paula (02-09), Vera (04-11),
-# Gwen (04-12) and Cody (04-13) are enabled from the `specialists` plugin but have (as yet) no
-# repo work here, hence no lens and no roster row -- a documented choice in CLAUDE.md, not drift.
-# A fresh consumer leaves this empty (every enabled agent belongs in its roster).
-$script:RosterIgnoredIds = @('02-09', '04-11', '04-12', '04-13')
+# Gwen (04-12), Cody (04-13) and Auden (06-30) are enabled from the `specialists` plugin but have
+# (as yet) no repo work here, hence no lens and no roster row -- a documented choice in CLAUDE.md,
+# not drift. A fresh consumer leaves this empty (every enabled agent belongs in its roster).
+$script:RosterIgnoredIds = @('02-09', '04-11', '04-12', '04-13', '06-30')
 
 function Get-RosterIgnoredIds {
     <# Ids of enabled agents intentionally kept out of the roster/lenses (skipped by the check). #>
