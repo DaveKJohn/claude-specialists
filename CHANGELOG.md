@@ -9,22 +9,16 @@ folding) is described in [`CONTRIBUTING.md`](CONTRIBUTING.md).
 Everything merged to `main` since the last release — newest at the top, one block per pull
 request.
 
-### #174 · Allow-rule for cut-release.ps1 in settings.json · Chore · 2026-07-24
-
-Add a `permissions.allow` rule to `.claude/settings.json` for
-`powershell -NoProfile -File "scripts/release/cut-release.ps1"*`, so the repo-wide release script
-runs without the auto-mode classifier blocking it. The behavioral safety rule is unchanged — a
-release is still cut only on Dave's explicit request; this only removes the classifier friction for
-that one command.
-
-[PR #174](https://github.com/DaveKJohn/davekjohns-workshop/pull/174)
-
----
-
 ## Releases
 
 The recorded versions of the marketplace — newest at the top. Each release bumps all plugin
 versions in lockstep and references the full notes in `releases/development/`.
+
+### [v2.4.1] - 2026-07-24 — Patch
+
+See [releases/development/2.x/2.4.1.md](releases/development/2.x/2.4.1.md) for the full release notes.
+
+---
 
 ### [v2.4.0] - 2026-07-24 — Minor
 

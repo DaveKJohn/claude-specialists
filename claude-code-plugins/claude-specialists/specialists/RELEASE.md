@@ -1,40 +1,15 @@
-# Release v2.4.0
+# Release v2.4.1
 
 **Date:** 2026-07-24  
-**Type:** Minor
+**Type:** Patch
 
-THESIS.md convention for Auden (#30) and the isolated-worktree parallel-PR pattern for Derek (#05)
+Allow cut-release.ps1 in settings.json to bypass the auto-mode classifier
 
 You are on this release.
 
-## Features
-
-### #173 · THESIS.md convention for Auden · Feat · 2026-07-24
-
-Establish `THESIS.md` as the conventional filename for Auden's (#30) formal, structured long-form
-deliverable — the academic/thesis-style piece, as distinct from a folder's short navigational
-README. A stable, recognizable name makes the output read the same across repos and lets consuming
-tooling/viewers key off the filename instead of an ad-hoc one. Documented in Auden's portable manual
-(`manuals/06-30-manual.md`) and his agent-def working method (`agents/06-30-agent.md`). From inbound
-issue #171 (source: DaveKJohn/life-hub).
-
-[PR #173](https://github.com/DaveKJohn/davekjohns-workshop/pull/173)
+No changes to this plugin in this release — see the full notes.
 
 ---
 
-### #172 · Worktree parallel-PR pattern for Derek · Feat · 2026-07-24
-
-Document in Derek's portable persona (`personas/05-05-persona.md`) the pattern for running a second
-branch's full PR movement (open → merge → fold → cleanup) in an isolated `git worktree` while a
-subagent is still editing the primary working tree — instead of switching the busy tree's branch out
-from under it. Captures the two gotchas found in practice: keep the worktree path short (Windows
-`MAX_PATH`), and fall back to `git branch -D` after verifying the merge with `git merge-base
---is-ancestor` when a pruned upstream makes `branch -d` refuse. From inbound issue #171 (source:
-DaveKJohn/life-hub).
-
-[PR #172](https://github.com/DaveKJohn/davekjohns-workshop/pull/172)
-
----
-
-Full workshop notes: [releases/development/2.x/2.4.0.md](https://github.com/DaveKJohn/davekjohns-workshop/blob/main/releases/development/2.x/2.4.0.md)
+Full workshop notes: [releases/development/2.x/2.4.1.md](https://github.com/DaveKJohn/davekjohns-workshop/blob/main/releases/development/2.x/2.4.1.md)
 Cumulative plugin history: [CHANGELOG.md](CHANGELOG.md)
