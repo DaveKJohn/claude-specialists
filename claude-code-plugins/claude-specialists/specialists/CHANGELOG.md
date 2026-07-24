@@ -4,6 +4,65 @@ Consumer-facing history of this plugin: per release, the changes that touched th
 Automatically appended by `cut-release.ps1` of the marketplace repo (davekjohns-workshop); the full
 workshop history lives there in `CHANGELOG.md` and `releases/`.
 
+## v2.2.0 — 2026-07-24
+
+### Features
+
+#### #166 · Add Marlowe #29 -- adversarial conclusion reviewer (investigative journalist / watchdog) · Feat · 2026-07-24
+
+New specialist in the shared `specialists` plugin (flows back to every consumer via a release):
+**Marlowe 🕵️ #29, the Investigative Journalist / consumer watchdog** — the independent devil's
+advocate on the *substance and conclusions* of the team's work.
+
+Where Victor #19 (correctness), Edith #17 (language), and Sebastian #23 (security) review the
+**craft**, Marlowe reviews the **conclusion itself**: before anyone acts on a recommendation, he
+tries to tear it down — the fine print / the catch, the load-bearing assumption, and real-world
+contradicting evidence (customer experiences, complaints, regulator warnings) versus the sales
+pitch. His distinct value versus the researcher (Rebecca #07): Rebecca builds the case, Marlowe is
+adversarial by mandate and red-teams a case that already exists. Delivers a critical counter-report
+with an explicit verdict (HOLDS / WOBBLES / FALLS); read-only in spirit — reviews, does not rewrite,
+fixes nothing, commits nothing, opens no PRs.
+
+- **Stable id 29, group 06** (reviewer group). Built as a subagent (agent-def + manual), matching
+  the other pre-PR reviewers; no persona file (personas exist only for the main-loop specialists).
+  Tools: `Read, Grep, Glob, WebSearch, WebFetch, Skill` (the research/reviewer profile) -- no
+  write/edit, no git.
+- New files: `agents/06-29-agent.md`, `manuals/06-29-manual.md` (plugin source),
+  `.claude/plugins/claude-specialists/specialists/06-29-extension.md` (repo lens).
+- Roster updated everywhere: `CLAUDE.md` (roster table), Chris's lens `01-01-extension.md` (routing
+  table + the pre-PR quality-check chain), the handbook README (name list, group-06 tree, id table),
+  and the family README manual inventory. Registered `06-29` in the connector manifest.
+- Housekeeping alongside: added the pre-existing missing `06-25` (Nolan) to the connector manifest
+  and to the family README manual inventory, so both are accurate again.
+
+[PR #166](https://github.com/DaveKJohn/davekjohns-workshop/pull/166)
+
+### Fixes
+
+#### #167 · fold-changelog: only fold real changelog-entry files, not root meta docs · Fix · 2026-07-24
+
+**Bug:** in fold-all mode (`fold-changelog-entry.ps1` without `-Branch`) any root `*.md` that was not
+in a tiny denylist (`CHANGELOG.md`/`CLAUDE.md`/`README.md`) was treated as a changelog entry — so
+the repo-meta files `CONTRIBUTING.md` and `SECURITY.md` (added later) got folded into `CHANGELOG.md`
+and then removed. Caught and reverted during the Marlowe fold; nothing shipped.
+
+**Fix:** add a positive, structural gate. A changelog entry always opens with the compact
+`### <title> · <type> · <date>` H3 heading (the fold code already relies on that `###` line);
+repo-root meta docs open with an H1. Fold-all now folds a file only if its first non-empty line is
+that H3 heading, so meta docs are never folded. Deliberately independent of the branch-prefix table,
+so consumer-extended prefixes (Shopify's `style/`, `liquid/`, …) still fold. `-Branch` mode is
+unchanged (it targets exactly the named entry).
+
+- `scripts/release/fold-changelog-entry.ps1`: new `Test-IsChangelogEntryFile` helper + the fold-all
+  filter; header doc updated. Plugin mirror re-synced byte-identical via `build-shared-scripts.ps1`.
+- New regression suite `scripts/tests/fold-changelog.tests.ps1` (17 asserts): meta docs survive, a
+  genuine entry folds, an extended-prefix entry still folds, a hyphen-named H1 doc is not folded,
+  and `-Branch` mode is unaffected.
+
+[PR #167](https://github.com/DaveKJohn/davekjohns-workshop/pull/167)
+
+---
+
 ## v2.1.0 — 2026-07-23
 
 ### Features
