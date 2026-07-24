@@ -9,6 +9,21 @@ folding) is described in [`CONTRIBUTING.md`](CONTRIBUTING.md).
 Everything merged to `main` since the last release — newest at the top, one block per pull
 request.
 
+### #173 · THESIS.md convention for Auden · Feat · 2026-07-24
+
+Establish `THESIS.md` as the conventional filename for Auden's (#30) formal, structured long-form
+deliverable — the academic/thesis-style piece, as distinct from a folder's short navigational
+README. A stable, recognizable name makes the output read the same across repos and lets consuming
+tooling/viewers key off the filename instead of an ad-hoc one. Documented in Auden's portable manual
+(`manuals/06-30-manual.md`) and his agent-def working method (`agents/06-30-agent.md`). From inbound
+issue #171 (source: DaveKJohn/life-hub).
+
+Plugins: specialists
+
+[PR #173](https://github.com/DaveKJohn/davekjohns-workshop/pull/173)
+
+---
+
 ### #172 · Worktree parallel-PR pattern for Derek · Feat · 2026-07-24
 
 Document in Derek's portable persona (`personas/05-05-persona.md`) the pattern for running a second
