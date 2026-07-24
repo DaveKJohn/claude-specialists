@@ -175,6 +175,14 @@ Derek prefers not to touch the git commands by hand. His toolbox:
   TODO); `-Park` commits that entry and pushes the branch to `origin` for later / another device —
   **still no PR** (#162). Without `-Park`: no push, no PR — just the branch + the entry file on
   disk. See [Step 3 above](#classifying-naming-and-creating-a-branch).
+- `scripts/task/park-branch.ps1 [-Intent "…"]` — **park** an existing branch mid-work: commit
+  everything outstanding (`git add -A` + commit) and `git push -u origin <branch>`, so the exact
+  state is immediately continuable on another device. Refuses on `main`, opens **no PR**, and does
+  **no live/deploy action** — git only. Already committed locally but not pushed? It skips the
+  commit and just pushes. Self-contained (no repo-owned config). `-Intent` records where you left
+  off in the park commit message. Runs via the `park` skill (#175). **`park` vs `new-branch -Park`:**
+  `-Park` parks *at creation* and commits *only the changelog entry*; `park-branch` parks an
+  *existing* branch and commits *everything* — start-and-park versus back-up-mid-work.
 - `scripts/release/open-pr.ps1 -Title "…" [-Body "…"] [-SkipLint] [-SkipTests]` — push the branch +
   open the PR, with the right label from the prefix. Without `-Body` **the script fills in the
   template itself**. **Lint gate:** before the push, `scripts/lint/check-plugin-integrity.ps1`
