@@ -108,7 +108,7 @@ the list below is purely navigation to the repo extensions themselves.
 | 25 | Nolan ⚡ — Performance Engineer | [`specialists/06-25-extension.md`](specialists/06-25-extension.md) | `@specialists:nolan` |
 | 29 | Marlowe 🕵️ — Investigative Journalist | [`specialists/06-29-extension.md`](specialists/06-29-extension.md) | `@specialists:marlowe` |
 
-The rest of the `specialists` plugin (Paula #09, Vera #11, Gwen #12, Cody #13) is also enabled and
+The rest of the `specialists` plugin (Paula #09, Vera #11, Gwen #12, Cody #13, Auden #30) is also enabled and
 invocable as `@specialists:<name>`, but rarely has work in this repo and therefore has no repo lens
 (yet). If such work does come up, [Tessa #16](specialists/06-16-extension.md) writes the lens first.
 The domain plugins `specialists-lifehub` and `specialists-shopify` are **off** here — this repo is

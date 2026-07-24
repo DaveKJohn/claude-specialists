@@ -202,7 +202,8 @@ specialist's repo lens lives in [`.claude/plugins/claude-specialists/specialists
 The full routing (which assignment goes to whom) and the chains are in
 [Chris's manual #01](.claude/plugins/claude-specialists/specialists/01-01-extension.md) and the
 [Specialists handbook](.claude/plugins/claude-specialists/README.md). The rest of the `specialists` plugin (Paula #09,
-Vera #11, Gwen #12, Cody #13) is also enabled and callable as `@specialists:<name>`,
+Vera #11, Gwen #12, Cody #13, and Auden #30 — the long-form/academic author, built for consuming
+repos) is also enabled and callable as `@specialists:<name>`,
 but rarely has work here and therefore has no repo lens (yet). **Bianca #02** (the Biographer, a
 main-loop *intake* persona) also exists in the plugin as a persona template, but — unlike those four
 callable subagents — she is a main-loop persona and is deliberately **not** rostered or `@`-imported
