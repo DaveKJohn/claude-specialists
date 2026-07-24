@@ -4,6 +4,37 @@ Consumer-facing history of this plugin: per release, the changes that touched th
 Automatically appended by `cut-release.ps1` of the marketplace repo (davekjohns-workshop); the full
 workshop history lives there in `CHANGELOG.md` and `releases/`.
 
+## v2.3.0 — 2026-07-24
+
+### Features
+
+#### #170 · Add Auden #30 -- academic/long-form content author · Feat · 2026-07-24
+
+New specialist in the shared `specialists` plugin, resolving inbound issue #169 (raised from
+life-hub): **Auden 🖋️ #30, the Academic & Long-form Writer.** He fills the gap between research and
+editing — the actual *authoring* of long, structured, argued, sourced content: subject-matter
+documentation and academic/thesis-style pieces.
+
+Chain: the research specialist gathers and cites the material → **Auden authors the piece** → the
+copy editor polishes → follow-up places it. Distinct from the technical writer (governance/meta-docs,
+not subject-matter content), the research specialist (gathers sources, does not author the finished
+piece), and the copy editor (polishes, does not author).
+
+- **Stable id 30, group 06.** Built as a subagent (agent-def + manual); tools
+  `Read, Write, Edit, Grep, Glob, Skill` (an author needs write/edit; research stays with Rebecca).
+  Reuses the shared boundary blocks, including the two just globalized into `agent-shared/`
+  (`no-conversation-history`, `no-commit-push-pr`).
+- New files: `agents/06-30-agent.md`, `manuals/06-30-manual.md` (plugin source).
+- **No workshop repo lens** (yet): like Paula/Vera/Gwen/Cody, Auden's work lives in consuming repos
+  (life-hub), not in this maintenance repo, so per the house convention he is listed as "also
+  enabled, rarely has work here" rather than given a contrived empty lens. Added to that note in
+  `CLAUDE.md` and the handbook README, and to the family README manual inventory.
+- Never invents facts/quotes/citations — a missing source is flagged back to the researcher.
+
+[PR #170](https://github.com/DaveKJohn/davekjohns-workshop/pull/170)
+
+---
+
 ## v2.2.1 — 2026-07-24
 
 ### Maintenance

@@ -9,39 +9,16 @@ folding) is described in [`CONTRIBUTING.md`](CONTRIBUTING.md).
 Everything merged to `main` since the last release — newest at the top, one block per pull
 request.
 
-### #170 · Add Auden #30 -- academic/long-form content author · Feat · 2026-07-24
-
-New specialist in the shared `specialists` plugin, resolving inbound issue #169 (raised from
-life-hub): **Auden 🖋️ #30, the Academic & Long-form Writer.** He fills the gap between research and
-editing — the actual *authoring* of long, structured, argued, sourced content: subject-matter
-documentation and academic/thesis-style pieces.
-
-Chain: the research specialist gathers and cites the material → **Auden authors the piece** → the
-copy editor polishes → follow-up places it. Distinct from the technical writer (governance/meta-docs,
-not subject-matter content), the research specialist (gathers sources, does not author the finished
-piece), and the copy editor (polishes, does not author).
-
-- **Stable id 30, group 06.** Built as a subagent (agent-def + manual); tools
-  `Read, Write, Edit, Grep, Glob, Skill` (an author needs write/edit; research stays with Rebecca).
-  Reuses the shared boundary blocks, including the two just globalized into `agent-shared/`
-  (`no-conversation-history`, `no-commit-push-pr`).
-- New files: `agents/06-30-agent.md`, `manuals/06-30-manual.md` (plugin source).
-- **No workshop repo lens** (yet): like Paula/Vera/Gwen/Cody, Auden's work lives in consuming repos
-  (life-hub), not in this maintenance repo, so per the house convention he is listed as "also
-  enabled, rarely has work here" rather than given a contrived empty lens. Added to that note in
-  `CLAUDE.md` and the handbook README, and to the family README manual inventory.
-- Never invents facts/quotes/citations — a missing source is flagged back to the researcher.
-
-Plugins: specialists
-
-[PR #170](https://github.com/DaveKJohn/davekjohns-workshop/pull/170)
-
----
-
 ## Releases
 
 The recorded versions of the marketplace — newest at the top. Each release bumps all plugin
 versions in lockstep and references the full notes in `releases/development/`.
+
+### [v2.3.0] - 2026-07-24 — Minor
+
+See [releases/development/2.x/2.3.0.md](releases/development/2.x/2.3.0.md) for the full release notes.
+
+---
 
 ### [v2.2.1] - 2026-07-24 — Patch
 
