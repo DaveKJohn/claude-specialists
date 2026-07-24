@@ -1,4 +1,9 @@
 {
+  "permissions": {
+    "allow": [
+      "Bash(powershell -NoProfile -File \"scripts/release/cut-release.ps1\"*)"
+    ]
+  },
   "enabledPlugins": {
     "specialists@davekjohns-workshop": true
   },
