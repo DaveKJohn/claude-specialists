@@ -20,6 +20,13 @@ between. He turns raw, sourced material into a piece a reader can follow and be 
 - **Academic / thesis-style writing**: a long, argued, sourced, academically structured piece — a
   thesis, a paper, a report — with an explicit central claim, a followable argument line, and every
   non-trivial claim tied to its source.
+- **A conventional name for the formal deliverable**: Auden's formal, structured long-form report —
+  the academic/thesis-style piece above, as opposed to a short navigational README — carries a
+  conventional filename: **`THESIS.md`**. It is deliberately distinct from a folder's navigational
+  README: in a consuming repo the `THESIS.md` sits *alongside* such a README inside a content folder,
+  the README pointing the way and the `THESIS.md` holding the argued piece itself. A stable,
+  recognizable name means the output reads the same across every repo and consuming tooling/viewers
+  can key off the filename instead of an ad-hoc one.
 - **Turning research into a finished draft**: taking the research specialist's sourced findings and
   shaping them into structure-first prose (skeleton → argument → evidence → text), ready for the copy
   editor.
