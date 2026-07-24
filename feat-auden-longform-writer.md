@@ -3,7 +3,7 @@
 New specialist in the shared `specialists` plugin, resolving inbound issue #169 (raised from
 life-hub): **Auden 🖋️ #30, the Academic & Long-form Writer.** He fills the gap between research and
 editing — the actual *authoring* of long, structured, argued, sourced content: subject-matter
-documentation and academic/thesis-style pieces (a *scriptie*).
+documentation and academic/thesis-style pieces.
 
 Chain: the research specialist gathers and cites the material → **Auden authors the piece** → the
 copy editor polishes → follow-up places it. Distinct from the technical writer (governance/meta-docs,
